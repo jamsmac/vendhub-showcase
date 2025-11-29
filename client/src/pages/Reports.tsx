@@ -237,10 +237,78 @@ export default function Reports() {
               </Card>
             </TabsContent>
 
-            <TabsContent value="operational">
-              <div className="flex flex-col items-center justify-center h-[400px] text-slate-500">
-                <BarChart3 className="w-16 h-16 mb-4 opacity-20" />
-                <p>Operational analytics module coming soon.</p>
+            <TabsContent value="operational" className="space-y-6">
+              <div className="grid gap-6 md:grid-cols-2">
+                {/* Machine Uptime */}
+                <Card className="bg-white/5 border-white/10 backdrop-blur-xl">
+                  <CardHeader>
+                    <CardTitle className="text-white">Fleet Uptime</CardTitle>
+                    <CardDescription className="text-slate-400">Average machine availability over the last 7 days</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="h-[300px] w-full">
+                      <ResponsiveContainer width="100%" height="100%">
+                        <BarChart data={[
+                          { day: "Mon", uptime: 98.5 },
+                          { day: "Tue", uptime: 99.2 },
+                          { day: "Wed", uptime: 97.8 },
+                          { day: "Thu", uptime: 99.5 },
+                          { day: "Fri", uptime: 96.4 },
+                          { day: "Sat", uptime: 98.9 },
+                          { day: "Sun", uptime: 99.1 },
+                        ]}>
+                          <CartesianGrid strokeDasharray="3 3" stroke="#ffffff10" />
+                          <XAxis dataKey="day" stroke="#94a3b8" fontSize={12} tickLine={false} axisLine={false} />
+                          <YAxis domain={[90, 100]} stroke="#94a3b8" fontSize={12} tickLine={false} axisLine={false} tickFormatter={(value) => `${value}%`} />
+                          <Tooltip 
+                            contentStyle={{ backgroundColor: '#0f172a', borderColor: '#1e293b', color: '#f8fafc' }}
+                            cursor={{ fill: '#ffffff10' }}
+                          />
+                          <Bar dataKey="uptime" fill="#3b82f6" radius={[4, 4, 0, 0]} />
+                        </BarChart>
+                      </ResponsiveContainer>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Technician Performance */}
+                <Card className="bg-white/5 border-white/10 backdrop-blur-xl">
+                  <CardHeader>
+                    <CardTitle className="text-white">Technician Performance</CardTitle>
+                    <CardDescription className="text-slate-400">Tasks completed vs. Avg resolution time (mins)</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-6">
+                      {[
+                        { name: "Alex K.", tasks: 45, time: 28, rating: 4.8 },
+                        { name: "Sarah M.", tasks: 38, time: 35, rating: 4.9 },
+                        { name: "Mike R.", tasks: 52, time: 22, rating: 4.7 },
+                        { name: "David L.", tasks: 31, time: 45, rating: 4.5 },
+                      ].map((tech, i) => (
+                        <div key={i} className="flex items-center justify-between">
+                          <div className="flex items-center gap-3">
+                            <div className="w-8 h-8 rounded-full bg-blue-500/20 flex items-center justify-center text-blue-400 font-bold text-xs">
+                              {tech.name.split(' ').map(n => n[0]).join('')}
+                            </div>
+                            <div>
+                              <p className="text-sm font-medium text-white">{tech.name}</p>
+                              <p className="text-xs text-slate-500">{tech.tasks} tasks completed</p>
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-6 text-sm">
+                            <div className="text-right">
+                              <p className="text-white">{tech.time}m</p>
+                              <p className="text-xs text-slate-500">Avg Time</p>
+                            </div>
+                            <Badge variant="outline" className="border-yellow-500/30 text-yellow-400 bg-yellow-500/10">
+                              ★ {tech.rating}
+                            </Badge>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
               </div>
             </TabsContent>
           </div>
