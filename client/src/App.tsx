@@ -14,6 +14,7 @@ import Tasks from "./pages/Tasks";
 import Users from "./pages/Users";
 import Inventory from "./pages/Inventory";
 import Login from "./pages/Login";
+import Auth from "./pages/Auth";
 import TelegramOnboarding from "./pages/TelegramOnboarding";
 import MasterData from "./pages/MasterData";
 import ComponentLifecycle from "./pages/ComponentLifecycle";
@@ -30,6 +31,7 @@ function Router() {
   return (
     <Switch>
       <Route path={"/login"} component={Login} />
+      <Route path={"/auth"} component={Auth} />
       <Route path={"/onboarding"} component={TelegramOnboarding} />
       <Route path={"/404"} component={NotFound} />
       {/* Protected routes with MainLayout */}
