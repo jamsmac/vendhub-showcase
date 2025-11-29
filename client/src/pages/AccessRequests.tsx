@@ -40,6 +40,7 @@ export default function AccessRequests() {
   const [selectedRequests, setSelectedRequests] = useState<Set<number>>(new Set());
   const [bulkAction, setBulkAction] = useState<"approve" | "reject" | null>(null);
   const [roleOverrides, setRoleOverrides] = useState<Map<number, string>>(new Map());
+  const [bulkRole, setBulkRole] = useState<string>("operator");
 
   const { data: allRequests, refetch } = trpc.accessRequests.list.useQuery();
   const { data: pendingRequests } = trpc.accessRequests.pending.useQuery();
@@ -152,6 +153,12 @@ export default function AccessRequests() {
   };
 
   const handleBulkApprove = () => {
+    // Apply bulk role to all selected requests
+    const newOverrides = new Map(roleOverrides);
+    selectedRequests.forEach(id => {
+      newOverrides.set(id, bulkRole);
+    });
+    setRoleOverrides(newOverrides);
     setBulkAction("approve");
   };
 
@@ -295,10 +302,29 @@ export default function AccessRequests() {
               </div>
               
               {selectedRequests.size > 0 && (
-                <div className="flex gap-2">
+                <div className="flex gap-3 items-center">
                   <Badge variant="outline" className="bg-primary/10 text-primary border-primary/20 px-3 py-1">
                     Выбрано: {selectedRequests.size}
                   </Badge>
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm text-slate-400">Роль:</span>
+                    <Select value={bulkRole} onValueChange={setBulkRole}>
+                      <SelectTrigger className="w-[140px] h-9 bg-slate-800/50 border-slate-700 text-white text-sm">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent className="bg-slate-800 border-slate-700">
+                        <SelectItem value="operator" className="text-white hover:bg-slate-700">
+                          Оператор
+                        </SelectItem>
+                        <SelectItem value="manager" className="text-white hover:bg-slate-700">
+                          Менеджер
+                        </SelectItem>
+                        <SelectItem value="admin" className="text-white hover:bg-slate-700">
+                          Администратор
+                        </SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
                   <Button
                     size="sm"
                     variant="outline"
