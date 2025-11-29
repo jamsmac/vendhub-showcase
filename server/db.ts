@@ -120,10 +120,26 @@ export async function getAllProducts() {
 }
 
 // Inventory
-export async function getInventoryByLevel(level: "warehouse" | "operator" | "machine") {
+export async function getInventoryByLevel(
+  level?: "warehouse" | "operator" | "machine",
+  locationId?: number
+) {
   const db = await getDb();
   if (!db) return [];
-  return await db.select().from(inventory).where(eq(inventory.level, level));
+  
+  const conditions: any[] = [];
+  if (level) {
+    conditions.push(eq(inventory.level, level));
+  }
+  if (locationId !== undefined) {
+    conditions.push(eq(inventory.locationId, locationId));
+  }
+  
+  if (conditions.length > 0) {
+    return await db.select().from(inventory).where(and(...conditions));
+  }
+  
+  return await db.select().from(inventory);
 }
 
 export async function getInventoryWithProducts(level: "warehouse" | "operator" | "machine") {
@@ -679,4 +695,193 @@ export async function getUserByTelegramId(telegramId: string) {
   
   const result = await db.select().from(users).where(eq(users.telegramId, telegramId));
   return result[0] || null;
+}
+
+
+
+
+// ============================================
+// Additional Inventory Functions
+// ============================================
+
+/**
+ * Get inventory by product across all levels
+ */
+export async function getInventoryByProduct(productId: number) {
+  const db = await getDb();
+  if (!db) return [];
+
+  return await db
+    .select({
+      id: inventory.id,
+      level: inventory.level,
+      locationId: inventory.locationId,
+      quantity: inventory.quantity,
+      updatedAt: inventory.updatedAt,
+    })
+    .from(inventory)
+    .where(eq(inventory.productId, productId));
+}
+
+/**
+ * Get all inventory with product details
+ */
+export async function getAllInventory() {
+  const db = await getDb();
+  if (!db) return [];
+
+  return await db
+    .select({
+      id: inventory.id,
+      productId: inventory.productId,
+      productName: products.name,
+      productSku: products.sku,
+      productCategory: products.category,
+      productUnit: products.unit,
+      productCostPrice: products.costPrice,
+      productSellingPrice: products.sellingPrice,
+      level: inventory.level,
+      locationId: inventory.locationId,
+      quantity: inventory.quantity,
+      updatedAt: inventory.updatedAt,
+    })
+    .from(inventory)
+    .leftJoin(products, eq(products.id, inventory.productId))
+    .orderBy(desc(inventory.updatedAt));
+}
+
+/**
+ * Update inventory quantity
+ */
+export async function updateInventoryQuantity(id: number, quantity: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  return await db
+    .update(inventory)
+    .set({ quantity, updatedAt: new Date().toISOString() })
+    .where(eq(inventory.id, id));
+}
+
+/**
+ * Get low stock alerts (items below threshold)
+ */
+export async function getLowStockAlerts(threshold: number = 10) {
+  const db = await getDb();
+  if (!db) return [];
+
+  return await db
+    .select({
+      id: inventory.id,
+      productId: inventory.productId,
+      productName: products.name,
+      productSku: products.sku,
+      level: inventory.level,
+      locationId: inventory.locationId,
+      quantity: inventory.quantity,
+      threshold: sql<number>`${threshold}`,
+    })
+    .from(inventory)
+    .leftJoin(products, eq(products.id, inventory.productId))
+    .where(sql`${inventory.quantity} < ${threshold}`)
+    .orderBy(inventory.quantity);
+}
+
+/**
+ * Get stock transfers with optional status filter
+ */
+export async function getStockTransfers(status?: 'pending' | 'approved' | 'rejected' | 'completed') {
+  const db = await getDb();
+  if (!db) return [];
+
+  let query = db
+    .select({
+      id: stockTransfers.id,
+      productId: stockTransfers.productId,
+      productName: products.name,
+      productSku: products.sku,
+      requestedBy: stockTransfers.requestedBy,
+      requesterName: users.name,
+      quantity: stockTransfers.quantity,
+      priority: stockTransfers.priority,
+      status: stockTransfers.status,
+      notes: stockTransfers.notes,
+      createdAt: stockTransfers.createdAt,
+      updatedAt: stockTransfers.updatedAt,
+    })
+    .from(stockTransfers)
+    .leftJoin(products, eq(products.id, stockTransfers.productId))
+    .leftJoin(users, eq(users.id, stockTransfers.requestedBy));
+
+  if (status) {
+    query = query.where(eq(stockTransfers.status, status)) as any;
+  }
+
+  return await query.orderBy(desc(stockTransfers.createdAt));
+}
+
+/**
+ * Update stock transfer status
+ */
+export async function updateStockTransferStatus(
+  id: number,
+  status: 'pending' | 'approved' | 'rejected' | 'completed'
+) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  return await db
+    .update(stockTransfers)
+    .set({ status, updatedAt: new Date().toISOString() })
+    .where(eq(stockTransfers.id, id));
+}
+
+/**
+ * Get inventory statistics
+ */
+export async function getInventoryStats() {
+  const db = await getDb();
+  if (!db) return null;
+
+  // Total products
+  const totalProducts = await db
+    .select({ count: sql<number>`COUNT(DISTINCT ${inventory.productId})` })
+    .from(inventory);
+
+  // Total quantity by level
+  const warehouseQty = await db
+    .select({ total: sql<number>`SUM(${inventory.quantity})` })
+    .from(inventory)
+    .where(eq(inventory.level, 'warehouse'));
+
+  const operatorQty = await db
+    .select({ total: sql<number>`SUM(${inventory.quantity})` })
+    .from(inventory)
+    .where(eq(inventory.level, 'operator'));
+
+  const machineQty = await db
+    .select({ total: sql<number>`SUM(${inventory.quantity})` })
+    .from(inventory)
+    .where(eq(inventory.level, 'machine'));
+
+  // Low stock count
+  const lowStockCount = await db
+    .select({ count: sql<number>`COUNT(*)` })
+    .from(inventory)
+    .where(sql`${inventory.quantity} < 10`);
+
+  // Pending transfers
+  const pendingTransfers = await db
+    .select({ count: sql<number>`COUNT(*)` })
+    .from(stockTransfers)
+    .where(eq(stockTransfers.status, 'pending'));
+
+  return {
+    totalProducts: totalProducts[0]?.count || 0,
+    warehouseQuantity: warehouseQty[0]?.total || 0,
+    operatorQuantity: operatorQty[0]?.total || 0,
+    machineQuantity: machineQty[0]?.total || 0,
+    lowStockCount: lowStockCount[0]?.count || 0,
+    pendingTransfers: pendingTransfers[0]?.count || 0,
+  };
 }

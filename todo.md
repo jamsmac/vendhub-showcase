@@ -371,3 +371,38 @@
 - [ ] Verify all navigation links work correctly
 - [ ] Check responsive design on mobile/tablet
 - [ ] Save comprehensive checkpoint with all features
+
+
+## Phase 23: Inventory Tracking System (3-Level Hierarchy)
+
+### Database & API
+- [x] Review existing inventory schema in drizzle/schema.ts
+- [x] Create inventory router in server/routers/inventory.ts
+- [x] Implement getInventoryByLevel endpoint (warehouse/operator/machine)
+- [x] Implement getInventoryByProduct endpoint
+- [x] Implement updateInventoryQuantity endpoint
+- [x] Implement createStockTransfer endpoint
+- [x] Implement getStockTransfers endpoint
+- [x] Implement getLowStockAlerts endpoint
+
+### UI Components
+- [x] Create Inventory page with 3-level tree view
+- [x] Add product list with stock levels for each location
+- [x] Implement stock level progress bars with color coding
+- [x] Add filtering by product category and location
+- [x] Create stock transfer modal with validation
+- [x] Add low stock alerts section
+- [x] Implement search functionality
+
+### Features
+- [x] Stock transfer workflow (warehouse → operator → machine)
+- [x] Low stock threshold alerts (configurable per product)
+- [ ] Stock consumption tracking linked to machine sales
+- [ ] Transfer history with audit trail
+- [ ] Stock adjustment functionality with reason tracking
+
+### Testing
+- [x] Write unit tests for inventory API endpoints
+- [x] Test stock transfer logic
+- [x] Test low stock alert calculations
+- [x] Verify 3-level hierarchy queries

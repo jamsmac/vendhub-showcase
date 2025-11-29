@@ -48,6 +48,53 @@ export const appRouter = router({
     machine: publicProcedure.query(async () => {
       return await db.getInventoryWithProducts("machine");
     }),
+    getByLevel: protectedProcedure
+      .input(z.object({
+        level: z.enum(['warehouse', 'operator', 'machine']).optional(),
+        locationId: z.number().optional(),
+      }))
+      .query(async ({ input }) => {
+        return await db.getInventoryByLevel(input.level, input.locationId);
+      }),
+    getByProduct: protectedProcedure
+      .input(z.object({ productId: z.number() }))
+      .query(async ({ input }) => {
+        return await db.getInventoryByProduct(input.productId);
+      }),
+    getAll: protectedProcedure.query(async () => {
+      return await db.getAllInventory();
+    }),
+    updateQuantity: protectedProcedure
+      .input(z.object({
+        id: z.number(),
+        quantity: z.number().min(0),
+      }))
+      .mutation(async ({ input }) => {
+        return await db.updateInventoryQuantity(input.id, input.quantity);
+      }),
+    getLowStockAlerts: protectedProcedure
+      .input(z.object({ threshold: z.number().optional().default(10) }))
+      .query(async ({ input }) => {
+        return await db.getLowStockAlerts(input.threshold);
+      }),
+    getStats: protectedProcedure.query(async () => {
+      return await db.getInventoryStats();
+    }),
+    getTransfers: protectedProcedure
+      .input(z.object({
+        status: z.enum(['pending', 'approved', 'rejected', 'completed']).optional(),
+      }))
+      .query(async ({ input }) => {
+        return await db.getStockTransfers(input.status);
+      }),
+    updateTransferStatus: protectedProcedure
+      .input(z.object({
+        id: z.number(),
+        status: z.enum(['pending', 'approved', 'rejected', 'completed']),
+      }))
+      .mutation(async ({ input }) => {
+        return await db.updateStockTransferStatus(input.id, input.status);
+      }),
   }),
 
   tasks: router({
