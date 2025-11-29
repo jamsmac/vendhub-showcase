@@ -11,12 +11,14 @@ import Users from "./pages/Users";
 import Inventory from "./pages/Inventory";
 import Login from "./pages/Login";
 import TelegramOnboarding from "./pages/TelegramOnboarding";
+import MasterData from "./pages/MasterData";
 
 function Router() {
   return (
     <Switch>
       <Route path={"/login"} component={Login} />
       <Route path={"/onboarding"} component={TelegramOnboarding} />
+      <Route path={"/master-data"} component={MasterData} />
       <Route path={"/"} component={Dashboard} />
       <Route path={"/machines"} component={Machines} />
       <Route path={"/inventory"} component={Inventory} />

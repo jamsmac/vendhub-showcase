@@ -7,6 +7,7 @@ import {
   LogOut,
   Settings,
   Store,
+  Database,
   Users
 } from "lucide-react";
 import { Link, useLocation } from "wouter";
@@ -24,6 +25,7 @@ export default function Layout({ children }: LayoutProps) {
     { icon: Box, label: "Inventory", href: "/inventory" },
     { icon: ClipboardList, label: "Tasks", href: "/tasks" },
     { icon: Users, label: "Users", href: "/users" },
+    { icon: Database, label: "Master Data", href: "/master-data" },
     { icon: BarChart3, label: "Reports", href: "/reports" },
   ];
 
