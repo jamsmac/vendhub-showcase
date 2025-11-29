@@ -156,22 +156,24 @@ export function generateDigestEmailHTML(stats: DigestStats, period: "daily" | "w
 /**
  * Send digest email to administrators
  */
-export async function sendDigestEmail(config: DigestConfig): Promise<void> {
-  if (!config.enabled || config.recipients.length === 0) {
+export async function sendDigestEmail(config?: DigestConfig): Promise<void> {
+  const digestConfig = config || await getDigestConfigFromDB();
+  
+  if (!digestConfig.enabled || digestConfig.recipients.length === 0) {
     console.log("📧 Email digest is disabled or no recipients configured");
     return;
   }
   
-  const period = config.frequency === "daily" ? "day" : "week";
+  const period = digestConfig.frequency === "daily" ? "day" : "week";
   const stats = await generateDigestStats(period);
   
-  const subject = config.frequency === "daily" 
+  const subject = digestConfig.frequency === "daily" 
     ? `VendHub - Ежедневный отчет (${new Date().toLocaleDateString('ru-RU')})`
     : `VendHub - Еженедельный отчет (${new Date().toLocaleDateString('ru-RU')})`;
   
-  const html = generateDigestEmailHTML(stats, config.frequency);
+  const html = generateDigestEmailHTML(stats, digestConfig.frequency);
   
-  for (const recipient of config.recipients) {
+  for (const recipient of digestConfig.recipients) {
     try {
       await sendEmail({ to: recipient, subject, html });
       console.log(`📧 Digest email sent to ${recipient}`);
@@ -185,6 +187,21 @@ export async function sendDigestEmail(config: DigestConfig): Promise<void> {
  * Get default digest configuration
  * In production, this should be stored in database
  */
+export async function getDigestConfigFromDB(): Promise<DigestConfig> {
+  const config = await db.getDigestConfig();
+  
+  if (config) {
+    return {
+      enabled: config.enabled,
+      frequency: config.frequency as "daily" | "weekly",
+      recipients: JSON.parse(config.recipients),
+    };
+  }
+  
+  // Return default if no config in database
+  return getDefaultDigestConfig();
+}
+
 export function getDefaultDigestConfig(): DigestConfig {
   return {
     frequency: "daily",

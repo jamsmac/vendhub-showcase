@@ -19,6 +19,8 @@ export const users = mysqlTable("users", {
   role: mysqlEnum("role", ["user", "admin", "manager", "operator"]).default("user").notNull(),
   telegramId: varchar("telegramId", { length: 64 }),
   twoFactorEnabled: boolean("twoFactorEnabled").default(false).notNull(),
+  emailNotifications: boolean("emailNotifications").default(true).notNull(),
+  telegramNotifications: boolean("telegramNotifications").default(true).notNull(),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
   lastSignedIn: timestamp("lastSignedIn").defaultNow().notNull(),
@@ -246,3 +248,19 @@ export const roleChanges = mysqlTable("roleChanges", {
 
 export type RoleChange = typeof roleChanges.$inferSelect;
 export type InsertRoleChange = typeof roleChanges.$inferInsert;
+
+/**
+ * Digest configuration
+ * Stores email digest settings
+ */
+export const digestConfig = mysqlTable("digestConfig", {
+  id: int("id").autoincrement().primaryKey(),
+  enabled: boolean("enabled").default(true).notNull(),
+  frequency: mysqlEnum("frequency", ["daily", "weekly"]).default("daily").notNull(),
+  recipients: text("recipients").notNull(), // JSON array of email addresses
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type DigestConfig = typeof digestConfig.$inferSelect;
+export type InsertDigestConfig = typeof digestConfig.$inferInsert;

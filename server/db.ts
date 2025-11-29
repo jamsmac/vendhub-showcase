@@ -4,7 +4,7 @@ import {
   InsertUser, users, machines, products, inventory, tasks, 
   components, componentHistory, transactions, suppliers, stockTransfers,
   accessRequests, InsertAccessRequest, accessRequestAuditLogs, InsertAccessRequestAuditLog,
-  roleChanges
+  roleChanges, digestConfig
 } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
@@ -450,4 +450,128 @@ export async function getRoleChangesByUserId(userId: number) {
     .from(roleChanges)
     .where(eq(roleChanges.userId, userId))
     .orderBy(desc(roleChanges.createdAt));
+}
+
+/**
+ * Get user by ID
+ */
+export async function getUserById(userId: number) {
+  const db = await getDb();
+  if (!db) return null;
+  
+  const result = await db.select().from(users).where(eq(users.id, userId)).limit(1);
+  return result[0] || null;
+}
+
+/**
+ * Update user role
+ */
+export async function updateUserRole(userId: number, newRole: string) {
+  const db = await getDb();
+  if (!db) return null;
+  
+  await db.update(users)
+    .set({ role: newRole as any })
+    .where(eq(users.id, userId));
+  
+  return true;
+}
+
+/**
+ * Get all users
+ */
+export async function getAllUsers() {
+  const db = await getDb();
+  if (!db) return [];
+  
+  return await db.select().from(users).orderBy(desc(users.createdAt));
+}
+
+/**
+ * Get digest configuration
+ */
+export async function getDigestConfig() {
+  const db = await getDb();
+  if (!db) return null;
+  
+  const result = await db.select().from(digestConfig).limit(1);
+  return result[0] || null;
+}
+
+/**
+ * Update digest configuration
+ */
+export async function updateDigestConfig(config: {
+  enabled: boolean;
+  frequency: "daily" | "weekly";
+  recipients: string[];
+}) {
+  const db = await getDb();
+  if (!db) return null;
+  
+  const existing = await getDigestConfig();
+  const recipientsJson = JSON.stringify(config.recipients);
+  
+  if (existing) {
+    await db.update(digestConfig)
+      .set({
+        enabled: config.enabled,
+        frequency: config.frequency,
+        recipients: recipientsJson,
+      })
+      .where(eq(digestConfig.id, existing.id));
+  } else {
+    await db.insert(digestConfig).values({
+      enabled: config.enabled,
+      frequency: config.frequency,
+      recipients: recipientsJson,
+    });
+  }
+  
+  return true;
+}
+
+/**
+ * Update user notification preferences
+ */
+export async function updateNotificationPreferences(
+  userId: number,
+  emailNotifications: boolean,
+  telegramNotifications: boolean
+) {
+  const db = await getDb();
+  if (!db) return null;
+  
+  await db.update(users)
+    .set({ emailNotifications, telegramNotifications })
+    .where(eq(users.id, userId));
+  
+  return true;
+}
+
+/**
+ * Get user notification preferences
+ */
+export async function getNotificationPreferences(userId: number) {
+  const db = await getDb();
+  if (!db) return null;
+  
+  const user = await getUserById(userId);
+  if (!user) return null;
+  
+  return {
+    emailNotifications: user.emailNotifications,
+    telegramNotifications: user.telegramNotifications,
+  };
+}
+
+/**
+ * Get user by Telegram ID
+ */
+export async function getUserByTelegramId(telegramId: string) {
+  const db = await getDb();
+  if (!db) return null;
+  
+  const result = await db.select().from(users).where(eq(users.telegramId, telegramId)).limit(1);
+  return result[0] || null;
 }

@@ -15,6 +15,8 @@ import MasterData from "./pages/MasterData";
 import ComponentLifecycle from "./pages/ComponentLifecycle";
 import Reports from "./pages/Reports";
 import AccessRequests from "./pages/AccessRequests";
+import DigestSettings from "./pages/DigestSettings";
+import NotificationPreferences from "./pages/NotificationPreferences";
 function Router() {
   // make sure to consider if you need authentication for certain routes
   return (
@@ -30,6 +32,8 @@ function Router() {
       <Route path={"/tasks"} component={Tasks} />
       <Route path={"/users"} component={Users} />
       <Route path={"/access-requests"} component={AccessRequests} />
+      <Route path={"/digest-settings"} component={DigestSettings} />
+      <Route path={"/notification-preferences"} component={NotificationPreferences} />
       <Route path={"/404"} component={NotFound} />
       {/* Final fallback route */}
       <Route component={NotFound} />

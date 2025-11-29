@@ -145,8 +145,9 @@ ${process.env.PUBLIC_URL || 'https://vendhub-showcase.manus.space'}
 Используйте свой Telegram аккаунт для входа.`);
           }
           
-          // Send Email notification
-          if (request.email) {
+          // Send Email notification if user has enabled it
+          const userPrefs = request.telegramId ? await db.getUserByTelegramId(request.telegramId) : null;
+          if (request.email && (!userPrefs || userPrefs.emailNotifications)) {
             await sendEmail({
               to: request.email,
               subject: "Заявка на доступ одобрена - VendHub Manager",
@@ -196,8 +197,9 @@ ${process.env.PUBLIC_URL || 'https://vendhub-showcase.manus.space'}
 Для уточнения причин обратитесь к администратору.`);
           }
           
-          // Send Email notification
-          if (request.email) {
+          // Send Email notification if user has enabled it
+          const userPrefs = request.telegramId ? await db.getUserByTelegramId(request.telegramId) : null;
+          if (request.email && (!userPrefs || userPrefs.emailNotifications)) {
             await sendEmail({
               to: request.email,
               subject: "Заявка на доступ отклонена - VendHub Manager",
@@ -232,6 +234,82 @@ ${process.env.PUBLIC_URL || 'https://vendhub-showcase.manus.space'}
       .query(async ({ input }) => {
         return await db.getAuditLogsByRequestId(input.requestId);
       }),
+  }),
+
+  users: router({
+    updateNotificationPreferences: protectedProcedure
+      .input(z.object({
+        emailNotifications: z.boolean(),
+        telegramNotifications: z.boolean(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        await db.updateNotificationPreferences(
+          ctx.user.id,
+          input.emailNotifications,
+          input.telegramNotifications
+        );
+        return { success: true };
+      }),
+    getNotificationPreferences: protectedProcedure.query(async ({ ctx }) => {
+      return await db.getNotificationPreferences(ctx.user.id);
+    }),
+    updateRole: protectedProcedure
+      .input(z.object({
+        userId: z.number(),
+        newRole: z.enum(["user", "operator", "manager", "admin"]),
+        reason: z.string().optional(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        // Get current user info
+        const user = await db.getUserById(input.userId);
+        if (!user) {
+          throw new Error("User not found");
+        }
+        
+        const oldRole = user.role;
+        
+        // Update user role
+        await db.updateUserRole(input.userId, input.newRole);
+        
+        // Log role change
+        await db.createRoleChange(
+          input.userId,
+          user.name,
+          oldRole,
+          input.newRole,
+          ctx.user.id,
+          ctx.user.name,
+          input.reason
+        );
+        
+        return { success: true };
+      }),
+  }),
+
+  digestConfig: router({
+    get: protectedProcedure.query(async () => {
+      const config = await db.getDigestConfig();
+      if (!config) return null;
+      return {
+        ...config,
+        recipients: JSON.parse(config.recipients),
+      };
+    }),
+    update: protectedProcedure
+      .input(z.object({
+        enabled: z.boolean(),
+        frequency: z.enum(["daily", "weekly"]),
+        recipients: z.array(z.string().email()),
+      }))
+      .mutation(async ({ input }) => {
+        await db.updateDigestConfig(input);
+        return { success: true };
+      }),
+    test: protectedProcedure.mutation(async () => {
+      const { triggerDigestNow } = await import("./scheduler");
+      await triggerDigestNow();
+      return { success: true };
+    }),
   }),
 
   roleChanges: router({

@@ -160,3 +160,32 @@
 - [x] Display role change timeline with details
 - [x] Show old/new role badges with color coding
 - [x] Include admin name and timestamp for each change
+
+## New Features - User Role Editing UI
+- [x] Add role editing functionality to Users page
+- [x] Create role change dialog with reason input field
+- [x] Add API endpoint for updating user roles
+- [x] Automatically log role changes to roleChanges table
+- [x] Show success/error toasts for role updates
+- [x] Refresh user list after role change
+- [x] Replace mock data with real database integration
+
+## New Features - Digest Configuration UI
+- [x] Create Settings page for digest configuration
+- [x] Add frequency selector (daily/weekly)
+- [x] Add recipient email management (add/remove)
+- [x] Add enable/disable toggle for digest
+- [x] Add "Test Digest" button to send immediately
+- [x] Store configuration in database (digestConfig table)
+- [x] Add API endpoints for digest settings (get, update, test)
+- [x] Update scheduler to use database config
+- [x] Update emailDigest to use database config
+
+## New Features - Notification Preferences
+- [x] Add notification preferences fields to users table
+- [x] Create user preferences API endpoints (get, update)
+- [x] Add notification settings page (/notification-preferences)
+- [x] Add email notification opt-in/opt-out toggle
+- [x] Add Telegram notification opt-in/opt-out toggle
+- [x] Respect preferences when sending notifications (approval/rejection)
+- [x] Add getUserByTelegramId helper function

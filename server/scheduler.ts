@@ -1,5 +1,5 @@
 import cron from "node-cron";
-import { sendDigestEmail, getDefaultDigestConfig } from "./emailDigest";
+import { sendDigestEmail, getDigestConfigFromDB } from "./emailDigest";
 
 /**
  * Schedule daily email digest
@@ -10,7 +10,7 @@ export function scheduleDailyDigest() {
   const task = cron.schedule("0 9 * * *", async () => {
     console.log("📅 Running daily email digest...");
     try {
-      const config = getDefaultDigestConfig();
+      const config = await getDigestConfigFromDB();
       if (config.frequency === "daily") {
         await sendDigestEmail(config);
       }
@@ -33,7 +33,7 @@ export function scheduleWeeklyDigest() {
   const task = cron.schedule("0 9 * * 1", async () => {
     console.log("📅 Running weekly email digest...");
     try {
-      const config = getDefaultDigestConfig();
+      const config = await getDigestConfigFromDB();
       if (config.frequency === "weekly") {
         await sendDigestEmail(config);
       }
@@ -50,8 +50,8 @@ export function scheduleWeeklyDigest() {
 /**
  * Initialize all scheduled tasks
  */
-export function initializeScheduler() {
-  const config = getDefaultDigestConfig();
+export async function initializeScheduler() {
+  const config = await getDigestConfigFromDB();
   
   if (!config.enabled) {
     console.log("📧 Email digest scheduler is disabled");
@@ -76,6 +76,6 @@ export function initializeScheduler() {
  */
 export async function triggerDigestNow() {
   console.log("📧 Manually triggering email digest...");
-  const config = getDefaultDigestConfig();
+  const config = await getDigestConfigFromDB();
   await sendDigestEmail(config);
 }
