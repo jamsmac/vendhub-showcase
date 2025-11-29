@@ -7,7 +7,7 @@
 - [x] Implement /start command (registration request)
 - [x] Implement /status command (user status check)
 - [x] Implement /help command
-- [ ] Create access request approval flow in admin panel
+- [x] Create access request approval flow in admin panel
 - [ ] Add Telegram ID linking to user profiles
 
 ## Phase 2: Russian UI & Navigation
@@ -56,6 +56,13 @@
 - [ ] Role permissions editor
 - [ ] Audit logs viewer
 - [ ] Backup/restore functionality
+
+## Phase 6.5: Notification System
+- [ ] Set up email notification service (SMTP/SendGrid)
+- [ ] Create notification templates (Telegram + Email)
+- [ ] Implement notification triggers for key events
+- [ ] Add notification preferences to user settings
+- [ ] Test notification delivery for all scenarios
 
 ## Phase 7: GitHub Repository
 - [ ] Initialize new repo at https://github.com/jamsmac/VHM24

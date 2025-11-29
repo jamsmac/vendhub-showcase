@@ -14,6 +14,7 @@ import TelegramOnboarding from "./pages/TelegramOnboarding";
 import MasterData from "./pages/MasterData";
 import ComponentLifecycle from "./pages/ComponentLifecycle";
 import Reports from "./pages/Reports";
+import AccessRequests from "./pages/AccessRequests";
 function Router() {
   // make sure to consider if you need authentication for certain routes
   return (
@@ -28,6 +29,7 @@ function Router() {
       <Route path={"/inventory"} component={Inventory} />
       <Route path={"/tasks"} component={Tasks} />
       <Route path={"/users"} component={Users} />
+      <Route path={"/access-requests"} component={AccessRequests} />
       <Route path={"/404"} component={NotFound} />
       {/* Final fallback route */}
       <Route component={NotFound} />
