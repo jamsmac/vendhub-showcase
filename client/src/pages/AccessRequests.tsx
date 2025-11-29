@@ -23,7 +23,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Check, X, Clock, User, Calendar, Search, ChevronDown, MessageSquare, History } from "lucide-react";
+import { Check, X, Clock, User, Calendar, Search, ChevronDown, MessageSquare, History, Download } from "lucide-react";
 import { DateRangePicker } from "@/components/DateRangePicker";
 import {
   Select,
@@ -38,12 +38,67 @@ function AuditLogList() {
   const [dateRange, setDateRange] = useState<{ startDate?: string; endDate?: string }>({});
   const [selectedPreset, setSelectedPreset] = useState<string>("all");
   const [actionType, setActionType] = useState<"approved" | "rejected" | "all">("all");
+  const [searchQuery, setSearchQuery] = useState<string>("");
   
   const { data: auditLogs } = trpc.auditLogs.list.useQuery({
     ...dateRange,
     actionType: actionType === "all" ? undefined : actionType,
   });
   const { data: allRequests } = trpc.accessRequests.list.useQuery();
+  
+  // Client-side search filtering
+  const filteredLogs = auditLogs?.filter(log => {
+    if (!searchQuery) return true;
+    const query = searchQuery.toLowerCase();
+    const request = allRequests?.find(r => r.id === log.accessRequestId);
+    const userName = (request?.firstName || request?.username || "").toLowerCase();
+    const adminName = (log.performedByName || "").toLowerCase();
+    return userName.includes(query) || adminName.includes(query);
+  }) || [];
+  
+  // Calculate statistics
+  const stats = {
+    approved: filteredLogs.filter(log => log.action === "approved").length,
+    rejected: filteredLogs.filter(log => log.action === "rejected").length,
+    total: filteredLogs.length,
+  };
+  
+  // CSV export function
+  const exportToCSV = () => {
+    if (!filteredLogs || filteredLogs.length === 0) {
+      toast.error("Нет данных для экспорта");
+      return;
+    }
+    
+    const headers = ["Дата", "Администратор", "Действие", "Пользователь", "Роль"];
+    const rows = filteredLogs.map(log => {
+      const request = allRequests?.find(r => r.id === log.accessRequestId);
+      const userName = request?.firstName || request?.username || "Неизвестно";
+      const action = log.action === "approved" ? "Одобрено" : "Отклонено";
+      const role = log.assignedRole ? 
+        (log.assignedRole === "operator" ? "Оператор" : 
+         log.assignedRole === "manager" ? "Менеджер" : "Администратор") : "-";
+      const date = new Date(log.createdAt).toLocaleString("ru-RU");
+      return [date, log.performedByName, action, userName, role];
+    });
+    
+    const csvContent = [
+      headers.join(","),
+      ...rows.map(row => row.map(cell => `"${cell}"`).join(","))
+    ].join("\n");
+    
+    const blob = new Blob(["\uFEFF" + csvContent], { type: "text/csv;charset=utf-8;" });
+    const link = document.createElement("a");
+    const url = URL.createObjectURL(blob);
+    link.setAttribute("href", url);
+    link.setAttribute("download", `audit_logs_${new Date().toISOString().split('T')[0]}.csv`);
+    link.style.visibility = "hidden";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    
+    toast.success(`Экспортировано ${filteredLogs.length} записей`);
+  };
 
   const formatDate = (date: Date | string) => {
     return new Date(date).toLocaleDateString("ru-RU", {
@@ -88,7 +143,7 @@ function AuditLogList() {
     }
   };
 
-  if (!auditLogs || auditLogs.length === 0) {
+  if (!filteredLogs || filteredLogs.length === 0) {
     return (
       <>
         <div className="space-y-3 mb-4">
@@ -175,8 +230,50 @@ function AuditLogList() {
           </Select>
         </div>
       </div>
+      <div className="space-y-4">
+        {/* Statistics and Export */}
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-green-500/10 border border-green-500/20">
+              <Check className="w-4 h-4 text-green-400" />
+              <span className="text-sm font-medium text-green-400">{stats.approved}</span>
+              <span className="text-xs text-slate-400">одобрено</span>
+            </div>
+            <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-red-500/10 border border-red-500/20">
+              <X className="w-4 h-4 text-red-400" />
+              <span className="text-sm font-medium text-red-400">{stats.rejected}</span>
+              <span className="text-xs text-slate-400">отклонено</span>
+            </div>
+            <div className="text-sm text-slate-400">
+              Всего: {stats.total}
+            </div>
+          </div>
+          <Button
+            onClick={exportToCSV}
+            size="sm"
+            variant="outline"
+            className="bg-slate-800/50 border-slate-700 hover:bg-slate-700 text-white"
+          >
+            <Download className="w-4 h-4 mr-2" />
+            Экспорт CSV
+          </Button>
+        </div>
+        
+        {/* Search Input */}
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+          <input
+            type="text"
+            placeholder="Поиск по имени администратора или пользователя..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full pl-10 pr-4 py-2 bg-slate-800/50 border border-slate-700 rounded-lg text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-primary/50"
+          />
+        </div>
+      </div>
+      
       <div className="grid gap-4">
-      {auditLogs.slice(0, 10).map((log) => {
+      {filteredLogs.slice(0, 10).map((log) => {
         const request = allRequests?.find(r => r.id === log.accessRequestId);
         return (
           <div key={log.id} className="p-4 bg-slate-800/30 rounded-lg border border-slate-700/50">
