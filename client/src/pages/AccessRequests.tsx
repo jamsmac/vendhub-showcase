@@ -24,6 +24,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Check, X, Clock, User, Calendar, Search, ChevronDown, MessageSquare, History } from "lucide-react";
+import { DateRangePicker } from "@/components/DateRangePicker";
 import {
   Select,
   SelectContent,
@@ -86,7 +87,7 @@ function AuditLogList() {
   if (!auditLogs || auditLogs.length === 0) {
     return (
       <>
-        <div className="flex gap-2 mb-4">
+        <div className="flex flex-wrap gap-2 mb-4">
           {["all", "today", "7days", "30days"].map((preset) => (
             <Button
               key={preset}
@@ -101,6 +102,11 @@ function AuditLogList() {
               {preset === "30days" && "30 дней"}
             </Button>
           ))}
+          <DateRangePicker 
+            onRangeChange={setDateRange}
+            onPresetChange={setSelectedPreset}
+            selectedPreset={selectedPreset}
+          />
         </div>
         <div className="text-center py-8 text-slate-400">
           <History className="w-12 h-12 mx-auto mb-4 opacity-50" />
@@ -112,21 +118,26 @@ function AuditLogList() {
 
   return (
     <>
-      <div className="flex gap-2 mb-4">
-        {["all", "today", "7days", "30days"].map((preset) => (
-          <Button
-            key={preset}
-            size="sm"
-            variant={selectedPreset === preset ? "default" : "outline"}
-            onClick={() => handlePresetChange(preset)}
-            className={selectedPreset === preset ? "bg-primary" : "bg-slate-800/50 border-slate-700 hover:bg-slate-700 text-white"}
-          >
-            {preset === "all" && "Все время"}
-            {preset === "today" && "Сегодня"}
-            {preset === "7days" && "7 дней"}
-            {preset === "30days" && "30 дней"}
-          </Button>
-        ))}
+      <div className="flex flex-wrap gap-2 mb-4">
+          {["all", "today", "7days", "30days"].map((preset) => (
+            <Button
+              key={preset}
+              size="sm"
+              variant={selectedPreset === preset ? "default" : "outline"}
+              onClick={() => handlePresetChange(preset)}
+              className={selectedPreset === preset ? "bg-primary" : "bg-slate-800/50 border-slate-700 hover:bg-slate-700 text-white"}
+            >
+              {preset === "all" && "Все время"}
+              {preset === "today" && "Сегодня"}
+              {preset === "7days" && "7 дней"}
+              {preset === "30days" && "30 дней"}
+            </Button>
+          ))}
+          <DateRangePicker 
+            onRangeChange={setDateRange}
+            onPresetChange={setSelectedPreset}
+            selectedPreset={selectedPreset}
+          />
       </div>
       <div className="grid gap-4">
       {auditLogs.slice(0, 10).map((log) => {

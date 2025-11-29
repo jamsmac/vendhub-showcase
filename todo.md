@@ -106,3 +106,12 @@
 - [x] Create preset filter buttons (All Time, Today, 7 Days, 30 Days)
 - [x] Integrate date filtering into audit log section
 - [x] Add unit tests for date filtering (9 tests passing)
+
+## New Features - Custom Date Picker
+- [x] Create DateRangePicker component with react-day-picker
+- [x] Add calendar UI with range selection (dual month view)
+- [x] Integrate custom picker with preset filters
+- [x] Add calendar button with popover interface
+- [x] Display selected date range in readable Russian format
+- [x] Add clear/reset functionality
+- [x] Custom dark theme styling for calendar
