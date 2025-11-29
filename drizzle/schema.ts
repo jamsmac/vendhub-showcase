@@ -188,3 +188,23 @@ export const stockTransfers = mysqlTable("stockTransfers", {
 
 export type StockTransfer = typeof stockTransfers.$inferSelect;
 export type InsertStockTransfer = typeof stockTransfers.$inferInsert;
+
+/**
+ * Telegram access requests
+ */
+export const accessRequests = mysqlTable("accessRequests", {
+  id: int("id").autoincrement().primaryKey(),
+  telegramId: varchar("telegramId", { length: 64 }).notNull().unique(),
+  username: varchar("username", { length: 255 }),
+  firstName: varchar("firstName", { length: 255 }),
+  lastName: varchar("lastName", { length: 255 }),
+  chatId: varchar("chatId", { length: 64 }).notNull(),
+  status: mysqlEnum("status", ["pending", "approved", "rejected"]).default("pending").notNull(),
+  requestedRole: mysqlEnum("requestedRole", ["operator", "manager"]).default("operator").notNull(),
+  approvedBy: int("approvedBy"),
+  approvedAt: timestamp("approvedAt"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type AccessRequest = typeof accessRequests.$inferSelect;
+export type InsertAccessRequest = typeof accessRequests.$inferInsert;

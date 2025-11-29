@@ -2,7 +2,8 @@ import { eq, desc, and, sql, gte } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
 import { 
   InsertUser, users, machines, products, inventory, tasks, 
-  components, componentHistory, transactions, suppliers, stockTransfers 
+  components, componentHistory, transactions, suppliers, stockTransfers,
+  accessRequests, InsertAccessRequest
 } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
@@ -266,4 +267,50 @@ export async function createStockTransfer(data: {
   if (!db) throw new Error("Database not available");
   
   await db.insert(stockTransfers).values(data);
+}
+
+// Access Requests
+export async function createAccessRequest(data: InsertAccessRequest) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  const result = await db.insert(accessRequests).values(data);
+  return result;
+}
+
+export async function getAllAccessRequests() {
+  const db = await getDb();
+  if (!db) return [];
+  return await db.select().from(accessRequests).orderBy(desc(accessRequests.createdAt));
+}
+
+export async function getPendingAccessRequests() {
+  const db = await getDb();
+  if (!db) return [];
+  return await db.select().from(accessRequests).where(eq(accessRequests.status, "pending")).orderBy(desc(accessRequests.createdAt));
+}
+
+export async function getAccessRequestByTelegramId(telegramId: string) {
+  const db = await getDb();
+  if (!db) return null;
+  const result = await db.select().from(accessRequests).where(eq(accessRequests.telegramId, telegramId)).limit(1);
+  return result[0] || null;
+}
+
+export async function approveAccessRequest(id: number, approvedBy: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  await db.update(accessRequests)
+    .set({ status: "approved", approvedBy, approvedAt: new Date() })
+    .where(eq(accessRequests.id, id));
+}
+
+export async function rejectAccessRequest(id: number, approvedBy: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  await db.update(accessRequests)
+    .set({ status: "rejected", approvedBy, approvedAt: new Date() })
+    .where(eq(accessRequests.id, id));
 }
