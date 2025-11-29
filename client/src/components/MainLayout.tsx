@@ -123,19 +123,15 @@ export function MainLayout({ children, userRole = 'user' }: MainLayoutProps) {
         <nav className="flex-1 overflow-y-auto py-4 px-2">
           <div className="space-y-1">
             {visibleNavItems.map((item) => (
-              <Link key={item.href} href={item.href}>
-                <a
-                  className={cn(
-                    'flex items-center gap-3 px-4 py-3 rounded-lg transition-colors',
-                    location === item.href
-                      ? 'bg-blue-600 text-white'
-                      : 'text-slate-300 hover:bg-slate-800'
-                  )}
-                  title={!sidebarOpen ? item.label : undefined}
-                >
-                  <span className="text-xl">{item.icon}</span>
-                  {sidebarOpen && <span className="text-sm font-medium">{item.label}</span>}
-                </a>
+              <Link key={item.href} href={item.href} className={cn(
+                'flex items-center gap-3 px-4 py-3 rounded-lg transition-colors',
+                location === item.href
+                  ? 'bg-blue-600 text-white'
+                  : 'text-slate-300 hover:bg-slate-800'
+              )}
+              title={!sidebarOpen ? item.label : undefined}>
+                <span className="text-xl">{item.icon}</span>
+                {sidebarOpen && <span className="text-sm font-medium">{item.label}</span>}
               </Link>
             ))}
           </div>
@@ -149,19 +145,15 @@ export function MainLayout({ children, userRole = 'user' }: MainLayoutProps) {
               </div>
               <div className="space-y-1">
                 {visibleSettingsItems.map((item) => (
-                  <Link key={item.href} href={item.href}>
-                    <a
-                      className={cn(
-                        'flex items-center gap-3 px-4 py-3 rounded-lg transition-colors',
-                        location === item.href
-                          ? 'bg-blue-600 text-white'
-                          : 'text-slate-300 hover:bg-slate-800'
-                      )}
-                      title={!sidebarOpen ? item.label : undefined}
-                    >
-                      <span className="text-xl">{item.icon}</span>
-                      {sidebarOpen && <span className="text-sm font-medium">{item.label}</span>}
-                    </a>
+                  <Link key={item.href} href={item.href} className={cn(
+                    'flex items-center gap-3 px-4 py-3 rounded-lg transition-colors',
+                    location === item.href
+                      ? 'bg-blue-600 text-white'
+                      : 'text-slate-300 hover:bg-slate-800'
+                  )}
+                  title={!sidebarOpen ? item.label : undefined}>
+                    <span className="text-xl">{item.icon}</span>
+                    {sidebarOpen && <span className="text-sm font-medium">{item.label}</span>}
                   </Link>
                 ))}
               </div>
@@ -171,11 +163,9 @@ export function MainLayout({ children, userRole = 'user' }: MainLayoutProps) {
 
         {/* Footer */}
         <div className="border-t border-slate-700 p-4">
-          <Link href="/login">
-            <a className="flex items-center gap-3 px-4 py-3 rounded-lg text-slate-300 hover:bg-slate-800 transition-colors">
-              <LogOut size={20} />
-              {sidebarOpen && <span className="text-sm font-medium">Logout</span>}
-            </a>
+          <Link href="/login" className="flex items-center gap-3 px-4 py-3 rounded-lg text-slate-300 hover:bg-slate-800 transition-colors">
+            <LogOut size={20} />
+            {sidebarOpen && <span className="text-sm font-medium">Logout</span>}
           </Link>
         </div>
       </aside>
