@@ -30,9 +30,9 @@ export default function Inventory() {
   const [selectedInventoryItem, setSelectedInventoryItem] = useState<any>(null);
 
   // Fetch inventory data
-  const { data: inventoryData, isLoading } = trpc.inventory.getAll.useQuery();
-  const { data: stats } = trpc.inventory.getStats.useQuery();
-  const { data: lowStockAlerts } = trpc.inventory.getLowStockAlerts.useQuery({ threshold: 10 });
+  const { data: inventoryData, isLoading, refetch: refetchInventory } = trpc.inventory.getAll.useQuery();
+  const { data: stats, refetch: refetchStats } = trpc.inventory.getStats.useQuery();
+  const { data: lowStockAlerts, refetch: refetchAlerts } = trpc.inventory.getLowStockAlerts.useQuery({ threshold: 10 });
 
   // Group inventory by product
   const groupedInventory = inventoryData?.reduce((acc, item) => {
@@ -344,6 +344,27 @@ export default function Inventory() {
                               className={`h-2 bg-white/10 ${getProgressColor(product.levels.warehouse?.quantity || 0)}`}
                             />
                           </div>
+                          {product.levels.warehouse && (
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setSelectedInventoryItem({
+                                  id: product.levels.warehouse.id,
+                                  productId: product.productId,
+                                  productName: product.productName,
+                                  level: "warehouse" as const,
+                                  locationId: product.levels.warehouse.locationId,
+                                  currentQuantity: product.levels.warehouse.quantity,
+                                });
+                                setAdjustmentModalOpen(true);
+                              }}
+                              className="bg-transparent border-blue-400/50 text-blue-400 hover:bg-blue-400/10"
+                            >
+                              Adjust Stock
+                            </Button>
+                          )}
                         </div>
 
                         {/* Operator Level */}
@@ -361,6 +382,27 @@ export default function Inventory() {
                               className={`h-2 bg-white/10 ${getProgressColor(product.levels.operator?.quantity || 0)}`}
                             />
                           </div>
+                          {product.levels.operator && (
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setSelectedInventoryItem({
+                                  id: product.levels.operator.id,
+                                  productId: product.productId,
+                                  productName: product.productName,
+                                  level: "operator" as const,
+                                  locationId: product.levels.operator.locationId,
+                                  currentQuantity: product.levels.operator.quantity,
+                                });
+                                setAdjustmentModalOpen(true);
+                              }}
+                              className="bg-transparent border-purple-400/50 text-purple-400 hover:bg-purple-400/10"
+                            >
+                              Adjust Stock
+                            </Button>
+                          )}
                         </div>
 
                         {/* Machine Level */}
@@ -378,6 +420,27 @@ export default function Inventory() {
                               className={`h-2 bg-white/10 ${getProgressColor(product.levels.machine?.quantity || 0)}`}
                             />
                           </div>
+                          {product.levels.machine && (
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setSelectedInventoryItem({
+                                  id: product.levels.machine.id,
+                                  productId: product.productId,
+                                  productName: product.productName,
+                                  level: "machine" as const,
+                                  locationId: product.levels.machine.locationId,
+                                  currentQuantity: product.levels.machine.quantity,
+                                });
+                                setAdjustmentModalOpen(true);
+                              }}
+                              className="bg-transparent border-emerald-400/50 text-emerald-400 hover:bg-emerald-400/10"
+                            >
+                              Adjust Stock
+                            </Button>
+                          )}
                         </div>
                       </div>
                     )}
@@ -388,6 +451,18 @@ export default function Inventory() {
           )}
         </div>
       </div>
+
+      {/* Inventory Adjustment Modal */}
+      <InventoryAdjustmentModal
+        open={adjustmentModalOpen}
+        onOpenChange={setAdjustmentModalOpen}
+        inventoryItem={selectedInventoryItem}
+        onSuccess={() => {
+          refetchInventory();
+          refetchStats();
+          refetchAlerts();
+        }}
+      />
     </Layout>
   );
 }

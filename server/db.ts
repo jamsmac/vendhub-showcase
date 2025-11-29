@@ -917,12 +917,67 @@ export async function approveStockTransfer(transferId: number, approvedBy: numbe
     })
     .where(eq(stockTransfers.id, transferId));
   
+  // Automatic inventory updates if fromLevel and toLevel are specified
+  if (transfer.fromLevel && transfer.toLevel) {
+    // Get source inventory
+    const [sourceInventory] = await db
+      .select()
+      .from(inventory)
+      .where(and(
+        eq(inventory.productId, transfer.productId),
+        eq(inventory.level, transfer.fromLevel),
+        transfer.fromLocationId ? eq(inventory.locationId, transfer.fromLocationId) : sql`1=1`
+      ));
+    
+    // Get destination inventory
+    const [destInventory] = await db
+      .select()
+      .from(inventory)
+      .where(and(
+        eq(inventory.productId, transfer.productId),
+        eq(inventory.level, transfer.toLevel),
+        transfer.toLocationId ? eq(inventory.locationId, transfer.toLocationId) : sql`1=1`
+      ));
+    
+    if (sourceInventory && destInventory) {
+      // Check if source has enough stock
+      if (sourceInventory.quantity >= transfer.quantity) {
+        // Decrement source
+        await db
+          .update(inventory)
+          .set({
+            quantity: sourceInventory.quantity - transfer.quantity,
+            updatedAt: new Date().toISOString(),
+          })
+          .where(eq(inventory.id, sourceInventory.id));
+        
+        // Increment destination
+        await db
+          .update(inventory)
+          .set({
+            quantity: destInventory.quantity + transfer.quantity,
+            updatedAt: new Date().toISOString(),
+          })
+          .where(eq(inventory.id, destInventory.id));
+        
+        // Update transfer status to completed
+        await db
+          .update(stockTransfers)
+          .set({
+            status: "completed",
+            updatedAt: new Date().toISOString(),
+          })
+          .where(eq(stockTransfers.id, transferId));
+      }
+    }
+  }
+  
   // Create notification for requester
   await createNotification({
     userId: transfer.requestedBy,
     type: "transfer_approved",
     title: "Transfer Request Approved",
-    message: `Your transfer request for ${transfer.quantity} items has been approved by ${approvedByName}.`,
+    message: `Your transfer request for ${transfer.quantity} items has been approved by ${approvedByName}. Inventory has been updated.`,
     relatedId: transferId,
     relatedType: "transfer",
   });
@@ -1210,4 +1265,15 @@ export async function markAllNotificationsAsRead(userId: number) {
     ));
   
   return { success: true };
+}
+
+
+/**
+ * Get users by role
+ */
+export async function getUsersByRole(role: string) {
+  const db = await getDb();
+  if (!db) return [];
+  
+  return await db.select().from(users).where(eq(users.role, role as any));
 }

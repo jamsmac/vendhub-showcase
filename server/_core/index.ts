@@ -8,6 +8,7 @@ import { appRouter } from "../routers";
 import { createContext } from "./context";
 import { serveStatic, setupVite } from "./vite";
 import { initTelegramBot } from "../telegram";
+import { scheduleLowStockAlerts } from "../jobs/lowStockAlerts";
 
 function isPortAvailable(port: number): Promise<boolean> {
   return new Promise(resolve => {
@@ -63,6 +64,9 @@ async function startServer() {
     
     // Initialize Telegram bot
     initTelegramBot();
+    
+    // Schedule low stock alert notifications
+    scheduleLowStockAlerts();
   });
 }
 

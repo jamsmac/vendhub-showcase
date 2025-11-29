@@ -495,3 +495,33 @@
 - [x] Test notification creation on approval/rejection
 - [ ] Test SSE connection and real-time updates (deferred - using polling)
 - [x] Verify notification UI updates
+
+
+## Phase 26: Inventory Enhancements
+
+### Inventory Adjustment Buttons
+- [x] Add "Adjust Stock" button to each product card in Inventory page
+- [x] Connect button to InventoryAdjustmentModal
+- [x] Pass inventory item data to modal
+- [x] Refresh inventory data after adjustment
+
+### Automatic Inventory Updates on Transfer Approval
+- [x] Implement inventory decrement at source location on approval
+- [x] Implement inventory increment at destination location on approval
+- [x] Add transaction logging for inventory changes
+- [x] Send completion notification with updated stock levels
+- [x] Handle edge cases (insufficient stock, missing inventory records)
+
+### Low Stock Alert Notifications
+- [x] Create scheduled job for daily low stock checks
+- [x] Query inventory items below threshold
+- [x] Create notifications for managers/admins
+- [x] Include product details and current stock levels
+- [x] Add link to inventory page in notification
+- [x] Configure job schedule (daily at specific time)
+
+### Testing
+- [x] Test adjustment button functionality
+- [x] Test automatic inventory updates on approval
+- [x] Test low stock alert notification creation
+- [x] Verify notification delivery to correct users
