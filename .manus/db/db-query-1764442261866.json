@@ -1,0 +1,23 @@
+{
+  "query": "SHOW CREATE TABLE inventory;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3FfdjCLoumdFxBM.root --database CnvwHcg9Gg9M7uweMepDrE --execute SHOW CREATE TABLE inventory;",
+  "rows": [
+    {
+      "Table": "inventory",
+      "Create Table": "CREATE TABLE `inventory` ("
+    }
+  ],
+  "messages": [
+    "  `id` int(11) NOT NULL AUTO_INCREMENT,",
+    "  `productId` int(11) NOT NULL,",
+    "  `level` enum('warehouse','operator','machine') NOT NULL,",
+    "  `locationId` int(11) DEFAULT NULL,",
+    "  `quantity` int(11) NOT NULL DEFAULT '0',",
+    "  `updatedAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,",
+    "  PRIMARY KEY (`id`) /*T![clustered_index] CLUSTERED */",
+    ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin"
+  ],
+  "stdout": "Table\tCreate Table\ninventory\tCREATE TABLE `inventory` (\n  `id` int(11) NOT NULL AUTO_INCREMENT,\n  `productId` int(11) NOT NULL,\n  `level` enum('warehouse','operator','machine') NOT NULL,\n  `locationId` int(11) DEFAULT NULL,\n  `quantity` int(11) NOT NULL DEFAULT '0',\n  `updatedAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,\n  PRIMARY KEY (`id`) /*T![clustered_index] CLUSTERED */\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin\n",
+  "stderr": "",
+  "execution_time_ms": 51
+}
