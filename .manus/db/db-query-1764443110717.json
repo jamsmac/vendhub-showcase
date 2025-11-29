@@ -1,0 +1,9 @@
+{
+  "query": "DROP TABLE IF EXISTS incidents;\n\nCREATE TABLE `incidents` (\n\t`id` int AUTO_INCREMENT NOT NULL,\n\t`machineId` int NOT NULL,\n\t`incidentType` enum('offline','malfunction','low_stock','temperature_alert','payment_error') NOT NULL,\n\t`status` enum('open','in_progress','resolved','closed') NOT NULL DEFAULT 'open',\n\t`severity` enum('low','medium','high','critical') NOT NULL DEFAULT 'medium',\n\t`description` text,\n\t`detectedAt` timestamp NULL,\n\t`assignedTo` int,\n\t`resolvedAt` timestamp NULL,\n\t`resolutionNotes` text,\n\t`createdAt` timestamp NOT NULL DEFAULT (now()),\n\t`updatedAt` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP,\n\tCONSTRAINT `incidents_id` PRIMARY KEY(`id`)\n);",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3FfdjCLoumdFxBM.root --database CnvwHcg9Gg9M7uweMepDrE --execute DROP TABLE IF EXISTS incidents;\n\nCREATE TABLE `incidents` (\n\t`id` int AUTO_INCREMENT NOT NULL,\n\t`machineId` int NOT NULL,\n\t`incidentType` enum('offline','malfunction','low_stock','temperature_alert','payment_error') NOT NULL,\n\t`status` enum('open','in_progress','resolved','closed') NOT NULL DEFAULT 'open',\n\t`severity` enum('low','medium','high','critical') NOT NULL DEFAULT 'medium',\n\t`description` text,\n\t`detectedAt` timestamp NULL,\n\t`assignedTo` int,\n\t`resolvedAt` timestamp NULL,\n\t`resolutionNotes` text,\n\t`createdAt` timestamp NOT NULL DEFAULT (now()),\n\t`updatedAt` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP,\n\tCONSTRAINT `incidents_id` PRIMARY KEY(`id`)\n);",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 193
+}

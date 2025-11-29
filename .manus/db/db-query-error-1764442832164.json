@@ -1,0 +1,8 @@
+{
+  "query": "ALTER TABLE components\n  CHANGE COLUMN machineId machine_id INT NOT NULL,\n  CHANGE COLUMN componentType component_type ENUM('compressor','cooling_system','payment_system','vending_mechanism','display','other') NOT NULL,\n  CHANGE COLUMN lastMaintenance last_maintenance TIMESTAMP NULL,\n  CHANGE COLUMN nextServiceDue next_service_due TIMESTAMP NULL,\n  CHANGE COLUMN warrantyExpiry warranty_expiry TIMESTAMP NULL,\n  CHANGE COLUMN createdAt created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,\n  CHANGE COLUMN updatedAt updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3FfdjCLoumdFxBM.root --database CnvwHcg9Gg9M7uweMepDrE --execute ALTER TABLE components\n  CHANGE COLUMN machineId machine_id INT NOT NULL,\n  CHANGE COLUMN componentType component_type ENUM('compressor','cooling_system','payment_system','vending_mechanism','display','other') NOT NULL,\n  CHANGE COLUMN lastMaintenance last_maintenance TIMESTAMP NULL,\n  CHANGE COLUMN nextServiceDue next_service_due TIMESTAMP NULL,\n  CHANGE COLUMN warrantyExpiry warranty_expiry TIMESTAMP NULL,\n  CHANGE COLUMN createdAt created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,\n  CHANGE COLUMN updatedAt updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP;",
+  "returncode": 1,
+  "logs": [
+    "ERROR 1054 (42S22) at line 1: Unknown column 'machineId' in 'components'"
+  ]
+}

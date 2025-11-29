@@ -270,8 +270,8 @@ export const incidents = mysqlTable("incidents", {
 	assignedTo: int(),
 	resolvedAt: timestamp({ mode: 'string' }),
 	resolutionNotes: text(),
-	createdAt: timestamp({ mode: 'string' }).default('CURRENT_TIMESTAMP').notNull(),
-	updatedAt: timestamp({ mode: 'string' }).default('CURRENT_TIMESTAMP').notNull(),
+	createdAt: timestamp({ mode: 'string' }).default(sql`CURRENT_TIMESTAMP`).notNull(),
+	updatedAt: timestamp({ mode: 'string' }).default(sql`CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP`).notNull(),
 });
 
 // AI-Agent System Tables
