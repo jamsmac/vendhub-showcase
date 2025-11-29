@@ -1,9 +1,0 @@
-{
-  "query": "ALTER TABLE products\n  CHANGE COLUMN costPrice cost_price INT NOT NULL,\n  CHANGE COLUMN sellingPrice selling_price INT NOT NULL,\n  CHANGE COLUMN createdAt created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP;",
-  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3FfdjCLoumdFxBM.root --database CnvwHcg9Gg9M7uweMepDrE --execute ALTER TABLE products\n  CHANGE COLUMN costPrice cost_price INT NOT NULL,\n  CHANGE COLUMN sellingPrice selling_price INT NOT NULL,\n  CHANGE COLUMN createdAt created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP;",
-  "rows": [],
-  "messages": [],
-  "stdout": "",
-  "stderr": "",
-  "execution_time_ms": 222
-}

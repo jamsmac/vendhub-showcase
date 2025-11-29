@@ -1,9 +1,0 @@
-{
-  "query": "ALTER TABLE inventoryAdjustments\n  CHANGE COLUMN inventoryId inventory_id INT NOT NULL,\n  CHANGE COLUMN productId product_id INT NOT NULL,\n  CHANGE COLUMN adjustmentType adjustment_type ENUM('damage','shrinkage','correction','found','expired','returned') NOT NULL,\n  CHANGE COLUMN quantityBefore quantity_before INT NOT NULL,\n  CHANGE COLUMN quantityAfter quantity_after INT NOT NULL,\n  CHANGE COLUMN quantityChange quantity_change INT NOT NULL,\n  CHANGE COLUMN photoUrl photo_url TEXT NULL,\n  CHANGE COLUMN performedBy performed_by INT NOT NULL,\n  CHANGE COLUMN performedByName performed_by_name VARCHAR(255) NULL,\n  CHANGE COLUMN locationId location_id INT NULL,\n  CHANGE COLUMN createdAt created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP;",
-  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3FfdjCLoumdFxBM.root --database CnvwHcg9Gg9M7uweMepDrE --execute ALTER TABLE inventoryAdjustments\n  CHANGE COLUMN inventoryId inventory_id INT NOT NULL,\n  CHANGE COLUMN productId product_id INT NOT NULL,\n  CHANGE COLUMN adjustmentType adjustment_type ENUM('damage','shrinkage','correction','found','expired','returned') NOT NULL,\n  CHANGE COLUMN quantityBefore quantity_before INT NOT NULL,\n  CHANGE COLUMN quantityAfter quantity_after INT NOT NULL,\n  CHANGE COLUMN quantityChange quantity_change INT NOT NULL,\n  CHANGE COLUMN photoUrl photo_url TEXT NULL,\n  CHANGE COLUMN performedBy performed_by INT NOT NULL,\n  CHANGE COLUMN performedByName performed_by_name VARCHAR(255) NULL,\n  CHANGE COLUMN locationId location_id INT NULL,\n  CHANGE COLUMN createdAt created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP;",
-  "rows": [],
-  "messages": [],
-  "stdout": "",
-  "stderr": "",
-  "execution_time_ms": 333
-}

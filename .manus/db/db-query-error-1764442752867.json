@@ -1,8 +1,0 @@
-{
-  "query": "ALTER TABLE tasks\n  CHANGE COLUMN machineId machine_id INT NULL,\n  CHANGE COLUMN assignedTo assigned_to INT NULL,\n  CHANGE COLUMN dueDate due_date TIMESTAMP NULL,\n  CHANGE COLUMN completedAt completed_at TIMESTAMP NULL,\n  CHANGE COLUMN createdAt created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,\n  CHANGE COLUMN updatedAt updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP;",
-  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3FfdjCLoumdFxBM.root --database CnvwHcg9Gg9M7uweMepDrE --execute ALTER TABLE tasks\n  CHANGE COLUMN machineId machine_id INT NULL,\n  CHANGE COLUMN assignedTo assigned_to INT NULL,\n  CHANGE COLUMN dueDate due_date TIMESTAMP NULL,\n  CHANGE COLUMN completedAt completed_at TIMESTAMP NULL,\n  CHANGE COLUMN createdAt created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,\n  CHANGE COLUMN updatedAt updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP;",
-  "returncode": 1,
-  "logs": [
-    "ERROR 1054 (42S22) at line 1: Unknown column 'dueDate' in 'tasks'"
-  ]
-}
