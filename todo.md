@@ -98,3 +98,11 @@
 - [x] Integrate widget into main dashboard
 - [x] Display last 5 audit log entries with action badges
 - [x] Add link to full audit log page
+
+## New Features - Date Range Filtering
+- [x] Install react-day-picker for date selection
+- [x] Add date range filtering to audit log API endpoint
+- [x] Update database queries to support date filtering
+- [x] Create preset filter buttons (All Time, Today, 7 Days, 30 Days)
+- [x] Integrate date filtering into audit log section
+- [x] Add unit tests for date filtering (9 tests passing)

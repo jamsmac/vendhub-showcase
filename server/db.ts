@@ -359,11 +359,33 @@ export async function getAuditLogsByRequestId(accessRequestId: number) {
     .orderBy(desc(accessRequestAuditLogs.createdAt));
 }
 
-export async function getAllAuditLogs() {
+export async function getAllAuditLogs(startDate?: string, endDate?: string) {
   const db = await getDb();
   if (!db) return [];
   
-  return await db.select()
-    .from(accessRequestAuditLogs)
-    .orderBy(desc(accessRequestAuditLogs.createdAt));
+  let query = db.select().from(accessRequestAuditLogs);
+  
+  // Apply date filtering if provided
+  if (startDate && endDate) {
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+    // Set end date to end of day
+    end.setHours(23, 59, 59, 999);
+    
+    query = query.where(
+      and(
+        gte(accessRequestAuditLogs.createdAt, start),
+        sql`${accessRequestAuditLogs.createdAt} <= ${end}`
+      )
+    ) as any;
+  } else if (startDate) {
+    const start = new Date(startDate);
+    query = query.where(gte(accessRequestAuditLogs.createdAt, start)) as any;
+  } else if (endDate) {
+    const end = new Date(endDate);
+    end.setHours(23, 59, 59, 999);
+    query = query.where(sql`${accessRequestAuditLogs.createdAt} <= ${end}`) as any;
+  }
+  
+  return await query.orderBy(desc(accessRequestAuditLogs.createdAt));
 }

@@ -34,7 +34,10 @@ import {
 import { toast } from "sonner";
 
 function AuditLogList() {
-  const { data: auditLogs } = trpc.auditLogs.list.useQuery();
+  const [dateRange, setDateRange] = useState<{ startDate?: string; endDate?: string }>({});
+  const [selectedPreset, setSelectedPreset] = useState<string>("all");
+  
+  const { data: auditLogs } = trpc.auditLogs.list.useQuery(dateRange);
   const { data: allRequests } = trpc.accessRequests.list.useQuery();
 
   const formatDate = (date: Date | string) => {
@@ -47,17 +50,85 @@ function AuditLogList() {
     });
   };
 
+  const handlePresetChange = (preset: string) => {
+    setSelectedPreset(preset);
+    const now = new Date();
+    
+    switch (preset) {
+      case "today":
+        const todayStart = new Date(now.setHours(0, 0, 0, 0));
+        setDateRange({ 
+          startDate: todayStart.toISOString(), 
+          endDate: new Date().toISOString() 
+        });
+        break;
+      case "7days":
+        const sevenDaysAgo = new Date(now.setDate(now.getDate() - 7));
+        setDateRange({ 
+          startDate: sevenDaysAgo.toISOString(), 
+          endDate: new Date().toISOString() 
+        });
+        break;
+      case "30days":
+        const thirtyDaysAgo = new Date(now.setDate(now.getDate() - 30));
+        setDateRange({ 
+          startDate: thirtyDaysAgo.toISOString(), 
+          endDate: new Date().toISOString() 
+        });
+        break;
+      case "all":
+      default:
+        setDateRange({});
+        break;
+    }
+  };
+
   if (!auditLogs || auditLogs.length === 0) {
     return (
-      <div className="text-center py-8 text-slate-400">
-        <History className="w-12 h-12 mx-auto mb-4 opacity-50" />
-        <p>Нет записей в журнале</p>
-      </div>
+      <>
+        <div className="flex gap-2 mb-4">
+          {["all", "today", "7days", "30days"].map((preset) => (
+            <Button
+              key={preset}
+              size="sm"
+              variant={selectedPreset === preset ? "default" : "outline"}
+              onClick={() => handlePresetChange(preset)}
+              className={selectedPreset === preset ? "bg-primary" : "bg-slate-800/50 border-slate-700 hover:bg-slate-700"}
+            >
+              {preset === "all" && "Все время"}
+              {preset === "today" && "Сегодня"}
+              {preset === "7days" && "7 дней"}
+              {preset === "30days" && "30 дней"}
+            </Button>
+          ))}
+        </div>
+        <div className="text-center py-8 text-slate-400">
+          <History className="w-12 h-12 mx-auto mb-4 opacity-50" />
+          <p>Нет записей в журнале</p>
+        </div>
+      </>
     );
   }
 
   return (
-    <div className="grid gap-4">
+    <>
+      <div className="flex gap-2 mb-4">
+        {["all", "today", "7days", "30days"].map((preset) => (
+          <Button
+            key={preset}
+            size="sm"
+            variant={selectedPreset === preset ? "default" : "outline"}
+            onClick={() => handlePresetChange(preset)}
+            className={selectedPreset === preset ? "bg-primary" : "bg-slate-800/50 border-slate-700 hover:bg-slate-700 text-white"}
+          >
+            {preset === "all" && "Все время"}
+            {preset === "today" && "Сегодня"}
+            {preset === "7days" && "7 дней"}
+            {preset === "30days" && "30 дней"}
+          </Button>
+        ))}
+      </div>
+      <div className="grid gap-4">
       {auditLogs.slice(0, 10).map((log) => {
         const request = allRequests?.find(r => r.id === log.accessRequestId);
         return (
@@ -105,7 +176,8 @@ function AuditLogList() {
           </div>
         );
       })}
-    </div>
+      </div>
+    </>
   );
 }
 

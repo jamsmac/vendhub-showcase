@@ -5,7 +5,7 @@ import { CheckCircle2, XCircle, Clock, ArrowRight } from "lucide-react";
 import { Link } from "wouter";
 
 export function RecentAdminActions() {
-  const { data: auditLogs, isLoading } = trpc.auditLogs.list.useQuery();
+  const { data: auditLogs, isLoading } = trpc.auditLogs.list.useQuery({});
   const { data: allRequests } = trpc.accessRequests.list.useQuery();
 
   const formatTimeAgo = (date: Date | string) => {

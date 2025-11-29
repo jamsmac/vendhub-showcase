@@ -214,9 +214,14 @@ ${process.env.PUBLIC_URL || 'https://vendhub-showcase.manus.space'}
   }),
 
   auditLogs: router({
-    list: protectedProcedure.query(async () => {
-      return await db.getAllAuditLogs();
-    }),
+    list: protectedProcedure
+      .input(z.object({ 
+        startDate: z.string().optional(),
+        endDate: z.string().optional(),
+      }).optional())
+      .query(async ({ input }) => {
+        return await db.getAllAuditLogs(input?.startDate, input?.endDate);
+      }),
     byRequestId: protectedProcedure
       .input(z.object({ requestId: z.number() }))
       .query(async ({ input }) => {
