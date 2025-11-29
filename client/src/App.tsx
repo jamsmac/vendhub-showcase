@@ -23,6 +23,7 @@ import DigestSettings from "./pages/DigestSettings";
 import NotificationPreferences from "./pages/NotificationPreferences";
 import AdminTransfers from "./pages/AdminTransfers";
 import TransferHistory from "./pages/TransferHistory";
+import { AdminAiAgents } from "./pages/AdminAiAgents";
 
 function Router() {
   // make sure to consider if you need authentication for certain routes
@@ -47,6 +48,7 @@ function Router() {
               <Route path={"/notification-preferences"} component={NotificationPreferences} />
               <Route path={"/admin/transfers"} component={AdminTransfers} />
               <Route path={"/inventory/transfer-history"} component={TransferHistory} />
+              <Route path={"/admin/ai-agents"} component={AdminAiAgents} />
               <Route path={"/master-data"} component={MasterData} />
               <Route path={"/components/:id"} component={ComponentLifecycle} />
               <Route path={"/reports"} component={Reports} />

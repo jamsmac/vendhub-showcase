@@ -525,3 +525,20 @@
 - [x] Test automatic inventory updates on approval
 - [x] Test low stock alert notification creation
 - [x] Verify notification delivery to correct users
+
+
+## Phase 27: AI-Agent Integration & Claude API
+
+- [ ] Create ProductForm component with AI-agent integration
+- [ ] Add AI suggestions for product fields (name, category, price, SKU)
+- [ ] Create MachineForm component with AI-agent integration
+- [ ] Add AI suggestions for machine fields (name, model, location, status)
+- [ ] Build AI-Agent Management Dashboard at /admin/ai-agents
+- [ ] Display agent statistics (suggestion accuracy, confirmation rate)
+- [ ] Show prompt versions and change history
+- [ ] Display improvement history and approvals
+- [ ] Implement Claude API integration in generateSuggestions
+- [ ] Add Anthropic API key to environment variables
+- [ ] Test Claude suggestions with real data
+- [ ] Add error handling for API failures
+- [ ] Implement suggestion caching

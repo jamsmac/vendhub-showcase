@@ -351,3 +351,55 @@ export async function getAgentStats(agentId: number) {
     learningDataPoints: learningData.length,
   };
 }
+
+
+/**
+ * Generate suggestions using Claude API
+ */
+export async function generateSuggestionsWithClaude(
+  agentId: number,
+  inputData: Record<string, any>
+): Promise<{
+  suggestedFields: Record<string, any>;
+  confidence: number;
+}> {
+  try {
+    const db = await getDb();
+    if (!db) throw new Error("Database not available");
+
+    // Get agent details
+    const agents = await db
+      .select()
+      .from(aiAgents)
+      .where(eq(aiAgents.id, agentId));
+
+    const agent = agents[0];
+    if (!agent) {
+      throw new Error("Agent not found");
+    }
+
+    // Import Claude service
+    const { generateSuggestionsWithClaude: claudeGenerate } = await import(
+      "./services/claudeService"
+    );
+
+    // Generate suggestions using Claude
+    const result = await claudeGenerate({
+      systemPrompt: agent.systemPrompt,
+      inputData,
+      referenceBookType: agent.referenceBookType,
+    });
+
+    return {
+      suggestedFields: result.suggestedFields,
+      confidence: result.confidence,
+    };
+  } catch (error) {
+    console.error("Error generating suggestions with Claude:", error);
+    // Fallback to mock suggestions if Claude fails
+    return {
+      suggestedFields: {},
+      confidence: 0.5,
+    };
+  }
+}
