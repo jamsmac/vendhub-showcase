@@ -4,7 +4,7 @@ import {
   InsertUser, users, machines, products, inventory, inventoryAdjustments, tasks, 
   components, componentHistory, transactions, suppliers, stockTransfers,
   accessRequests, InsertAccessRequest, accessRequestAuditLogs, InsertAccessRequestAuditLog,
-  roleChanges, digestConfig, InsertInventoryAdjustment
+  roleChanges, digestConfig, InsertInventoryAdjustment, notifications
 } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
@@ -917,6 +917,16 @@ export async function approveStockTransfer(transferId: number, approvedBy: numbe
     })
     .where(eq(stockTransfers.id, transferId));
   
+  // Create notification for requester
+  await createNotification({
+    userId: transfer.requestedBy,
+    type: "transfer_approved",
+    title: "Transfer Request Approved",
+    message: `Your transfer request for ${transfer.quantity} items has been approved by ${approvedByName}.`,
+    relatedId: transferId,
+    relatedType: "transfer",
+  });
+  
   return { success: true, transfer };
 }
 
@@ -949,6 +959,16 @@ export async function rejectStockTransfer(transferId: number, rejectedBy: number
       updatedAt: new Date().toISOString(),
     })
     .where(eq(stockTransfers.id, transferId));
+  
+  // Create notification for requester
+  await createNotification({
+    userId: transfer.requestedBy,
+    type: "transfer_rejected",
+    title: "Transfer Request Rejected",
+    message: `Your transfer request for ${transfer.quantity} items has been rejected by ${rejectedByName}.${reason ? ` Reason: ${reason}` : ""}`,
+    relatedId: transferId,
+    relatedType: "transfer",
+  });
   
   return { success: true, transfer };
 }
@@ -1082,4 +1102,112 @@ export async function getInventoryAdjustments(filters?: {
     .orderBy(desc(inventoryAdjustments.createdAt));
   
   return await query;
+}
+
+
+// ============================================
+// Notification Functions
+// ============================================
+
+/**
+ * Create a new notification
+ */
+export async function createNotification(data: {
+  userId: number;
+  type: 'transfer_approved' | 'transfer_rejected' | 'low_stock' | 'task_assigned' | 'system';
+  title: string;
+  message: string;
+  relatedId?: number;
+  relatedType?: string;
+}) {
+  const db = await getDb();
+  if (!db) throw new Error("Database connection failed");
+  
+  const [notification] = await db
+    .insert(notifications)
+    .values({
+      userId: data.userId,
+      type: data.type,
+      title: data.title,
+      message: data.message,
+      relatedId: data.relatedId,
+      relatedType: data.relatedType,
+      read: 0,
+    });
+  
+  return notification;
+}
+
+/**
+ * Get notifications for a user
+ */
+export async function getUserNotifications(userId: number, limit?: number) {
+  const db = await getDb();
+  if (!db) return [];
+  
+  let query = db
+    .select()
+    .from(notifications)
+    .where(eq(notifications.userId, userId))
+    .orderBy(desc(notifications.createdAt));
+  
+  if (limit) {
+    query = query.limit(limit) as any;
+  }
+  
+  return await query;
+}
+
+/**
+ * Get unread notification count for a user
+ */
+export async function getUnreadNotificationCount(userId: number) {
+  const db = await getDb();
+  if (!db) return 0;
+  
+  const result = await db
+    .select()
+    .from(notifications)
+    .where(and(
+      eq(notifications.userId, userId),
+      eq(notifications.read, 0)
+    ));
+  
+  return result.length;
+}
+
+/**
+ * Mark a notification as read
+ */
+export async function markNotificationAsRead(notificationId: number, userId: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database connection failed");
+  
+  await db
+    .update(notifications)
+    .set({ read: 1 })
+    .where(and(
+      eq(notifications.id, notificationId),
+      eq(notifications.userId, userId)
+    ));
+  
+  return { success: true };
+}
+
+/**
+ * Mark all notifications as read for a user
+ */
+export async function markAllNotificationsAsRead(userId: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database connection failed");
+  
+  await db
+    .update(notifications)
+    .set({ read: 1 })
+    .where(and(
+      eq(notifications.userId, userId),
+      eq(notifications.read, 0)
+    ));
+  
+  return { success: true };
 }

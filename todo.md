@@ -449,3 +449,49 @@
 - [x] Test transfer history filtering
 - [x] Verify automatic inventory updates
 - [ ] Test notification delivery
+
+
+## Phase 25: Real-Time Notification System
+
+### Database Schema
+- [x] Create notifications table in schema.ts
+- [x] Add fields: id, userId, type, title, message, relatedId, read, createdAt
+- [x] Run database migration
+
+### Backend Infrastructure
+- [x] Create notification service module
+- [x] Add createNotification function
+- [x] Add getUserNotifications function
+- [x] Add markNotificationAsRead function
+- [x] Add markAllNotificationsAsRead function
+- [ ] Implement real-time push via Server-Sent Events (SSE) (deferred - using polling for now)
+
+### API Endpoints
+- [x] Create notifications router
+- [x] Add notifications.list endpoint (get user notifications)
+- [x] Add notifications.unreadCount endpoint
+- [x] Add notifications.markAsRead endpoint
+- [x] Add notifications.markAllAsRead endpoint
+- [ ] Add notifications.subscribe endpoint (SSE) (deferred)
+
+### Frontend Notification Center
+- [x] Create NotificationCenter component
+- [x] Add bell icon with unread count badge in header
+- [x] Implement dropdown with notification list
+- [x] Add mark as read functionality
+- [x] Add mark all as read button
+- [x] Style notification items with icons and timestamps
+- [x] Add empty state for no notifications
+
+### Integration with Transfer Workflow
+- [x] Trigger notification on transfer approval
+- [x] Trigger notification on transfer rejection
+- [x] Send notification to requester with transfer details
+- [x] Include link to transfer history
+- [x] Add real-time update to notification center
+
+### Testing
+- [x] Write unit tests for notification service
+- [x] Test notification creation on approval/rejection
+- [ ] Test SSE connection and real-time updates (deferred - using polling)
+- [x] Verify notification UI updates

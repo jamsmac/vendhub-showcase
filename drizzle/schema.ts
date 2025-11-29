@@ -273,6 +273,18 @@ export const incidents = mysqlTable("incidents", {
 	updatedAt: timestamp({ mode: 'string' }).default(sql`CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP`).notNull(),
 });
 
+export const notifications = mysqlTable("notifications", {
+	id: int().autoincrement().notNull(),
+	userId: int().notNull(),
+	type: mysqlEnum(['transfer_approved','transfer_rejected','low_stock','task_assigned','system']).notNull(),
+	title: varchar({ length: 255 }).notNull(),
+	message: text().notNull(),
+	relatedId: int(),
+	relatedType: varchar({ length: 50 }),
+	read: int().default(0).notNull(),
+	createdAt: timestamp({ mode: 'string' }).default(sql`CURRENT_TIMESTAMP`).notNull(),
+});
+
 // Type exports for database operations
 export type User = typeof users.$inferSelect;
 export type InsertUser = typeof users.$inferInsert;
@@ -298,3 +310,6 @@ export type StockTransfer = typeof stockTransfers.$inferSelect;
 export type InsertStockTransfer = typeof stockTransfers.$inferInsert;
 export type InventoryAdjustment = typeof inventoryAdjustments.$inferSelect;
 export type InsertInventoryAdjustment = typeof inventoryAdjustments.$inferInsert;
+
+export type Notification = typeof notifications.$inferSelect;
+export type InsertNotification = typeof notifications.$inferInsert;

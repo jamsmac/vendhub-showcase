@@ -5,6 +5,7 @@ import { publicProcedure, protectedProcedure, router } from "./_core/trpc";
 import { z } from "zod";
 import * as db from "./db";
 import { telegramRouter } from "./telegram-router";
+import { notificationsRouter } from "./routers/notifications";
 import { sendEmail, getAccessRequestApprovedEmail, getAccessRequestRejectedEmail } from "./email";
 
 export const appRouter = router({
@@ -423,6 +424,8 @@ ${process.env.PUBLIC_URL || 'https://vendhub-showcase.manus.space'}
         );
       }),
   }),
+
+  notifications: notificationsRouter,
 
   inventoryAdjustments: router({
     list: protectedProcedure
