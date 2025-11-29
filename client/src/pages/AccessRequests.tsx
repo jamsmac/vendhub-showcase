@@ -3,6 +3,7 @@ import { trpc } from "@/lib/trpc";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Table,
   TableBody,
@@ -29,6 +30,8 @@ export default function AccessRequests() {
   const [selectedRequest, setSelectedRequest] = useState<number | null>(null);
   const [action, setAction] = useState<"approve" | "reject" | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
+  const [selectedRequests, setSelectedRequests] = useState<Set<number>>(new Set());
+  const [bulkAction, setBulkAction] = useState<"approve" | "reject" | null>(null);
 
   const { data: allRequests, refetch } = trpc.accessRequests.list.useQuery();
   const { data: pendingRequests } = trpc.accessRequests.pending.useQuery();
@@ -107,6 +110,62 @@ export default function AccessRequests() {
       approveMutation.mutate({ id: selectedRequest, approvedBy });
     } else if (action === "reject") {
       rejectMutation.mutate({ id: selectedRequest, approvedBy });
+    }
+  };
+
+  const toggleSelection = (id: number) => {
+    const newSelected = new Set(selectedRequests);
+    if (newSelected.has(id)) {
+      newSelected.delete(id);
+    } else {
+      newSelected.add(id);
+    }
+    setSelectedRequests(newSelected);
+  };
+
+  const toggleSelectAll = (requests: typeof allRequests) => {
+    if (!requests) return;
+    const allIds = requests.map(r => r.id);
+    const allSelected = allIds.every(id => selectedRequests.has(id));
+    
+    if (allSelected) {
+      setSelectedRequests(new Set());
+    } else {
+      setSelectedRequests(new Set(allIds));
+    }
+  };
+
+  const handleBulkApprove = () => {
+    setBulkAction("approve");
+  };
+
+  const handleBulkReject = () => {
+    setBulkAction("reject");
+  };
+
+  const confirmBulkAction = async () => {
+    if (selectedRequests.size === 0 || !bulkAction) return;
+
+    const approvedBy = 1; // TODO: Get actual user ID from auth context
+    const promises = Array.from(selectedRequests).map(id => {
+      if (bulkAction === "approve") {
+        return approveMutation.mutateAsync({ id, approvedBy });
+      } else {
+        return rejectMutation.mutateAsync({ id, approvedBy });
+      }
+    });
+
+    try {
+      await Promise.all(promises);
+      toast.success(
+        bulkAction === "approve" ? "Заявки одобрены" : "Заявки отклонены",
+        { description: `Обработано заявок: ${selectedRequests.size}` }
+      );
+      setSelectedRequests(new Set());
+      setBulkAction(null);
+      refetch();
+    } catch (error) {
+      toast.error("Ошибка при обработке заявок");
     }
   };
 
@@ -206,8 +265,9 @@ export default function AccessRequests() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            {/* Search Bar */}
-            <div className="mb-6 relative">
+            {/* Search Bar and Bulk Actions */}
+            <div className="mb-6 flex gap-4 items-center">
+              <div className="flex-1 relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-slate-400" />
               <input
                 type="text"
@@ -216,6 +276,33 @@ export default function AccessRequests() {
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full pl-10 pr-4 py-3 bg-slate-800/50 border border-slate-700 rounded-xl text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all"
               />
+              </div>
+              
+              {selectedRequests.size > 0 && (
+                <div className="flex gap-2">
+                  <Badge variant="outline" className="bg-primary/10 text-primary border-primary/20 px-3 py-1">
+                    Выбрано: {selectedRequests.size}
+                  </Badge>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="bg-green-500/10 border-green-500/20 text-green-400 hover:bg-green-500/20"
+                    onClick={handleBulkApprove}
+                  >
+                    <Check className="w-4 h-4 mr-1" />
+                    Одобрить все
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="bg-red-500/10 border-red-500/20 text-red-400 hover:bg-red-500/20"
+                    onClick={handleBulkReject}
+                  >
+                    <X className="w-4 h-4 mr-1" />
+                    Отклонить все
+                  </Button>
+                </div>
+              )}
             </div>
 
             <Tabs defaultValue="pending" className="w-full">
@@ -235,6 +322,12 @@ export default function AccessRequests() {
                   <Table>
                     <TableHeader>
                       <TableRow className="border-slate-800">
+                        <TableHead className="text-slate-400 w-12">
+                          <Checkbox
+                            checked={filteredPendingRequests.length > 0 && filteredPendingRequests.every(r => selectedRequests.has(r.id))}
+                            onCheckedChange={() => toggleSelectAll(filteredPendingRequests)}
+                          />
+                        </TableHead>
                         <TableHead className="text-slate-400">Пользователь</TableHead>
                         <TableHead className="text-slate-400">Telegram ID</TableHead>
                         <TableHead className="text-slate-400">Роль</TableHead>
@@ -246,6 +339,12 @@ export default function AccessRequests() {
                     <TableBody>
                       {filteredPendingRequests.map((request) => (
                         <TableRow key={request.id} className="border-slate-800">
+                          <TableCell>
+                            <Checkbox
+                              checked={selectedRequests.has(request.id)}
+                              onCheckedChange={() => toggleSelection(request.id)}
+                            />
+                          </TableCell>
                           <TableCell className="text-white">
                             <div className="flex items-center gap-2">
                               <User className="w-4 h-4 text-slate-400" />
@@ -361,6 +460,12 @@ export default function AccessRequests() {
                   <Table>
                     <TableHeader>
                       <TableRow className="border-slate-800">
+                        <TableHead className="text-slate-400 w-12">
+                          <Checkbox
+                            checked={filteredAllRequests.length > 0 && filteredAllRequests.every(r => selectedRequests.has(r.id))}
+                            onCheckedChange={() => toggleSelectAll(filteredAllRequests)}
+                          />
+                        </TableHead>
                         <TableHead className="text-slate-400">Пользователь</TableHead>
                         <TableHead className="text-slate-400">Telegram ID</TableHead>
                         <TableHead className="text-slate-400">Роль</TableHead>
@@ -372,6 +477,12 @@ export default function AccessRequests() {
                     <TableBody>
                       {filteredAllRequests.map((request) => (
                         <TableRow key={request.id} className="border-slate-800">
+                          <TableCell>
+                            <Checkbox
+                              checked={selectedRequests.has(request.id)}
+                              onCheckedChange={() => toggleSelection(request.id)}
+                            />
+                          </TableCell>
                           <TableCell className="text-white">
                             <div className="flex items-center gap-2">
                               <User className="w-4 h-4 text-slate-400" />
@@ -426,6 +537,7 @@ export default function AccessRequests() {
         </Card>
       </div>
 
+      {/* Single Request Confirmation Dialog */}
       <AlertDialog open={action !== null} onOpenChange={() => setAction(null)}>
         <AlertDialogContent className="bg-slate-900 border-slate-800">
           <AlertDialogHeader>
@@ -451,6 +563,39 @@ export default function AccessRequests() {
               }
             >
               {action === "approve" ? "Одобрить" : "Отклонить"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Bulk Action Confirmation Dialog */}
+      <AlertDialog open={bulkAction !== null} onOpenChange={() => setBulkAction(null)}>
+        <AlertDialogContent className="bg-slate-900 border-slate-800">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="text-white">
+              {bulkAction === "approve" 
+                ? `Одобрить ${selectedRequests.size} заявок?` 
+                : `Отклонить ${selectedRequests.size} заявок?`}
+            </AlertDialogTitle>
+            <AlertDialogDescription className="text-slate-400">
+              {bulkAction === "approve"
+                ? "Все выбранные пользователи получат уведомления в Telegram и смогут войти в систему."
+                : "Все выбранные пользователи получат уведомления об отклонении заявок."}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel className="bg-slate-800 border-slate-700 text-white hover:bg-slate-700">
+              Отмена
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={confirmBulkAction}
+              className={
+                bulkAction === "approve"
+                  ? "bg-green-600 hover:bg-green-700"
+                  : "bg-red-600 hover:bg-red-700"
+              }
+            >
+              {bulkAction === "approve" ? "Одобрить все" : "Отклонить все"}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
