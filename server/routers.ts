@@ -234,6 +234,17 @@ ${process.env.PUBLIC_URL || 'https://vendhub-showcase.manus.space'}
       }),
   }),
 
+  roleChanges: router({
+    list: protectedProcedure.query(async () => {
+      return await db.getAllRoleChanges();
+    }),
+    byUserId: protectedProcedure
+      .input(z.object({ userId: z.number() }))
+      .query(async ({ input }) => {
+        return await db.getRoleChangesByUserId(input.userId);
+      }),
+  }),
+
   stockTransfers: router({
     list: publicProcedure.query(async () => {
       return await db.getAllStockTransfers();

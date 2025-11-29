@@ -3,7 +3,8 @@ import { drizzle } from "drizzle-orm/mysql2";
 import { 
   InsertUser, users, machines, products, inventory, tasks, 
   components, componentHistory, transactions, suppliers, stockTransfers,
-  accessRequests, InsertAccessRequest, accessRequestAuditLogs, InsertAccessRequestAuditLog
+  accessRequests, InsertAccessRequest, accessRequestAuditLogs, InsertAccessRequestAuditLog,
+  roleChanges
 } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
@@ -397,4 +398,56 @@ export async function getAllAuditLogs(startDate?: string, endDate?: string, acti
   }
   
   return await query.orderBy(desc(accessRequestAuditLogs.createdAt));
+}
+
+/**
+ * Create a role change log entry
+ */
+export async function createRoleChange(
+  userId: number,
+  userName: string | null,
+  oldRole: string,
+  newRole: string,
+  changedBy: number,
+  changedByName: string | null,
+  reason?: string
+) {
+  const db = await getDb();
+  if (!db) return null;
+  
+  const result = await db.insert(roleChanges).values({
+    userId,
+    userName,
+    oldRole: oldRole as any,
+    newRole: newRole as any,
+    changedBy,
+    changedByName,
+    reason,
+  });
+  
+  return result;
+}
+
+/**
+ * Get all role changes
+ */
+export async function getAllRoleChanges() {
+  const db = await getDb();
+  if (!db) return [];
+  
+  return await db.select().from(roleChanges).orderBy(desc(roleChanges.createdAt));
+}
+
+/**
+ * Get role changes for a specific user
+ */
+export async function getRoleChangesByUserId(userId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  
+  return await db
+    .select()
+    .from(roleChanges)
+    .where(eq(roleChanges.userId, userId))
+    .orderBy(desc(roleChanges.createdAt));
 }

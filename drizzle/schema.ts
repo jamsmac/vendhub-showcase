@@ -227,3 +227,22 @@ export const accessRequestAuditLogs = mysqlTable("accessRequestAuditLogs", {
 
 export type AccessRequestAuditLog = typeof accessRequestAuditLogs.$inferSelect;
 export type InsertAccessRequestAuditLog = typeof accessRequestAuditLogs.$inferInsert;
+
+/**
+ * Role change history
+ * Tracks when user roles are modified after initial approval
+ */
+export const roleChanges = mysqlTable("roleChanges", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull(),
+  userName: varchar("userName", { length: 255 }),
+  oldRole: mysqlEnum("oldRole", ["user", "operator", "manager", "admin"]).notNull(),
+  newRole: mysqlEnum("newRole", ["user", "operator", "manager", "admin"]).notNull(),
+  changedBy: int("changedBy").notNull(),
+  changedByName: varchar("changedByName", { length: 255 }),
+  reason: text("reason"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type RoleChange = typeof roleChanges.$inferSelect;
+export type InsertRoleChange = typeof roleChanges.$inferInsert;

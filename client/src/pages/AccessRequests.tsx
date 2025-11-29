@@ -34,6 +34,75 @@ import {
 } from "@/components/ui/select";
 import { toast } from "sonner";
 
+function RoleChangesTab() {
+  const { data: roleChanges } = trpc.roleChanges.list.useQuery();
+  
+  const formatDate = (date: Date | string) => {
+    return new Date(date).toLocaleDateString("ru-RU", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  };
+  
+  const getRoleName = (role: string) => {
+    switch (role) {
+      case "operator": return "Оператор";
+      case "manager": return "Менеджер";
+      case "admin": return "Администратор";
+      case "user": return "Пользователь";
+      default: return role;
+    }
+  };
+  
+  if (!roleChanges || roleChanges.length === 0) {
+    return (
+      <div className="text-center py-12 text-slate-400">
+        <History className="w-12 h-12 mx-auto mb-4 opacity-50" />
+        <p>Нет изменений ролей</p>
+      </div>
+    );
+  }
+  
+  return (
+    <div className="space-y-4">
+      {roleChanges.map((change) => (
+        <div key={change.id} className="bg-slate-800/30 border border-slate-700 rounded-lg p-4">
+          <div className="flex items-start justify-between">
+            <div className="flex-1">
+              <div className="flex items-center gap-3 mb-2">
+                <User className="w-5 h-5 text-blue-400" />
+                <span className="font-medium text-white">
+                  {change.userName || `User #${change.userId}`}
+                </span>
+              </div>
+              <div className="flex items-center gap-3 text-sm">
+                <Badge variant="outline" className="bg-red-500/10 text-red-400 border-red-500/30">
+                  {getRoleName(change.oldRole)}
+                </Badge>
+                <span className="text-slate-400">→</span>
+                <Badge variant="outline" className="bg-green-500/10 text-green-400 border-green-500/30">
+                  {getRoleName(change.newRole)}
+                </Badge>
+              </div>
+              {change.reason && (
+                <div className="mt-2 text-sm text-slate-400">
+                  <span className="font-medium">Причина:</span> {change.reason}
+                </div>
+              )}
+              <div className="mt-2 text-xs text-slate-500">
+                Изменено: {change.changedByName || `Admin #${change.changedBy}`} • {formatDate(change.createdAt)}
+              </div>
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 function AuditLogList() {
   const [dateRange, setDateRange] = useState<{ startDate?: string; endDate?: string }>({});
   const [selectedPreset, setSelectedPreset] = useState<string>("all");
@@ -654,10 +723,11 @@ export default function AccessRequests() {
             </div>
 
             <Tabs defaultValue="pending" className="w-full">
-              <TabsList className="grid w-full grid-cols-3 bg-slate-800/50">
+              <TabsList className="grid w-full grid-cols-4 bg-slate-800/50">
                 <TabsTrigger value="pending">На рассмотрении</TabsTrigger>
                 <TabsTrigger value="approved">Одобренные</TabsTrigger>
                 <TabsTrigger value="all">Все</TabsTrigger>
+                <TabsTrigger value="roleChanges">История ролей</TabsTrigger>
               </TabsList>
 
               <TabsContent value="pending" className="mt-6">
@@ -1037,6 +1107,10 @@ export default function AccessRequests() {
                     </TableBody>
                   </Table>
                 )}
+              </TabsContent>
+              
+              <TabsContent value="roleChanges" className="mt-6">
+                <RoleChangesTab />
               </TabsContent>
             </Tabs>
           </CardContent>

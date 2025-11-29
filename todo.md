@@ -133,3 +133,30 @@
 - [x] Add statistics summary badges (approved/rejected counts)
 - [x] Display statistics based on current filters
 - [x] Export respects all active filters (date, action type, search)
+
+## New Features - Bulk Actions
+- [x] Add checkbox selection to access request table
+- [x] Implement select all/deselect all functionality
+- [x] Create bulk approve/reject buttons
+- [x] Add confirmation dialog for bulk operations
+- [x] Update API to handle bulk operations
+- [x] Show success/error toasts for bulk actions
+- [x] Add bulk role selection dropdown
+
+## New Features - Email Digest Scheduling
+- [x] Create email digest generation function
+- [x] Design daily/weekly digest email templates (HTML with statistics)
+- [x] Implement cron job for scheduled email sending (node-cron)
+- [x] Add digest configuration (frequency, recipients via env vars)
+- [x] Include statistics and recent actions in digest
+- [x] Initialize scheduler on server startup
+- [ ] Add unsubscribe/preferences functionality (future enhancement)
+
+## New Features - Role Change History
+- [x] Create role_changes database table
+- [x] Track role modifications with old/new values
+- [x] Add API endpoints for role change logs (list, byUserId)
+- [x] Create "Role Changes" tab in UI (4th tab)
+- [x] Display role change timeline with details
+- [x] Show old/new role badges with color coding
+- [x] Include admin name and timestamp for each change
