@@ -1,9 +1,0 @@
-{
-  "query": "ALTER TABLE `stockTransfers` \nADD COLUMN IF NOT EXISTS `approvedBy` int,\nADD COLUMN IF NOT EXISTS `approvedAt` timestamp NULL,\nADD COLUMN IF NOT EXISTS `rejectedBy` int,\nADD COLUMN IF NOT EXISTS `rejectedAt` timestamp NULL,\nADD COLUMN IF NOT EXISTS `fromLevel` enum('warehouse','operator','machine'),\nADD COLUMN IF NOT EXISTS `toLevel` enum('warehouse','operator','machine'),\nADD COLUMN IF NOT EXISTS `fromLocationId` int,\nADD COLUMN IF NOT EXISTS `toLocationId` int",
-  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3FfdjCLoumdFxBM.root --database CnvwHcg9Gg9M7uweMepDrE --execute ALTER TABLE `stockTransfers` \nADD COLUMN IF NOT EXISTS `approvedBy` int,\nADD COLUMN IF NOT EXISTS `approvedAt` timestamp NULL,\nADD COLUMN IF NOT EXISTS `rejectedBy` int,\nADD COLUMN IF NOT EXISTS `rejectedAt` timestamp NULL,\nADD COLUMN IF NOT EXISTS `fromLevel` enum('warehouse','operator','machine'),\nADD COLUMN IF NOT EXISTS `toLevel` enum('warehouse','operator','machine'),\nADD COLUMN IF NOT EXISTS `fromLocationId` int,\nADD COLUMN IF NOT EXISTS `toLocationId` int",
-  "rows": [],
-  "messages": [],
-  "stdout": "",
-  "stderr": "",
-  "execution_time_ms": 2138
-}
