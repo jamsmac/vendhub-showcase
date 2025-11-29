@@ -220,3 +220,19 @@
 - [ ] Transactions list
 - [ ] Incidents tracking
 - [ ] Complaints management
+
+
+## Phase 10: Machines Module
+- [ ] Create machines database table with schema
+- [ ] Add machine status enum (active, maintenance, offline, retired)
+- [ ] Create tRPC API endpoints for machines (list, get, create, update, delete)
+- [ ] Implement machine list page with filters (status, location, type)
+- [ ] Add search functionality for machine name/ID
+- [ ] Create machine detail page with full information
+- [ ] Generate QR codes for each machine (unique ID)
+- [ ] Implement QR code scanner page
+- [ ] Add location/map integration for machine placement
+- [ ] Create machine status history tracking
+- [ ] Add machine photo upload functionality
+- [ ] Implement machine performance metrics
+- [ ] Create unit tests for machine operations
