@@ -9,10 +9,14 @@ import Machines from "./pages/Machines";
 import Tasks from "./pages/Tasks";
 import Users from "./pages/Users";
 import Inventory from "./pages/Inventory";
+import Login from "./pages/Login";
+import TelegramOnboarding from "./pages/TelegramOnboarding";
 
 function Router() {
   return (
     <Switch>
+      <Route path={"/login"} component={Login} />
+      <Route path={"/onboarding"} component={TelegramOnboarding} />
       <Route path={"/"} component={Dashboard} />
       <Route path={"/machines"} component={Machines} />
       <Route path={"/inventory"} component={Inventory} />
