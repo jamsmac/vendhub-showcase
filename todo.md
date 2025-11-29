@@ -71,3 +71,6 @@
 - [ ] Configure GitHub Actions for CI/CD
 - [ ] Push initial code
 - [ ] Create deployment documentation
+
+## New Features - Access Requests
+- [x] Add search bar to filter access requests by name or Telegram ID

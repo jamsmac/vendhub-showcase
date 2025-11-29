@@ -22,15 +22,38 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Check, X, Clock, User, Calendar } from "lucide-react";
+import { Check, X, Clock, User, Calendar, Search } from "lucide-react";
 import { toast } from "sonner";
 
 export default function AccessRequests() {
   const [selectedRequest, setSelectedRequest] = useState<number | null>(null);
   const [action, setAction] = useState<"approve" | "reject" | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
 
   const { data: allRequests, refetch } = trpc.accessRequests.list.useQuery();
   const { data: pendingRequests } = trpc.accessRequests.pending.useQuery();
+
+  // Filter requests based on search query
+  const filterRequests = (requests: typeof allRequests) => {
+    if (!requests) return [];
+    if (!searchQuery.trim()) return requests;
+
+    const query = searchQuery.toLowerCase();
+    return requests.filter((request) => {
+      const name = (request.firstName || request.username || "").toLowerCase();
+      const username = (request.username || "").toLowerCase();
+      const telegramId = request.telegramId.toString();
+      
+      return (
+        name.includes(query) ||
+        username.includes(query) ||
+        telegramId.includes(query)
+      );
+    });
+  };
+
+  const filteredAllRequests = filterRequests(allRequests);
+  const filteredPendingRequests = filterRequests(pendingRequests);
 
   const approveMutation = trpc.accessRequests.approve.useMutation({
     onSuccess: () => {
@@ -183,6 +206,18 @@ export default function AccessRequests() {
             </CardDescription>
           </CardHeader>
           <CardContent>
+            {/* Search Bar */}
+            <div className="mb-6 relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-slate-400" />
+              <input
+                type="text"
+                placeholder="Поиск по имени, username или Telegram ID..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full pl-10 pr-4 py-3 bg-slate-800/50 border border-slate-700 rounded-xl text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all"
+              />
+            </div>
+
             <Tabs defaultValue="pending" className="w-full">
               <TabsList className="grid w-full grid-cols-3 bg-slate-800/50">
                 <TabsTrigger value="pending">На рассмотрении</TabsTrigger>
@@ -191,7 +226,7 @@ export default function AccessRequests() {
               </TabsList>
 
               <TabsContent value="pending" className="mt-6">
-                {!pendingRequests || pendingRequests.length === 0 ? (
+                {!filteredPendingRequests || filteredPendingRequests.length === 0 ? (
                   <div className="text-center py-12 text-slate-400">
                     <Clock className="w-12 h-12 mx-auto mb-4 opacity-50" />
                     <p>Нет заявок на рассмотрении</p>
@@ -209,7 +244,7 @@ export default function AccessRequests() {
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {pendingRequests.map((request) => (
+                      {filteredPendingRequests.map((request) => (
                         <TableRow key={request.id} className="border-slate-800">
                           <TableCell className="text-white">
                             <div className="flex items-center gap-2">
@@ -265,7 +300,7 @@ export default function AccessRequests() {
               </TabsContent>
 
               <TabsContent value="approved" className="mt-6">
-                {!allRequests || allRequests.filter((r) => r.status === "approved").length === 0 ? (
+                {!filteredAllRequests || filteredAllRequests.filter((r) => r.status === "approved").length === 0 ? (
                   <div className="text-center py-12 text-slate-400">
                     <Check className="w-12 h-12 mx-auto mb-4 opacity-50" />
                     <p>Нет одобренных заявок</p>
@@ -283,7 +318,7 @@ export default function AccessRequests() {
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {allRequests
+                      {filteredAllRequests
                         .filter((r) => r.status === "approved")
                         .map((request) => (
                           <TableRow key={request.id} className="border-slate-800">
@@ -317,7 +352,7 @@ export default function AccessRequests() {
               </TabsContent>
 
               <TabsContent value="all" className="mt-6">
-                {!allRequests || allRequests.length === 0 ? (
+                {!filteredAllRequests || filteredAllRequests.length === 0 ? (
                   <div className="text-center py-12 text-slate-400">
                     <User className="w-12 h-12 mx-auto mb-4 opacity-50" />
                     <p>Нет заявок</p>
@@ -335,7 +370,7 @@ export default function AccessRequests() {
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {allRequests.map((request) => (
+                      {filteredAllRequests.map((request) => (
                         <TableRow key={request.id} className="border-slate-800">
                           <TableCell className="text-white">
                             <div className="flex items-center gap-2">
