@@ -94,8 +94,8 @@ export default function Layout({ children }: LayoutProps) {
         </aside>
 
         {/* Main Content Area */}
-        <main className="flex-1 overflow-y-auto scrollbar-hide">
-          <div className="container py-8 md:py-12 max-w-7xl mx-auto animate-in fade-in slide-in-from-bottom-4 duration-700">
+        <main className="flex-1 overflow-y-auto scrollbar-hide bg-gradient-to-br from-slate-50 to-slate-100">
+          <div className="container py-8 md:py-12 px-4 md:px-8 max-w-7xl mx-auto animate-in fade-in slide-in-from-bottom-4 duration-700">
             {children}
           </div>
         </main>

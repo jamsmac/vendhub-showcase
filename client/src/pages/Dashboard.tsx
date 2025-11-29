@@ -53,12 +53,12 @@ export default function Dashboard() {
     <Layout>
       <div className="space-y-8">
         {/* Header */}
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-2">
           <div>
-            <h1 className="text-4xl font-heading font-bold text-white tracking-tight">Dashboard</h1>
-            <p className="text-muted-foreground mt-1">Overview of your vending empire</p>
+            <h1 className="text-4xl font-heading font-bold text-slate-900 tracking-tight">Dashboard</h1>
+            <p className="text-slate-600 mt-2 text-sm">Overview of your vending empire</p>
           </div>
-          <div className="flex gap-3">
+          <div className="flex gap-3 w-full md:w-auto">
             <button className="px-4 py-2 rounded-lg bg-white/5 border border-white/10 text-sm font-medium hover:bg-white/10 transition-colors backdrop-blur-md">
               Export Report
             </button>
@@ -69,7 +69,7 @@ export default function Dashboard() {
         </div>
 
         {/* Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mt-8">
           {stats.map((stat, i) => (
             <Card key={i} className="border-white/10 bg-white/5 backdrop-blur-md shadow-xl hover:bg-white/10 transition-all duration-300 group">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">

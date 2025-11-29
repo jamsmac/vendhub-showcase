@@ -33,6 +33,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { toast } from "sonner";
+import Layout from "@/components/Layout";
 
 function RoleChangesTab() {
   const { data: roleChanges } = trpc.roleChanges.list.useQuery();
@@ -617,14 +618,14 @@ export default function AccessRequests() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-blue-950 to-slate-950 p-6">
-      <div className="container max-w-7xl mx-auto">
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold text-white mb-2">Заявки на доступ</h1>
-          <p className="text-slate-400">Управление запросами на доступ через Telegram бот</p>
+    <Layout>
+      <div className="space-y-8">
+        <div className="mb-2">
+          <h1 className="text-4xl font-bold text-slate-900 mb-2">Access Requests</h1>
+          <p className="text-slate-600 text-sm">Manage access requests from Telegram bot</p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           <Card className="bg-slate-900/50 border-slate-800 backdrop-blur-sm">
             <CardHeader className="pb-3">
               <CardTitle className="text-sm font-medium text-slate-400">Всего заявок</CardTitle>
@@ -1130,7 +1131,6 @@ export default function AccessRequests() {
             <AuditLogList />
           </CardContent>
         </Card>
-      </div>
 
       {/* Single Request Confirmation Dialog */}
       <AlertDialog open={action !== null} onOpenChange={() => setAction(null)}>
@@ -1195,6 +1195,7 @@ export default function AccessRequests() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-    </div>
+      </div>
+    </Layout>
   );
 }

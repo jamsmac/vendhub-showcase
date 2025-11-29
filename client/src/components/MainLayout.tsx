@@ -173,21 +173,21 @@ export function MainLayout({ children, userRole = 'user' }: MainLayoutProps) {
       {/* Main Content */}
       <div className="flex-1 flex flex-col overflow-hidden">
         {/* Header */}
-        <header className="bg-white border-b border-slate-200 px-6 py-4 flex items-center justify-between">
+        <header className="bg-white border-b border-slate-200 px-8 py-5 flex items-center justify-between sticky top-0 z-10">
           <h1 className="text-2xl font-bold text-slate-900">VendHub Manager</h1>
-          <div className="flex items-center gap-4">
-            <Button variant="ghost" size="sm" className="relative">
-              <Bell size={20} />
-              <span className="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full" />
+          <div className="flex items-center gap-6">
+            <Button variant="ghost" size="sm" className="relative hover:bg-slate-100">
+              <Bell size={20} className="text-slate-700" />
+              <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full" />
             </Button>
-            <div className="w-10 h-10 bg-slate-200 rounded-full flex items-center justify-center font-bold text-slate-700">
+            <div className="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center font-bold text-white text-sm">
               U
             </div>
           </div>
         </header>
 
         {/* Page Content */}
-        <main className="flex-1 overflow-auto bg-slate-50 p-6">
+        <main className="flex-1 overflow-auto bg-slate-50 p-8">
           {children}
         </main>
       </div>
