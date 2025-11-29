@@ -3,7 +3,7 @@ import { drizzle } from "drizzle-orm/mysql2";
 import { 
   InsertUser, users, machines, products, inventory, tasks, 
   components, componentHistory, transactions, suppliers, stockTransfers,
-  accessRequests, InsertAccessRequest
+  accessRequests, InsertAccessRequest, accessRequestAuditLogs, InsertAccessRequestAuditLog
 } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
@@ -309,6 +309,14 @@ export async function approveAccessRequest(id: number, approvedBy: number, role?
   await db.update(accessRequests)
     .set(updateData)
     .where(eq(accessRequests.id, id));
+  
+  // Create audit log entry
+  await createAuditLog({
+    accessRequestId: id,
+    action: "approved",
+    performedBy: approvedBy,
+    assignedRole: role as "operator" | "manager" | "admin" | undefined,
+  });
 }
 
 export async function rejectAccessRequest(id: number, approvedBy: number) {
@@ -318,4 +326,44 @@ export async function rejectAccessRequest(id: number, approvedBy: number) {
   await db.update(accessRequests)
     .set({ status: "rejected", approvedBy, approvedAt: new Date() })
     .where(eq(accessRequests.id, id));
+  
+  // Create audit log entry
+  await createAuditLog({
+    accessRequestId: id,
+    action: "rejected",
+    performedBy: approvedBy,
+  });
+}
+
+export async function createAuditLog(log: Omit<InsertAccessRequestAuditLog, "id" | "createdAt">) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  // Get performer's name from users table
+  const performer = await db.select({ name: users.name }).from(users).where(eq(users.id, log.performedBy)).limit(1);
+  const performedByName = performer[0]?.name || "Unknown";
+  
+  await db.insert(accessRequestAuditLogs).values({
+    ...log,
+    performedByName,
+  });
+}
+
+export async function getAuditLogsByRequestId(accessRequestId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  
+  return await db.select()
+    .from(accessRequestAuditLogs)
+    .where(eq(accessRequestAuditLogs.accessRequestId, accessRequestId))
+    .orderBy(desc(accessRequestAuditLogs.createdAt));
+}
+
+export async function getAllAuditLogs() {
+  const db = await getDb();
+  if (!db) return [];
+  
+  return await db.select()
+    .from(accessRequestAuditLogs)
+    .orderBy(desc(accessRequestAuditLogs.createdAt));
 }

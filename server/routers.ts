@@ -114,6 +114,14 @@ export const appRouter = router({
     pending: protectedProcedure.query(async () => {
       return await db.getPendingAccessRequests();
     }),
+    auditLogs: protectedProcedure.query(async () => {
+      return await db.getAllAuditLogs();
+    }),
+    auditLogsByRequestId: protectedProcedure
+      .input(z.object({ requestId: z.number() }))
+      .query(async ({ input }) => {
+        return await db.getAuditLogsByRequestId(input.requestId);
+      }),
     approve: protectedProcedure
       .input(z.object({ id: z.number(), approvedBy: z.number(), role: z.string().optional() }))
       .mutation(async ({ input }) => {
@@ -202,6 +210,17 @@ ${process.env.PUBLIC_URL || 'https://vendhub-showcase.manus.space'}
         }
         
         return { success: true };
+      }),
+  }),
+
+  auditLogs: router({
+    list: protectedProcedure.query(async () => {
+      return await db.getAllAuditLogs();
+    }),
+    byRequestId: protectedProcedure
+      .input(z.object({ requestId: z.number() }))
+      .query(async ({ input }) => {
+        return await db.getAuditLogsByRequestId(input.requestId);
       }),
   }),
 

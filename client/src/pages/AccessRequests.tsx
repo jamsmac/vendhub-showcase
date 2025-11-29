@@ -23,7 +23,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Check, X, Clock, User, Calendar, Search, ChevronDown, MessageSquare } from "lucide-react";
+import { Check, X, Clock, User, Calendar, Search, ChevronDown, MessageSquare, History } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -32,6 +32,82 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { toast } from "sonner";
+
+function AuditLogList() {
+  const { data: auditLogs } = trpc.auditLogs.list.useQuery();
+  const { data: allRequests } = trpc.accessRequests.list.useQuery();
+
+  const formatDate = (date: Date | string) => {
+    return new Date(date).toLocaleDateString("ru-RU", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  };
+
+  if (!auditLogs || auditLogs.length === 0) {
+    return (
+      <div className="text-center py-8 text-slate-400">
+        <History className="w-12 h-12 mx-auto mb-4 opacity-50" />
+        <p>Нет записей в журнале</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="grid gap-4">
+      {auditLogs.slice(0, 10).map((log) => {
+        const request = allRequests?.find(r => r.id === log.accessRequestId);
+        return (
+          <div key={log.id} className="p-4 bg-slate-800/30 rounded-lg border border-slate-700/50">
+            <div className="flex items-start justify-between">
+              <div className="space-y-2">
+                <div className="flex items-center gap-2">
+                  <Badge
+                    variant={log.action === "approved" ? "default" : "destructive"}
+                    className={
+                      log.action === "approved"
+                        ? "bg-green-500/20 text-green-400 border-green-500/30"
+                        : "bg-red-500/20 text-red-400 border-red-500/30"
+                    }
+                  >
+                    {log.action === "approved" ? "Одобрено" : "Отклонено"}
+                  </Badge>
+                  {log.assignedRole && (
+                    <Badge variant="outline" className="bg-blue-500/10 text-blue-400 border-blue-500/30">
+                      {log.assignedRole === "operator"
+                        ? "Оператор"
+                        : log.assignedRole === "manager"
+                        ? "Менеджер"
+                        : "Администратор"}
+                    </Badge>
+                  )}
+                </div>
+                <div className="text-sm text-slate-300">
+                  <span className="font-medium">{log.performedByName}</span>
+                  {" "}
+                  {log.action === "approved" ? "одобрил(а)" : "отклонил(а)"} заявку
+                  {" "}
+                  {request && (
+                    <span className="text-slate-400">
+                      от {request.firstName || request.username || "Неизвестно"}
+                    </span>
+                  )}
+                </div>
+                <div className="flex items-center gap-2 text-xs text-slate-500">
+                  <Clock className="w-3 h-3" />
+                  {formatDate(log.createdAt)}
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
 
 export default function AccessRequests() {
   const [selectedRequest, setSelectedRequest] = useState<number | null>(null);
@@ -747,6 +823,21 @@ export default function AccessRequests() {
                 )}
               </TabsContent>
             </Tabs>
+          </CardContent>
+        </Card>
+        {/* Audit Log Section */}
+        <Card className="bg-slate-900/50 border-slate-800 backdrop-blur-sm mt-6">
+          <CardHeader>
+            <CardTitle className="text-white flex items-center gap-2">
+              <History className="w-5 h-5" />
+              Журнал аудита
+            </CardTitle>
+            <CardDescription className="text-slate-400">
+              История всех одобрений и отклонений заявок
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <AuditLogList />
           </CardContent>
         </Card>
       </div>

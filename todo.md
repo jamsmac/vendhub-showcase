@@ -84,3 +84,11 @@
 - [x] Add email configuration to environment variables
 - [x] Add email field to access_requests database schema
 - [x] Create unit tests for email service
+
+## New Features - Audit Log System
+- [x] Create access_request_audit_logs database table
+- [x] Add database operations for logging approval/rejection actions
+- [x] Create tRPC API endpoint for fetching audit logs
+- [x] Build audit log UI component with timeline view
+- [x] Integrate audit log display into access requests page
+- [x] Add unit tests for audit log functionality

@@ -210,3 +210,20 @@ export const accessRequests = mysqlTable("accessRequests", {
 
 export type AccessRequest = typeof accessRequests.$inferSelect;
 export type InsertAccessRequest = typeof accessRequests.$inferInsert;
+
+/**
+ * Access request audit logs
+ */
+export const accessRequestAuditLogs = mysqlTable("accessRequestAuditLogs", {
+  id: int("id").autoincrement().primaryKey(),
+  accessRequestId: int("accessRequestId").notNull(),
+  action: mysqlEnum("action", ["approved", "rejected"]).notNull(),
+  performedBy: int("performedBy").notNull(),
+  performedByName: varchar("performedByName", { length: 255 }),
+  assignedRole: mysqlEnum("assignedRole", ["operator", "manager", "admin"]),
+  notes: text("notes"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type AccessRequestAuditLog = typeof accessRequestAuditLogs.$inferSelect;
+export type InsertAccessRequestAuditLog = typeof accessRequestAuditLogs.$inferInsert;
