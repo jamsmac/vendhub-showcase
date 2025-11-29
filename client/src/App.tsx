@@ -8,12 +8,14 @@ import Dashboard from "./pages/Dashboard";
 import Machines from "./pages/Machines";
 import Tasks from "./pages/Tasks";
 import Users from "./pages/Users";
+import Inventory from "./pages/Inventory";
 
 function Router() {
   return (
     <Switch>
       <Route path={"/"} component={Dashboard} />
       <Route path={"/machines"} component={Machines} />
+      <Route path={"/inventory"} component={Inventory} />
       <Route path={"/tasks"} component={Tasks} />
       <Route path={"/users"} component={Users} />
       <Route path={"/404"} component={NotFound} />
