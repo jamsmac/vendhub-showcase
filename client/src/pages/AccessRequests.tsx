@@ -37,8 +37,12 @@ import { toast } from "sonner";
 function AuditLogList() {
   const [dateRange, setDateRange] = useState<{ startDate?: string; endDate?: string }>({});
   const [selectedPreset, setSelectedPreset] = useState<string>("all");
+  const [actionType, setActionType] = useState<"approved" | "rejected" | "all">("all");
   
-  const { data: auditLogs } = trpc.auditLogs.list.useQuery(dateRange);
+  const { data: auditLogs } = trpc.auditLogs.list.useQuery({
+    ...dateRange,
+    actionType: actionType === "all" ? undefined : actionType,
+  });
   const { data: allRequests } = trpc.accessRequests.list.useQuery();
 
   const formatDate = (date: Date | string) => {
@@ -87,7 +91,8 @@ function AuditLogList() {
   if (!auditLogs || auditLogs.length === 0) {
     return (
       <>
-        <div className="flex flex-wrap gap-2 mb-4">
+        <div className="space-y-3 mb-4">
+          <div className="flex flex-wrap gap-2">
           {["all", "today", "7days", "30days"].map((preset) => (
             <Button
               key={preset}
@@ -107,6 +112,21 @@ function AuditLogList() {
             onPresetChange={setSelectedPreset}
             selectedPreset={selectedPreset}
           />
+          </div>
+          
+          <div className="flex items-center gap-2">
+            <span className="text-sm text-slate-400">Тип действия:</span>
+            <Select value={actionType} onValueChange={(value: any) => setActionType(value)}>
+              <SelectTrigger className="w-[180px] bg-slate-800/50 border-slate-700 text-white">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent className="bg-slate-900 border-slate-700">
+                <SelectItem value="all" className="text-white">Все действия</SelectItem>
+                <SelectItem value="approved" className="text-white">Одобренные</SelectItem>
+                <SelectItem value="rejected" className="text-white">Отклоненные</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
         </div>
         <div className="text-center py-8 text-slate-400">
           <History className="w-12 h-12 mx-auto mb-4 opacity-50" />
@@ -118,7 +138,8 @@ function AuditLogList() {
 
   return (
     <>
-      <div className="flex flex-wrap gap-2 mb-4">
+      <div className="space-y-3 mb-4">
+        <div className="flex flex-wrap gap-2">
           {["all", "today", "7days", "30days"].map((preset) => (
             <Button
               key={preset}
@@ -138,6 +159,21 @@ function AuditLogList() {
             onPresetChange={setSelectedPreset}
             selectedPreset={selectedPreset}
           />
+        </div>
+        
+        <div className="flex items-center gap-2">
+          <span className="text-sm text-slate-400">Тип действия:</span>
+          <Select value={actionType} onValueChange={(value: any) => setActionType(value)}>
+            <SelectTrigger className="w-[180px] bg-slate-800/50 border-slate-700 text-white">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent className="bg-slate-900 border-slate-700">
+              <SelectItem value="all" className="text-white">Все действия</SelectItem>
+              <SelectItem value="approved" className="text-white">Одобренные</SelectItem>
+              <SelectItem value="rejected" className="text-white">Отклоненные</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
       </div>
       <div className="grid gap-4">
       {auditLogs.slice(0, 10).map((log) => {

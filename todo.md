@@ -115,3 +115,11 @@
 - [x] Display selected date range in readable Russian format
 - [x] Add clear/reset functionality
 - [x] Custom dark theme styling for calendar
+
+## New Features - Action Type Filter
+- [x] Add action type parameter to audit log API endpoint
+- [x] Update database queries to support action type filtering
+- [x] Create action type dropdown component
+- [x] Add filter options (All Actions, Approved, Rejected)
+- [x] Integrate action filter with date filters
+- [x] Add unit tests for action type filtering (9 tests passing)

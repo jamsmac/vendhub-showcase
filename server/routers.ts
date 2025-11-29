@@ -218,9 +218,14 @@ ${process.env.PUBLIC_URL || 'https://vendhub-showcase.manus.space'}
       .input(z.object({ 
         startDate: z.string().optional(),
         endDate: z.string().optional(),
+        actionType: z.enum(["approved", "rejected"]).optional(),
       }).optional())
       .query(async ({ input }) => {
-        return await db.getAllAuditLogs(input?.startDate, input?.endDate);
+        return await db.getAllAuditLogs(
+          input?.startDate, 
+          input?.endDate,
+          input?.actionType
+        );
       }),
     byRequestId: protectedProcedure
       .input(z.object({ requestId: z.number() }))

@@ -359,11 +359,12 @@ export async function getAuditLogsByRequestId(accessRequestId: number) {
     .orderBy(desc(accessRequestAuditLogs.createdAt));
 }
 
-export async function getAllAuditLogs(startDate?: string, endDate?: string) {
+export async function getAllAuditLogs(startDate?: string, endDate?: string, actionType?: "approved" | "rejected") {
   const db = await getDb();
   if (!db) return [];
   
   let query = db.select().from(accessRequestAuditLogs);
+  const conditions: any[] = [];
   
   // Apply date filtering if provided
   if (startDate && endDate) {
@@ -372,19 +373,27 @@ export async function getAllAuditLogs(startDate?: string, endDate?: string) {
     // Set end date to end of day
     end.setHours(23, 59, 59, 999);
     
-    query = query.where(
-      and(
-        gte(accessRequestAuditLogs.createdAt, start),
-        sql`${accessRequestAuditLogs.createdAt} <= ${end}`
-      )
-    ) as any;
+    conditions.push(
+      gte(accessRequestAuditLogs.createdAt, start),
+      sql`${accessRequestAuditLogs.createdAt} <= ${end}`
+    );
   } else if (startDate) {
     const start = new Date(startDate);
-    query = query.where(gte(accessRequestAuditLogs.createdAt, start)) as any;
+    conditions.push(gte(accessRequestAuditLogs.createdAt, start));
   } else if (endDate) {
     const end = new Date(endDate);
     end.setHours(23, 59, 59, 999);
-    query = query.where(sql`${accessRequestAuditLogs.createdAt} <= ${end}`) as any;
+    conditions.push(sql`${accessRequestAuditLogs.createdAt} <= ${end}`);
+  }
+  
+  // Apply action type filtering if provided
+  if (actionType) {
+    conditions.push(eq(accessRequestAuditLogs.action, actionType));
+  }
+  
+  // Apply all conditions if any exist
+  if (conditions.length > 0) {
+    query = query.where(and(...conditions)) as any;
   }
   
   return await query.orderBy(desc(accessRequestAuditLogs.createdAt));
