@@ -6,6 +6,7 @@ import { z } from "zod";
 import * as db from "./db";
 import { telegramRouter } from "./telegram-router";
 import { notificationsRouter } from "./routers/notifications";
+import { aiAgentsRouter } from "./routers/aiAgents";
 import { sendEmail, getAccessRequestApprovedEmail, getAccessRequestRejectedEmail } from "./email";
 
 export const appRouter = router({
@@ -426,6 +427,8 @@ ${process.env.PUBLIC_URL || 'https://vendhub-showcase.manus.space'}
   }),
 
   notifications: notificationsRouter,
+
+  aiAgents: aiAgentsRouter,
 
   inventoryAdjustments: router({
     list: protectedProcedure

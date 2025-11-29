@@ -1,4 +1,4 @@
-import { mysqlTable, mysqlSchema, AnyMySqlColumn, int, mysqlEnum, varchar, text, timestamp, index, boolean } from "drizzle-orm/mysql-core";
+import { mysqlTable, mysqlSchema, AnyMySqlColumn, int, mysqlEnum, varchar, text, timestamp, index, boolean, decimal } from "drizzle-orm/mysql-core";
 import { sql } from "drizzle-orm";
 
 export const accessRequestAuditLogs = mysqlTable("accessRequestAuditLogs", {
@@ -271,6 +271,58 @@ export const incidents = mysqlTable("incidents", {
 	resolutionNotes: text(),
 	createdAt: timestamp({ mode: 'string' }).default(sql`CURRENT_TIMESTAMP`).notNull(),
 	updatedAt: timestamp({ mode: 'string' }).default(sql`CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP`).notNull(),
+});
+
+// AI-Agent System Tables
+export const aiAgents = mysqlTable("aiAgents", {
+  id: int().autoincrement().primaryKey(),
+  referenceBookType: varchar({ length: 50 }).notNull().unique(),
+  displayName: varchar({ length: 255 }).notNull(),
+  systemPrompt: text().notNull(),
+  status: mysqlEnum(['active', 'inactive', 'archived']).default('active').notNull(),
+  version: int().default(1),
+  createdBy: int().notNull(),
+  updatedBy: int(),
+  createdAt: timestamp({ mode: 'string' }).default(sql`CURRENT_TIMESTAMP`).notNull(),
+  updatedAt: timestamp({ mode: 'string' }).default(sql`CURRENT_TIMESTAMP`).onUpdateNow(),
+});
+
+export const aiSuggestions = mysqlTable("aiSuggestions", {
+  id: int().autoincrement().primaryKey(),
+  agentId: int().notNull(),
+  referenceBookId: int(),
+  inputData: text().notNull(),
+  suggestedFields: text().notNull(),
+  confidence: decimal({ precision: 3, scale: 2 }),
+  confirmed: boolean().default(false),
+  confirmedBy: int(),
+  confirmedAt: timestamp({ mode: 'string' }),
+  rejectedReason: text(),
+  createdAt: timestamp({ mode: 'string' }).default(sql`CURRENT_TIMESTAMP`).notNull(),
+});
+
+export const aiImprovements = mysqlTable("aiImprovements", {
+  id: int().autoincrement().primaryKey(),
+  agentId: int().notNull(),
+  proposedPrompt: text().notNull(),
+  proposedChanges: text().notNull(),
+  reasoning: text(),
+  status: mysqlEnum(['pending', 'approved', 'rejected']).default('pending').notNull(),
+  approvedBy: int(),
+  approvedAt: timestamp({ mode: 'string' }),
+  rejectionReason: text(),
+  createdAt: timestamp({ mode: 'string' }).default(sql`CURRENT_TIMESTAMP`).notNull(),
+});
+
+export const aiLearningData = mysqlTable("aiLearningData", {
+  id: int().autoincrement().primaryKey(),
+  agentId: int().notNull(),
+  fieldName: varchar({ length: 100 }),
+  inputPattern: varchar({ length: 255 }),
+  suggestedValue: varchar({ length: 255 }),
+  confirmationRate: decimal({ precision: 3, scale: 2 }),
+  rejectionRate: decimal({ precision: 3, scale: 2 }),
+  lastUsed: timestamp({ mode: 'string' }),
 });
 
 export const notifications = mysqlTable("notifications", {
