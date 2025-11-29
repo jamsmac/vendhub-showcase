@@ -5,6 +5,7 @@ import { publicProcedure, protectedProcedure, router } from "./_core/trpc";
 import { z } from "zod";
 import * as db from "./db";
 import { telegramRouter } from "./telegram-router";
+import { sendEmail, getAccessRequestApprovedEmail, getAccessRequestRejectedEmail } from "./email";
 
 export const appRouter = router({
     // if you need to use socket.io, read and register route in server/_core/index.ts, all api should start with '/api/' so that the gateway can route correctly
@@ -118,13 +119,15 @@ export const appRouter = router({
       .mutation(async ({ input }) => {
         await db.approveAccessRequest(input.id, input.approvedBy, input.role);
         
-        // Get request details to send notification
+        // Get request details to send notifications
         const requests = await db.getAllAccessRequests();
         const request = requests.find(r => r.id === input.id);
         
-        if (request && request.chatId) {
-          const { sendMessage } = await import('./telegram');
-          await sendMessage(parseInt(request.chatId), `✅ **Ваша заявка одобрена!**
+        if (request) {
+          // Send Telegram notification
+          if (request.chatId) {
+            const { sendMessage } = await import('./telegram');
+            await sendMessage(parseInt(request.chatId), `✅ **Ваша заявка одобрена!**
 
 Поздравляем! Вам предоставлен доступ к VendHub Manager.
 
@@ -132,6 +135,19 @@ export const appRouter = router({
 ${process.env.PUBLIC_URL || 'https://vendhub-showcase.manus.space'}
 
 Используйте свой Telegram аккаунт для входа.`);
+          }
+          
+          // Send Email notification
+          if (request.email) {
+            await sendEmail({
+              to: request.email,
+              subject: "Заявка на доступ одобрена - VendHub Manager",
+              html: getAccessRequestApprovedEmail({
+                firstName: request.firstName || "Пользователь",
+                role: input.role || request.requestedRole,
+              }),
+            });
+          }
         }
         
         return { success: true };
@@ -157,17 +173,32 @@ ${process.env.PUBLIC_URL || 'https://vendhub-showcase.manus.space'}
       .mutation(async ({ input }) => {
         await db.rejectAccessRequest(input.id, input.approvedBy);
         
-        // Get request details to send notification
+        // Get request details to send notifications
         const requests = await db.getAllAccessRequests();
         const request = requests.find(r => r.id === input.id);
         
-        if (request && request.chatId) {
-          const { sendMessage } = await import('./telegram');
-          await sendMessage(parseInt(request.chatId), `❌ **Ваша заявка отклонена**
+        if (request) {
+          // Send Telegram notification
+          if (request.chatId) {
+            const { sendMessage } = await import('./telegram');
+            await sendMessage(parseInt(request.chatId), `❌ **Ваша заявка отклонена**
 
 К сожалению, ваша заявка на доступ к VendHub Manager была отклонена.
 
 Для уточнения причин обратитесь к администратору.`);
+          }
+          
+          // Send Email notification
+          if (request.email) {
+            await sendEmail({
+              to: request.email,
+              subject: "Заявка на доступ отклонена - VendHub Manager",
+              html: getAccessRequestRejectedEmail({
+                firstName: request.firstName || "Пользователь",
+                reason: request.adminNotes || undefined,
+              }),
+            });
+          }
         }
         
         return { success: true };

@@ -198,6 +198,7 @@ export const accessRequests = mysqlTable("accessRequests", {
   username: varchar("username", { length: 255 }),
   firstName: varchar("firstName", { length: 255 }),
   lastName: varchar("lastName", { length: 255 }),
+  email: varchar("email", { length: 320 }),
   chatId: varchar("chatId", { length: 64 }).notNull(),
   status: mysqlEnum("status", ["pending", "approved", "rejected"]).default("pending").notNull(),
   requestedRole: mysqlEnum("requestedRole", ["operator", "manager"]).default("operator").notNull(),

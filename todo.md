@@ -78,3 +78,9 @@
 - [x] Add role dropdown to change user role before approving request
 - [x] Add bulk role assignment for multiple selected requests
 - [x] Add admin comments field to access requests for internal notes
+- [x] Integrate SMTP service (Nodemailer) for email notifications
+- [x] Create email templates for access request approval/rejection
+- [x] Send email notifications when requests are approved or rejected
+- [x] Add email configuration to environment variables
+- [x] Add email field to access_requests database schema
+- [x] Create unit tests for email service
