@@ -16,6 +16,7 @@ import {
 } from "recharts";
 import { ArrowUpRight, ArrowDownRight, DollarSign, ShoppingCart, Activity, AlertTriangle } from "lucide-react";
 import { RecentAdminActions } from "@/components/RecentAdminActions";
+import { formatUZS } from "@/lib/currency";
 
 const revenueData = [
   { name: "Mon", value: 4000 },
@@ -34,13 +35,20 @@ const machineStatusData = [
 ];
 
 const recentSales = [
-  { id: 1, machine: "Lobby Snack #04", product: "Cola Zero", amount: "$2.50", time: "2 min ago", status: "success" },
-  { id: 2, machine: "Gym Drink #02", product: "Protein Bar", amount: "$4.00", time: "5 min ago", status: "success" },
-  { id: 3, machine: "Office Coffee #01", product: "Latte", amount: "$3.50", time: "12 min ago", status: "pending" },
-  { id: 4, machine: "Lobby Snack #04", product: "Chips", amount: "$1.75", time: "15 min ago", status: "success" },
+  { id: 1, machine: "Lobby Snack #04", product: "Cola Zero", amount: formatUZS(31250), time: "2 min ago", status: "success" },
+  { id: 2, machine: "Gym Drink #02", product: "Protein Bar", amount: formatUZS(50000), time: "5 min ago", status: "success" },
+  { id: 3, machine: "Office Coffee #01", product: "Latte", amount: formatUZS(43750), time: "12 min ago", status: "pending" },
+  { id: 4, machine: "Lobby Snack #04", product: "Chips", amount: formatUZS(21875), time: "15 min ago", status: "success" },
 ];
 
 export default function Dashboard() {
+  const stats = [
+    { title: "Total Revenue", value: formatUZS(155625000), change: "+12.5%", icon: DollarSign, trend: "up" },
+    { title: "Active Machines", value: "142/150", change: "+2", icon: Activity, trend: "up" },
+    { title: "Total Sales", value: "3,842", change: "+8.2%", icon: ShoppingCart, trend: "up" },
+    { title: "Alerts", value: "5", change: "-2", icon: AlertTriangle, trend: "down", isNegative: true },
+  ];
+
   return (
     <Layout>
       <div className="space-y-8">
@@ -62,12 +70,7 @@ export default function Dashboard() {
 
         {/* Stats Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {[
-            { title: "Total Revenue", value: "$12,450", change: "+12.5%", icon: DollarSign, trend: "up" },
-            { title: "Active Machines", value: "142/150", change: "+2", icon: Activity, trend: "up" },
-            { title: "Total Sales", value: "3,842", change: "+8.2%", icon: ShoppingCart, trend: "up" },
-            { title: "Alerts", value: "5", change: "-2", icon: AlertTriangle, trend: "down", isNegative: true },
-          ].map((stat, i) => (
+          {stats.map((stat, i) => (
             <Card key={i} className="border-white/10 bg-white/5 backdrop-blur-md shadow-xl hover:bg-white/10 transition-all duration-300 group">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium text-muted-foreground group-hover:text-white transition-colors">
@@ -125,7 +128,6 @@ export default function Dashboard() {
                       fontSize={12} 
                       tickLine={false} 
                       axisLine={false} 
-                      tickFormatter={(value) => `$${value}`} 
                     />
                     <Tooltip
                       contentStyle={{
@@ -206,27 +208,27 @@ export default function Dashboard() {
             <CardHeader>
               <CardTitle className="text-white">Recent Transactions</CardTitle>
             </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {recentSales.map((sale) => (
-                <div key={sale.id} className="flex items-center justify-between p-4 rounded-xl bg-white/5 hover:bg-white/10 transition-colors border border-white/5">
-                  <div className="flex items-center gap-4">
-                    <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-primary">
-                      <ShoppingCart className="w-5 h-5" />
+            <CardContent>
+              <div className="space-y-4">
+                {recentSales.map((sale) => (
+                  <div key={sale.id} className="flex items-center justify-between p-4 rounded-xl bg-white/5 hover:bg-white/10 transition-colors border border-white/5">
+                    <div className="flex items-center gap-4">
+                      <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-primary">
+                        <ShoppingCart className="w-5 h-5" />
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium text-white">{sale.product}</p>
+                        <p className="text-xs text-muted-foreground">{sale.machine}</p>
+                      </div>
                     </div>
-                    <div>
-                      <p className="text-sm font-medium text-white">{sale.product}</p>
-                      <p className="text-xs text-muted-foreground">{sale.machine}</p>
+                    <div className="text-right">
+                      <p className="text-sm font-bold text-white">{sale.amount}</p>
+                      <p className="text-xs text-muted-foreground">{sale.time}</p>
                     </div>
                   </div>
-                  <div className="text-right">
-                    <p className="text-sm font-bold text-white">{sale.amount}</p>
-                    <p className="text-xs text-muted-foreground">{sale.time}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </CardContent>
+                ))}
+              </div>
+            </CardContent>
           </Card>
         </div>
       </div>

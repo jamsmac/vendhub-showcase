@@ -189,3 +189,34 @@
 - [x] Add Telegram notification opt-in/opt-out toggle
 - [x] Respect preferences when sending notifications (approval/rejection)
 - [x] Add getUserByTelegramId helper function
+
+
+## Phase 8: Localization & Uzbek Features
+- [x] Implement i18n framework (react-i18next installed)
+- [x] Create English translation file with 100+ keys
+- [ ] Complete Russian translation for all UI (next phase)
+- [x] Add Uzbek currency (UZS) support with proper formatting
+- [x] Add Uzbek-specific validators (phone +998, INN, bank account) - 22 tests
+- [x] Add Uzbek date format (DD.MM.YYYY) in validators
+- [x] Update Dashboard to show UZS currency
+- [x] Add Uzbek regions/locations support in validators
+- [ ] Create Uzbek-specific documentation (next phase)
+
+## Phase 9: Navigation & Access Control
+- [x] Add sidebar navigation with all pages (MainLayout component)
+- [x] Implement role-based access control (admin-only pages)
+- [x] Add collapsible sidebar (240px / 64px modes)
+- [ ] Implement breadcrumb navigation (next phase)
+- [ ] Create user menu dropdown (next phase)
+- [x] Add notifications bell in header
+- [ ] Add command palette (⌘K) (next phase)
+
+## Phase 10: Core Modules UI
+- [ ] Machines list page with filters
+- [ ] Machine detail page with status
+- [ ] Tasks kanban board
+- [ ] Tasks calendar view
+- [ ] Inventory 3-level view
+- [ ] Transactions list
+- [ ] Incidents tracking
+- [ ] Complaints management
