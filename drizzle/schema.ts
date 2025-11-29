@@ -209,6 +209,7 @@ export const users = mysqlTable("users", {
 	updatedAt: timestamp({ mode: 'string' }).defaultNow().onUpdateNow().notNull(),
 	lastSignedIn: timestamp({ mode: 'string' }).default('CURRENT_TIMESTAMP').notNull(),
 	telegramId: varchar({ length: 64 }),
+	passwordHash: varchar({ length: 255 }),
 	twoFactorEnabled: boolean().default(false).notNull(),
 	emailNotifications: boolean().default(true).notNull(),
 	telegramNotifications: boolean().default(true).notNull(),
@@ -265,12 +266,12 @@ export const incidents = mysqlTable("incidents", {
 	status: mysqlEnum(['open','in_progress','resolved','closed']).default('open').notNull(),
 	severity: mysqlEnum(['low','medium','high','critical']).default('medium').notNull(),
 	description: text(),
-	detectedAt: timestamp({ mode: 'string' }).default(sql`CURRENT_TIMESTAMP`),
+	detectedAt: timestamp({ mode: 'string' }),
 	assignedTo: int(),
 	resolvedAt: timestamp({ mode: 'string' }),
 	resolutionNotes: text(),
-	createdAt: timestamp({ mode: 'string' }).default(sql`CURRENT_TIMESTAMP`).notNull(),
-	updatedAt: timestamp({ mode: 'string' }).default(sql`CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP`).notNull(),
+	createdAt: timestamp({ mode: 'string' }).default('CURRENT_TIMESTAMP').notNull(),
+	updatedAt: timestamp({ mode: 'string' }).default('CURRENT_TIMESTAMP').notNull(),
 });
 
 // AI-Agent System Tables

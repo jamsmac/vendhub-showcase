@@ -29,19 +29,34 @@ export default function Auth() {
     setIsLoading(true);
 
     try {
-      // TODO: Implement email/password login
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: loginEmail,
+          password: loginPassword,
+        }),
+        credentials: 'include',
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Login failed');
+      }
       
       toast({
         title: "Добро пожаловать!",
-        description: "Вы успешно вошли в систему",
+        description: `Вы успешно вошли как ${data.user.name}`,
       });
       
-      setLocation('/dashboard');
+      setLocation('/');
     } catch (error) {
       toast({
         title: "Ошибка входа",
-        description: "Неверный email или пароль",
+        description: error instanceof Error ? error.message : "Неверный email или пароль",
         variant: "destructive",
       });
     } finally {
@@ -64,21 +79,35 @@ export default function Auth() {
     setIsLoading(true);
 
     try {
-      // TODO: Implement email/password registration
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      const response = await fetch('/api/auth/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: registerName,
+          email: registerEmail,
+          password: registerPassword,
+        }),
+        credentials: 'include',
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Registration failed');
+      }
       
       toast({
         title: "Регистрация успешна!",
-        description: "Проверьте email для подтверждения аккаунта",
+        description: `Добро пожаловать, ${data.user.name}!`,
       });
       
-      // Switch to login tab
-      const loginTab = document.querySelector('[value="login"]') as HTMLButtonElement;
-      loginTab?.click();
+      setLocation('/');
     } catch (error) {
       toast({
         title: "Ошибка регистрации",
-        description: "Попробуйте позже",
+        description: error instanceof Error ? error.message : "Попробуйте позже",
         variant: "destructive",
       });
     } finally {
@@ -337,6 +366,9 @@ export default function Auth() {
                         minLength={8}
                       />
                     </div>
+                    <p className="text-xs text-muted-foreground">
+                      Минимум 8 символов, включая заглавные и строчные буквы, цифры
+                    </p>
                   </div>
 
                   <div className="space-y-2">

@@ -565,3 +565,15 @@
 - [x] Add error handling for OAuth failures
 - [x] Test Google OAuth flow (7 tests passing)
 - [x] Test Telegram OAuth flow (7 tests passing)
+
+## Email/Password Authentication Tasks
+- [x] Install bcrypt and @types/bcrypt
+- [x] Update database schema to add password_hash field
+- [x] Create password hashing service with bcrypt
+- [x] Implement user registration endpoint
+- [x] Implement user login endpoint
+- [x] Update Auth.tsx to use real registration/login
+- [x] Add password validation (min 8 chars, complexity)
+- [x] Write unit tests for auth service (18 tests passing)
+- [x] Test registration flow
+- [x] Test login flow

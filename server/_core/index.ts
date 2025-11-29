@@ -6,6 +6,7 @@ import { createExpressMiddleware } from "@trpc/server/adapters/express";
 import { registerOAuthRoutes } from "./oauth";
 import oauthRoutes from "../routes/oauth";
 import telegramAuthRoutes from "../routes/telegramAuth";
+import emailAuthRoutes from "../routes/emailAuth";
 import { appRouter } from "../routers";
 import { createContext } from "./context";
 import { serveStatic, setupVite } from "./vite";
@@ -43,6 +44,8 @@ async function startServer() {
   app.use('/api/oauth', oauthRoutes);
   // Telegram Login Widget auth
   app.use('/api/telegram', telegramAuthRoutes);
+  // Email/Password auth
+  app.use('/api/auth', emailAuthRoutes);
   // tRPC API
   app.use(
     "/api/trpc",
