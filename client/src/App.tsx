@@ -9,6 +9,7 @@ import { ThemeProvider } from "./contexts/ThemeContext";
 import MainLayout from "./components/MainLayout";
 import Dashboard from "./pages/Dashboard";
 import Machines from "./pages/Machines";
+import MachineDetail from "./pages/MachineDetail";
 import Tasks from "./pages/Tasks";
 import Users from "./pages/Users";
 import Inventory from "./pages/Inventory";
@@ -35,6 +36,7 @@ function Router() {
             <Switch>
               <Route path={"/"} component={Dashboard} />
               <Route path={"/machines"} component={Machines} />
+              <Route path={"/machines/:id"} component={MachineDetail} />
               <Route path={"/inventory"} component={Inventory} />
               <Route path={"/tasks"} component={Tasks} />
               <Route path={"/users"} component={Users} />

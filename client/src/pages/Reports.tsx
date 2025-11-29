@@ -6,7 +6,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AlertTriangle, ArrowDownRight, ArrowUpRight, BarChart3, Calendar, DollarSign, Download, FileSpreadsheet, FileText, PieChart, TrendingUp } from "lucide-react";
 import { useState } from "react";
 import { Area, AreaChart, Bar, BarChart, CartesianGrid, Cell, Legend, Pie, PieChart as RePieChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
-import Layout from "../components/Layout";
+import { Layout } from "../components/Layout";
 
 const revenueData = [
   { name: "Mon", revenue: 4000, profit: 2400 },

@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Activity, AlertTriangle, Calendar, CheckCircle2, Clock, History, MapPin, Settings, Wrench } from "lucide-react";
-import Layout from "../components/Layout";
+import { Layout } from "../components/Layout";
 
 export default function ComponentLifecycle() {
   return (

@@ -222,17 +222,89 @@
 - [ ] Complaints management
 
 
-## Phase 10: Machines Module
+## Phase 11: Machines Module (No QR Codes)
 - [ ] Create machines database table with schema
 - [ ] Add machine status enum (active, maintenance, offline, retired)
 - [ ] Create tRPC API endpoints for machines (list, get, create, update, delete)
 - [ ] Implement machine list page with filters (status, location, type)
 - [ ] Add search functionality for machine name/ID
 - [ ] Create machine detail page with full information
-- [ ] Generate QR codes for each machine (unique ID)
-- [ ] Implement QR code scanner page
 - [ ] Add location/map integration for machine placement
 - [ ] Create machine status history tracking
 - [ ] Add machine photo upload functionality
 - [ ] Implement machine performance metrics
 - [ ] Create unit tests for machine operations
+
+
+## Phase 11: Machines Module
+- [ ] Add machines API endpoints (list, get, create, update, delete)
+- [ ] Create Machines list page with status display
+- [ ] Add status color coding (active=green, offline=red, maintenance=yellow)
+- [ ] Implement search by machine name/serial number
+- [ ] Add filters by status and location
+- [ ] Create machine detail page
+- [ ] Add machine edit dialog
+- [ ] Implement machine creation form
+- [ ] Add location/map display
+- [ ] Create unit tests for machines operations
+
+
+## Phase 12: Machine Detail Page
+- [x] Create machine detail page component
+- [x] Display complete machine information (name, serial, model, location)
+- [x] Show operational status with color coding
+- [x] Display revenue statistics and sales metrics
+- [x] Add maintenance history timeline
+- [x] Show next service due date with warnings
+- [x] Implement edit machine dialog
+- [x] Add status update functionality
+- [x] Create maintenance log entry form
+- [ ] Add unit tests for detail page operations
+
+
+## Phase 13: Machines Module Implementation
+- [ ] Create machines list page with status display and filtering
+- [ ] Create machines detail page with maintenance history
+- [ ] Add machine creation/editing forms
+- [ ] Implement machine status update functionality
+- [ ] Add maintenance logging with cost tracking
+- [ ] Create unit tests for machines operations
+
+## Phase 14: Tasks Module Implementation
+- [ ] Create tasks list page with status display
+- [ ] Build kanban board with drag-and-drop functionality
+- [ ] Implement task creation and editing
+- [ ] Add task status workflow (pending, in-progress, completed)
+- [ ] Create task assignment to users
+- [ ] Add task priority levels
+- [ ] Create unit tests for tasks operations
+
+
+## Phase 15: Manual Operations Architecture
+- [ ] Create photo validation system for task completion
+- [ ] Implement before/after photo requirements for tasks
+- [ ] Add photo upload and storage integration
+- [ ] Create photo gallery view in task detail page
+- [ ] Implement photo validation rules (size, format, quality)
+- [ ] Create inventory movement audit trail table
+- [ ] Track all inventory changes with timestamps and operators
+- [ ] Implement audit log display for inventory movements
+- [ ] Create connectivity monitoring system
+- [ ] Implement automated offline incident creation
+- [ ] Add machine status polling mechanism
+- [ ] Create incident notification system
+- [ ] Add unit tests for manual operations features
+
+
+## Phase 16: Machines Module List Page
+- [x] Create Machines list page component
+- [x] Display machine cards with status badges
+- [x] Add statistics dashboard (total, active, offline, maintenance)
+- [x] Implement search by machine name or serial number
+- [x] Add status filter (all, active, offline, maintenance, retired)
+- [x] Add location filter
+- [x] Display revenue and sales metrics per machine
+- [x] Show last maintenance and next service dates
+- [x] Add navigation route for Machines page
+- [x] Update sidebar navigation to include Machines link
+- [x] Test Machines page functionality

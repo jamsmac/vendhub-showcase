@@ -565,13 +565,94 @@ export async function getNotificationPreferences(userId: number) {
   };
 }
 
+
+
+
 /**
- * Get user by Telegram ID
+ * Create a new machine
  */
-export async function getUserByTelegramId(telegramId: string) {
+export async function createMachine(data: {
+  name: string;
+  serialNumber: string;
+  model?: string;
+  type?: string;
+  location: string;
+  latitude?: string;
+  longitude?: string;
+  notes?: string;
+}) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  const result = await db.insert(machines).values({
+    ...data,
+    status: 'offline',
+    totalRevenue: 0,
+    totalSales: 0,
+  });
+  return result;
+}
+
+/**
+ * Update a machine
+ */
+export async function updateMachineData(id: number, data: Partial<{
+  name: string;
+  model: string;
+  type: string;
+  location: string;
+  latitude: string;
+  longitude: string;
+  status: string;
+  lastMaintenance: Date;
+  nextServiceDue: Date;
+  photo: string;
+  notes: string;
+}>) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  return await db.update(machines).set({
+    ...data,
+    updatedAt: new Date(),
+  }).where(eq(machines.id, id));
+}
+
+/**
+ * Delete a machine
+ */
+export async function deleteMachineData(id: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  return await db.delete(machines).where(eq(machines.id, id));
+}
+
+/**
+ * Get machines by status
+ */
+export async function getMachinesByStatus(status: string) {
+  const db = await getDb();
+  if (!db) return [];
+  
+  return await db.select().from(machines).where(eq(machines.status, status as any));
+}
+
+/**
+ * Update machine revenue
+ */
+export async function updateMachineRevenue(id: number, amount: number) {
   const db = await getDb();
   if (!db) return null;
   
-  const result = await db.select().from(users).where(eq(users.telegramId, telegramId)).limit(1);
-  return result[0] || null;
+  const machine = await getMachineById(id);
+  if (!machine) return null;
+  
+  return await db.update(machines).set({
+    totalRevenue: machine.totalRevenue + amount,
+    totalSales: machine.totalSales + 1,
+    updatedAt: new Date(),
+  }).where(eq(machines.id, id));
 }
+
+

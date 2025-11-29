@@ -44,7 +44,7 @@ export const componentHistory = mysqlTable("componentHistory", {
 export const components = mysqlTable("components", {
 	id: int().autoincrement().notNull(),
 	serialNumber: varchar({ length: 100 }).notNull(),
-	type: varchar({ length: 100 }).notNull(),
+	type: varchar({ length: 100 }),
 	model: varchar({ length: 100 }),
 	status: mysqlEnum(['operational','maintenance','repair','retired']).default('operational').notNull(),
 	currentMachineId: int(),
@@ -79,14 +79,18 @@ export const inventory = mysqlTable("inventory", {
 export const machines = mysqlTable("machines", {
 	id: int().autoincrement().notNull(),
 	name: varchar({ length: 255 }).notNull(),
-	serialNumber: varchar({ length: 100 }),
+	serialNumber: varchar({ length: 100 }).notNull(),
 	model: varchar({ length: 100 }),
 	location: text().notNull(),
 	latitude: varchar({ length: 50 }),
 	longitude: varchar({ length: 50 }),
-	status: mysqlEnum(['online','offline','maintenance']).default('offline').notNull(),
+	status: mysqlEnum(['active','maintenance','offline','retired']).default('offline').notNull(),
 	lastMaintenance: timestamp({ mode: 'string' }),
 	nextServiceDue: timestamp({ mode: 'string' }),
+	totalRevenue: int().default(0).notNull(),
+	totalSales: int().default(0).notNull(),
+	photo: varchar({ length: 255 }),
+	notes: text(),
 	createdAt: timestamp({ mode: 'string' }).default('CURRENT_TIMESTAMP').notNull(),
 	updatedAt: timestamp({ mode: 'string' }).defaultNow().onUpdateNow().notNull(),
 },
@@ -187,3 +191,59 @@ export const users = mysqlTable("users", {
 (table) => [
 	index("users_openId_unique").on(table.openId),
 ]);
+
+export const taskPhotos = mysqlTable("taskPhotos", {
+	id: int().autoincrement().notNull(),
+	taskId: int().notNull(),
+	photoUrl: text().notNull(),
+	photoType: mysqlEnum(['before','after']).notNull(),
+	fileSize: int(),
+	fileMimeType: varchar({ length: 100 }),
+	validationStatus: mysqlEnum(['pending','approved','rejected']).default('pending').notNull(),
+	validatedBy: int(),
+	validationNotes: text(),
+	uploadedAt: timestamp({ mode: 'string' }).default('CURRENT_TIMESTAMP').notNull(),
+	validatedAt: timestamp({ mode: 'string' }),
+});
+
+export const inventoryAuditTrail = mysqlTable("inventoryAuditTrail", {
+	id: int().autoincrement().notNull(),
+	machineId: int().notNull(),
+	productId: int(),
+	quantityBefore: int(),
+	quantityAfter: int(),
+	quantityChange: int().notNull(),
+	operationType: mysqlEnum(['refill','removal','adjustment','inventory_count']).notNull(),
+	operator: int().notNull(),
+	operatorName: varchar({ length: 255 }),
+	taskId: int(),
+	notes: text(),
+	createdAt: timestamp({ mode: 'string' }).default('CURRENT_TIMESTAMP').notNull(),
+});
+
+export const machineConnectivity = mysqlTable("machineConnectivity", {
+	id: int().autoincrement().notNull(),
+	machineId: int().notNull(),
+	status: mysqlEnum(['online','offline']).notNull(),
+	lastHeartbeat: timestamp({ mode: 'string' }),
+	offlineSince: timestamp({ mode: 'string' }),
+	incidentCreated: boolean().default(false).notNull(),
+	incidentId: int(),
+	checkedAt: timestamp({ mode: 'string' }).default('CURRENT_TIMESTAMP').notNull(),
+	updatedAt: timestamp({ mode: 'string' }).defaultNow().onUpdateNow().notNull(),
+});
+
+export const incidents = mysqlTable("incidents", {
+	id: int().autoincrement().notNull(),
+	machineId: int().notNull(),
+	incidentType: mysqlEnum(['offline','malfunction','low_stock','temperature_alert','payment_error']).notNull(),
+	status: mysqlEnum(['open','in_progress','resolved','closed']).default('open').notNull(),
+	severity: mysqlEnum(['low','medium','high','critical']).default('medium').notNull(),
+	description: text(),
+	detectedAt: timestamp({ mode: 'string' }).defaultNow().notNull(),
+	assignedTo: int(),
+	resolvedAt: timestamp({ mode: 'string' }),
+	resolutionNotes: text(),
+	createdAt: timestamp({ mode: 'string' }).default('CURRENT_TIMESTAMP').notNull(),
+	updatedAt: timestamp({ mode: 'string' }).defaultNow().onUpdateNow().notNull(),
+});

@@ -5,7 +5,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { Check, Clock, MessageSquare, Shield, UserPlus, X } from "lucide-react";
 import { useState } from "react";
-import Layout from "../components/Layout";
+import { Layout } from "../components/Layout";
 
 interface Request {
   id: string;

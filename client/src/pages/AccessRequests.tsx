@@ -33,7 +33,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { toast } from "sonner";
-import Layout from "@/components/Layout";
+import { Layout } from "@/components/Layout";
 
 function RoleChangesTab() {
   const { data: roleChanges } = trpc.roleChanges.list.useQuery();

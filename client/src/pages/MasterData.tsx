@@ -6,7 +6,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Box, Coffee, MapPin, Plus, Search, Settings, Truck, Upload } from "lucide-react";
 import { useState } from "react";
-import Layout from "../components/Layout";
+import { Layout } from "../components/Layout";
 
 export default function MasterData() {
   const [activeTab, setActiveTab] = useState("products");
