@@ -13,6 +13,7 @@ import Login from "./pages/Login";
 import TelegramOnboarding from "./pages/TelegramOnboarding";
 import MasterData from "./pages/MasterData";
 import ComponentLifecycle from "./pages/ComponentLifecycle";
+import Reports from "./pages/Reports";
 
 function Router() {
   return (
@@ -21,6 +22,7 @@ function Router() {
       <Route path={"/onboarding"} component={TelegramOnboarding} />
       <Route path={"/master-data"} component={MasterData} />
       <Route path={"/components/:id"} component={ComponentLifecycle} />
+      <Route path={"/reports"} component={Reports} />
       <Route path={"/"} component={Dashboard} />
       <Route path={"/machines"} component={Machines} />
       <Route path={"/inventory"} component={Inventory} />
