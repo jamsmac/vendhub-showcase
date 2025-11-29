@@ -15,6 +15,7 @@ import {
   YAxis,
 } from "recharts";
 import { ArrowUpRight, ArrowDownRight, DollarSign, ShoppingCart, Activity, AlertTriangle } from "lucide-react";
+import { RecentAdminActions } from "@/components/RecentAdminActions";
 
 const revenueData = [
   { name: "Mon", value: 4000 },
@@ -197,11 +198,14 @@ export default function Dashboard() {
           </Card>
         </div>
 
-        {/* Recent Sales */}
-        <Card className="border-white/10 bg-white/5 backdrop-blur-md shadow-xl">
-          <CardHeader>
-            <CardTitle className="text-white">Recent Transactions</CardTitle>
-          </CardHeader>
+        {/* Recent Admin Actions & Recent Sales */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <RecentAdminActions />
+          
+          <Card className="border-white/10 bg-white/5 backdrop-blur-md shadow-xl">
+            <CardHeader>
+              <CardTitle className="text-white">Recent Transactions</CardTitle>
+            </CardHeader>
           <CardContent>
             <div className="space-y-4">
               {recentSales.map((sale) => (
@@ -223,7 +227,8 @@ export default function Dashboard() {
               ))}
             </div>
           </CardContent>
-        </Card>
+          </Card>
+        </div>
       </div>
     </Layout>
   );

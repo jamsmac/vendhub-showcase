@@ -92,3 +92,9 @@
 - [x] Build audit log UI component with timeline view
 - [x] Integrate audit log display into access requests page
 - [x] Add unit tests for audit log functionality
+
+## New Features - Dashboard Widget
+- [x] Create RecentAdminActions component
+- [x] Integrate widget into main dashboard
+- [x] Display last 5 audit log entries with action badges
+- [x] Add link to full audit log page
