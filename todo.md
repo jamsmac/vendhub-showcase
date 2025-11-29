@@ -554,3 +554,14 @@
 - [ ] Test all functionality
 - [ ] Create production build
 - [ ] Prepare deployment package
+
+## OAuth Integration Tasks
+- [x] Implement Google OAuth backend endpoint
+- [x] Implement Telegram OAuth backend endpoint
+- [x] Update Auth.tsx to use real OAuth flows
+- [x] Add OAuth callback handlers
+- [x] Add Telegram Login Widget component
+- [x] Add Telegram auth verification backend
+- [x] Add error handling for OAuth failures
+- [x] Test Google OAuth flow (7 tests passing)
+- [x] Test Telegram OAuth flow (7 tests passing)

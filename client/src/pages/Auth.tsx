@@ -7,6 +7,7 @@ import { Card } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Coffee, Mail, Lock, User, ArrowRight, CheckCircle2, Shield, Zap } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { TelegramLoginButton } from '@/components/TelegramLoginButton';
 
 export default function Auth() {
   const [, setLocation] = useLocation();
@@ -28,7 +29,7 @@ export default function Auth() {
     setIsLoading(true);
 
     try {
-      // Simulate API call
+      // TODO: Implement email/password login
       await new Promise(resolve => setTimeout(resolve, 1500));
       
       toast({
@@ -63,7 +64,7 @@ export default function Auth() {
     setIsLoading(true);
 
     try {
-      // Simulate API call
+      // TODO: Implement email/password registration
       await new Promise(resolve => setTimeout(resolve, 1500));
       
       toast({
@@ -78,6 +79,50 @@ export default function Auth() {
       toast({
         title: "Ошибка регистрации",
         description: "Попробуйте позже",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleGoogleLogin = () => {
+    // Redirect to Google OAuth endpoint
+    window.location.href = '/api/oauth/google';
+  };
+
+  const handleTelegramAuth = async (user: any) => {
+    try {
+      setIsLoading(true);
+      
+      // Send Telegram auth data to backend
+      const response = await fetch('/api/telegram/auth', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(user),
+        credentials: 'include',
+      });
+
+      if (!response.ok) {
+        throw new Error('Telegram authentication failed');
+      }
+
+      const data = await response.json();
+      
+      toast({
+        title: "Добро пожаловать!",
+        description: `Вы вошли через Telegram как ${data.user.name}`,
+      });
+      
+      // Redirect to dashboard
+      setLocation('/');
+    } catch (error) {
+      console.error('Telegram auth error:', error);
+      toast({
+        title: "Ошибка авторизации",
+        description: "Не удалось войти через Telegram",
         variant: "destructive",
       });
     } finally {
@@ -358,7 +403,8 @@ export default function Auth() {
             <div className="grid grid-cols-2 gap-4">
               <Button
                 variant="outline"
-                onClick={() => toast({ title: "Google OAuth в разработке" })}
+                onClick={handleGoogleLogin}
+                disabled={isLoading}
               >
                 <svg className="mr-2 h-4 w-4" viewBox="0 0 24 24">
                   <path
@@ -380,15 +426,15 @@ export default function Auth() {
                 </svg>
                 Google
               </Button>
-              <Button
-                variant="outline"
-                onClick={() => toast({ title: "Telegram OAuth в разработке" })}
-              >
-                <svg className="mr-2 h-4 w-4" viewBox="0 0 24 24" fill="#0088cc">
-                  <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221l-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.446 1.394c-.14.18-.357.295-.6.295-.002 0-.003 0-.005 0l.213-3.054 5.56-5.022c.24-.213-.054-.334-.373-.121l-6.869 4.326-2.96-.924c-.64-.203-.658-.64.135-.954l11.566-4.458c.538-.196 1.006.128.832.941z"/>
-                </svg>
-                Telegram
-              </Button>
+              
+              <div className="flex items-center justify-center">
+                <TelegramLoginButton
+                  botName="vhm24bot"
+                  buttonSize="medium"
+                  onAuth={handleTelegramAuth}
+                  requestAccess={true}
+                />
+              </div>
             </div>
           </div>
 
