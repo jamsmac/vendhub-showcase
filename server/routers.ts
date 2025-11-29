@@ -136,6 +136,22 @@ ${process.env.PUBLIC_URL || 'https://vendhub-showcase.manus.space'}
         
         return { success: true };
       }),
+    updateNotes: protectedProcedure
+      .input(z.object({ id: z.number(), notes: z.string() }))
+      .mutation(async ({ input }) => {
+        const db = await import('./db');
+        const dbInstance = await db.getDb();
+        if (!dbInstance) throw new Error("Database not available");
+        
+        const { accessRequests } = await import('../drizzle/schema');
+        const { eq } = await import('drizzle-orm');
+        
+        await dbInstance.update(accessRequests)
+          .set({ adminNotes: input.notes })
+          .where(eq(accessRequests.id, input.id));
+        
+        return { success: true };
+      }),
     reject: protectedProcedure
       .input(z.object({ id: z.number(), approvedBy: z.number() }))
       .mutation(async ({ input }) => {

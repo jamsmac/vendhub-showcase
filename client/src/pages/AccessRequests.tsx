@@ -23,7 +23,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Check, X, Clock, User, Calendar, Search, ChevronDown } from "lucide-react";
+import { Check, X, Clock, User, Calendar, Search, ChevronDown, MessageSquare } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -41,6 +41,8 @@ export default function AccessRequests() {
   const [bulkAction, setBulkAction] = useState<"approve" | "reject" | null>(null);
   const [roleOverrides, setRoleOverrides] = useState<Map<number, string>>(new Map());
   const [bulkRole, setBulkRole] = useState<string>("operator");
+  const [editingNotes, setEditingNotes] = useState<number | null>(null);
+  const [notesText, setNotesText] = useState<string>("");
 
   const { data: allRequests, refetch } = trpc.accessRequests.list.useQuery();
   const { data: pendingRequests } = trpc.accessRequests.pending.useQuery();
@@ -66,6 +68,18 @@ export default function AccessRequests() {
 
   const filteredAllRequests = filterRequests(allRequests);
   const filteredPendingRequests = filterRequests(pendingRequests);
+
+  const updateNotesMutation = trpc.accessRequests.updateNotes.useMutation({
+    onSuccess: () => {
+      toast.success("Заметка сохранена");
+      refetch();
+      setEditingNotes(null);
+      setNotesText("");
+    },
+    onError: () => {
+      toast.error("Ошибка при сохранении заметки");
+    },
+  });
 
   const approveMutation = trpc.accessRequests.approve.useMutation({
     onSuccess: () => {
@@ -374,6 +388,7 @@ export default function AccessRequests() {
                         <TableHead className="text-slate-400">Telegram ID</TableHead>
                         <TableHead className="text-slate-400">Роль</TableHead>
                         <TableHead className="text-slate-400">Дата подачи</TableHead>
+                        <TableHead className="text-slate-400">Заметки</TableHead>
                         <TableHead className="text-slate-400">Статус</TableHead>
                         <TableHead className="text-slate-400 text-right">Действия</TableHead>
                       </TableRow>
@@ -429,6 +444,54 @@ export default function AccessRequests() {
                               <Calendar className="w-4 h-4" />
                               {formatDate(request.createdAt)}
                             </div>
+                          </TableCell>
+                          <TableCell>
+                            {editingNotes === request.id ? (
+                              <div className="flex gap-2 items-center">
+                                <input
+                                  type="text"
+                                  value={notesText}
+                                  onChange={(e) => setNotesText(e.target.value)}
+                                  className="px-2 py-1 bg-slate-800/50 border border-slate-700 rounded text-white text-sm w-full"
+                                  placeholder="Введите заметку..."
+                                  autoFocus
+                                />
+                                <Button
+                                  size="sm"
+                                  variant="ghost"
+                                  onClick={() => {
+                                    updateNotesMutation.mutate({ id: request.id, notes: notesText });
+                                  }}
+                                  className="text-green-400 hover:text-green-300"
+                                >
+                                  <Check className="w-4 h-4" />
+                                </Button>
+                                <Button
+                                  size="sm"
+                                  variant="ghost"
+                                  onClick={() => {
+                                    setEditingNotes(null);
+                                    setNotesText("");
+                                  }}
+                                  className="text-red-400 hover:text-red-300"
+                                >
+                                  <X className="w-4 h-4" />
+                                </Button>
+                              </div>
+                            ) : (
+                              <div
+                                className="flex items-center gap-2 cursor-pointer text-slate-400 hover:text-white transition-colors"
+                                onClick={() => {
+                                  setEditingNotes(request.id);
+                                  setNotesText(request.adminNotes || "");
+                                }}
+                              >
+                                <MessageSquare className="w-4 h-4" />
+                                <span className="text-sm">
+                                  {request.adminNotes || "Добавить заметку"}
+                                </span>
+                              </div>
+                            )}
                           </TableCell>
                           <TableCell>{getStatusBadge(request.status)}</TableCell>
                           <TableCell className="text-right">
@@ -552,6 +615,7 @@ export default function AccessRequests() {
                         <TableHead className="text-slate-400">Telegram ID</TableHead>
                         <TableHead className="text-slate-400">Роль</TableHead>
                         <TableHead className="text-slate-400">Дата подачи</TableHead>
+                        <TableHead className="text-slate-400">Заметки</TableHead>
                         <TableHead className="text-slate-400">Статус</TableHead>
                         <TableHead className="text-slate-400 text-right">Действия</TableHead>
                       </TableRow>
@@ -603,6 +667,54 @@ export default function AccessRequests() {
                             </Select>
                           </TableCell>
                           <TableCell className="text-slate-400">{formatDate(request.createdAt)}</TableCell>
+                          <TableCell>
+                            {editingNotes === request.id ? (
+                              <div className="flex gap-2 items-center">
+                                <input
+                                  type="text"
+                                  value={notesText}
+                                  onChange={(e) => setNotesText(e.target.value)}
+                                  className="px-2 py-1 bg-slate-800/50 border border-slate-700 rounded text-white text-sm w-full"
+                                  placeholder="Введите заметку..."
+                                  autoFocus
+                                />
+                                <Button
+                                  size="sm"
+                                  variant="ghost"
+                                  onClick={() => {
+                                    updateNotesMutation.mutate({ id: request.id, notes: notesText });
+                                  }}
+                                  className="text-green-400 hover:text-green-300"
+                                >
+                                  <Check className="w-4 h-4" />
+                                </Button>
+                                <Button
+                                  size="sm"
+                                  variant="ghost"
+                                  onClick={() => {
+                                    setEditingNotes(null);
+                                    setNotesText("");
+                                  }}
+                                  className="text-red-400 hover:text-red-300"
+                                >
+                                  <X className="w-4 h-4" />
+                                </Button>
+                              </div>
+                            ) : (
+                              <div
+                                className="flex items-center gap-2 cursor-pointer text-slate-400 hover:text-white transition-colors"
+                                onClick={() => {
+                                  setEditingNotes(request.id);
+                                  setNotesText(request.adminNotes || "");
+                                }}
+                              >
+                                <MessageSquare className="w-4 h-4" />
+                                <span className="text-sm">
+                                  {request.adminNotes || "Добавить заметку"}
+                                </span>
+                              </div>
+                            )}
+                          </TableCell>
                           <TableCell>{getStatusBadge(request.status)}</TableCell>
                           <TableCell className="text-right">
                             {request.status === "pending" && (

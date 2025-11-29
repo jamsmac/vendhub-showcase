@@ -203,6 +203,7 @@ export const accessRequests = mysqlTable("accessRequests", {
   requestedRole: mysqlEnum("requestedRole", ["operator", "manager"]).default("operator").notNull(),
   approvedBy: int("approvedBy"),
   approvedAt: timestamp("approvedAt"),
+  adminNotes: text("adminNotes"),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
 });
 

@@ -77,3 +77,4 @@
 - [x] Add bulk selection with checkboxes for mass approve/reject actions
 - [x] Add role dropdown to change user role before approving request
 - [x] Add bulk role assignment for multiple selected requests
+- [x] Add admin comments field to access requests for internal notes
