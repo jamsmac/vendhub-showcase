@@ -14,8 +14,8 @@ import TelegramOnboarding from "./pages/TelegramOnboarding";
 import MasterData from "./pages/MasterData";
 import ComponentLifecycle from "./pages/ComponentLifecycle";
 import Reports from "./pages/Reports";
-
 function Router() {
+  // make sure to consider if you need authentication for certain routes
   return (
     <Switch>
       <Route path={"/login"} component={Login} />
