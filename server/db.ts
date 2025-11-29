@@ -1,10 +1,10 @@
 import { eq, desc, and, sql, gte } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
 import { 
-  InsertUser, users, machines, products, inventory, tasks, 
+  InsertUser, users, machines, products, inventory, inventoryAdjustments, tasks, 
   components, componentHistory, transactions, suppliers, stockTransfers,
   accessRequests, InsertAccessRequest, accessRequestAuditLogs, InsertAccessRequestAuditLog,
-  roleChanges, digestConfig
+  roleChanges, digestConfig, InsertInventoryAdjustment
 } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
@@ -884,4 +884,202 @@ export async function getInventoryStats() {
     lowStockCount: lowStockCount[0]?.count || 0,
     pendingTransfers: pendingTransfers[0]?.count || 0,
   };
+}
+
+
+// Stock Transfer Approval Functions
+export async function approveStockTransfer(transferId: number, approvedBy: number, approvedByName: string) {
+  const db = await getDb();
+  if (!db) throw new Error("Database connection failed");
+  
+  // Get transfer details
+  const [transfer] = await db
+    .select()
+    .from(stockTransfers)
+    .where(eq(stockTransfers.id, transferId));
+  
+  if (!transfer) {
+    throw new Error("Transfer not found");
+  }
+  
+  if (transfer.status !== "pending") {
+    throw new Error("Transfer is not pending");
+  }
+  
+  // Update transfer status
+  await db
+    .update(stockTransfers)
+    .set({
+      status: "approved",
+      approvedBy,
+      approvedAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    })
+    .where(eq(stockTransfers.id, transferId));
+  
+  return { success: true, transfer };
+}
+
+export async function rejectStockTransfer(transferId: number, rejectedBy: number, rejectedByName: string, reason?: string) {
+  const db = await getDb();
+  if (!db) throw new Error("Database connection failed");
+  
+  // Get transfer details
+  const [transfer] = await db
+    .select()
+    .from(stockTransfers)
+    .where(eq(stockTransfers.id, transferId));
+  
+  if (!transfer) {
+    throw new Error("Transfer not found");
+  }
+  
+  if (transfer.status !== "pending") {
+    throw new Error("Transfer is not pending");
+  }
+  
+  // Update transfer status
+  await db
+    .update(stockTransfers)
+    .set({
+      status: "rejected",
+      rejectedBy,
+      rejectedAt: new Date().toISOString(),
+      notes: reason || transfer.notes,
+      updatedAt: new Date().toISOString(),
+    })
+    .where(eq(stockTransfers.id, transferId));
+  
+  return { success: true, transfer };
+}
+
+export async function getPendingStockTransfers() {
+  const db = await getDb();
+  if (!db) return [];
+  
+  const transfers = await db
+    .select({
+      id: stockTransfers.id,
+      productId: stockTransfers.productId,
+      productName: products.name,
+      productSku: products.sku,
+      requestedBy: stockTransfers.requestedBy,
+      requesterName: users.name,
+      quantity: stockTransfers.quantity,
+      priority: stockTransfers.priority,
+      status: stockTransfers.status,
+      notes: stockTransfers.notes,
+      fromLevel: stockTransfers.fromLevel,
+      toLevel: stockTransfers.toLevel,
+      fromLocationId: stockTransfers.fromLocationId,
+      toLocationId: stockTransfers.toLocationId,
+      createdAt: stockTransfers.createdAt,
+      updatedAt: stockTransfers.updatedAt,
+    })
+    .from(stockTransfers)
+    .leftJoin(products, eq(stockTransfers.productId, products.id))
+    .leftJoin(users, eq(stockTransfers.requestedBy, users.id))
+    .where(eq(stockTransfers.status, "pending"))
+    .orderBy(desc(stockTransfers.createdAt));
+  
+  return transfers;
+}
+
+// Inventory Adjustment Functions
+export async function createInventoryAdjustment(data: {
+  inventoryId: number;
+  productId: number;
+  adjustmentType: 'damage' | 'shrinkage' | 'correction' | 'found' | 'expired' | 'returned';
+  quantityChange: number;
+  reason: string;
+  photoUrl?: string;
+  performedBy: number;
+  performedByName: string;
+  level: 'warehouse' | 'operator' | 'machine';
+  locationId?: number;
+}) {
+  const db = await getDb();
+  if (!db) throw new Error("Database connection failed");
+  
+  // Get current inventory
+  const [currentInventory] = await db
+    .select()
+    .from(inventory)
+    .where(eq(inventory.id, data.inventoryId));
+  
+  if (!currentInventory) {
+    throw new Error("Inventory not found");
+  }
+  
+  const quantityBefore = currentInventory.quantity;
+  const quantityAfter = quantityBefore + data.quantityChange;
+  
+  if (quantityAfter < 0) {
+    throw new Error("Adjustment would result in negative inventory");
+  }
+  
+  // Create adjustment record
+  const [adjustment] = await db
+    .insert(inventoryAdjustments)
+    .values({
+      inventoryId: data.inventoryId,
+      productId: data.productId,
+      adjustmentType: data.adjustmentType,
+      quantityBefore,
+      quantityAfter,
+      quantityChange: data.quantityChange,
+      reason: data.reason,
+      photoUrl: data.photoUrl,
+      performedBy: data.performedBy,
+      performedByName: data.performedByName,
+      level: data.level,
+      locationId: data.locationId,
+    });
+  
+  // Update inventory quantity
+  await db
+    .update(inventory)
+    .set({
+      quantity: quantityAfter,
+      updatedAt: new Date().toISOString(),
+    })
+    .where(eq(inventory.id, data.inventoryId));
+  
+  return adjustment;
+}
+
+export async function getInventoryAdjustments(filters?: {
+  productId?: number;
+  level?: 'warehouse' | 'operator' | 'machine';
+  adjustmentType?: string;
+  startDate?: string;
+  endDate?: string;
+}) {
+  const db = await getDb();
+  if (!db) return [];
+  
+  let query = db
+    .select({
+      id: inventoryAdjustments.id,
+      inventoryId: inventoryAdjustments.inventoryId,
+      productId: inventoryAdjustments.productId,
+      productName: products.name,
+      productSku: products.sku,
+      adjustmentType: inventoryAdjustments.adjustmentType,
+      quantityBefore: inventoryAdjustments.quantityBefore,
+      quantityAfter: inventoryAdjustments.quantityAfter,
+      quantityChange: inventoryAdjustments.quantityChange,
+      reason: inventoryAdjustments.reason,
+      photoUrl: inventoryAdjustments.photoUrl,
+      performedBy: inventoryAdjustments.performedBy,
+      performedByName: inventoryAdjustments.performedByName,
+      level: inventoryAdjustments.level,
+      locationId: inventoryAdjustments.locationId,
+      createdAt: inventoryAdjustments.createdAt,
+    })
+    .from(inventoryAdjustments)
+    .leftJoin(products, eq(inventoryAdjustments.productId, products.id))
+    .orderBy(desc(inventoryAdjustments.createdAt));
+  
+  return await query;
 }

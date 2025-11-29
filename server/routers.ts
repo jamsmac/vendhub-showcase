@@ -374,6 +374,12 @@ ${process.env.PUBLIC_URL || 'https://vendhub-showcase.manus.space'}
     list: publicProcedure.query(async () => {
       return await db.getAllStockTransfers();
     }),
+    pending: protectedProcedure.query(async ({ ctx }) => {
+      if (ctx.user.role !== "admin" && ctx.user.role !== "manager") {
+        throw new Error("Unauthorized: Admin or Manager role required");
+      }
+      return await db.getPendingStockTransfers();
+    }),
     create: protectedProcedure
       .input(z.object({
         productId: z.number(),
@@ -387,6 +393,66 @@ ${process.env.PUBLIC_URL || 'https://vendhub-showcase.manus.space'}
           requestedBy: ctx.user.id,
         });
         return { success: true };
+      }),
+    approve: protectedProcedure
+      .input(z.object({ transferId: z.number() }))
+      .mutation(async ({ ctx, input }) => {
+        if (ctx.user.role !== "admin" && ctx.user.role !== "manager") {
+          throw new Error("Unauthorized: Admin or Manager role required");
+        }
+        return await db.approveStockTransfer(
+          input.transferId,
+          ctx.user.id,
+          ctx.user.name || "Unknown"
+        );
+      }),
+    reject: protectedProcedure
+      .input(z.object({
+        transferId: z.number(),
+        reason: z.string().optional(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        if (ctx.user.role !== "admin" && ctx.user.role !== "manager") {
+          throw new Error("Unauthorized: Admin or Manager role required");
+        }
+        return await db.rejectStockTransfer(
+          input.transferId,
+          ctx.user.id,
+          ctx.user.name || "Unknown",
+          input.reason
+        );
+      }),
+  }),
+
+  inventoryAdjustments: router({
+    list: protectedProcedure
+      .input(z.object({
+        productId: z.number().optional(),
+        level: z.enum(["warehouse", "operator", "machine"]).optional(),
+        adjustmentType: z.string().optional(),
+        startDate: z.string().optional(),
+        endDate: z.string().optional(),
+      }).optional())
+      .query(async ({ input }) => {
+        return await db.getInventoryAdjustments(input);
+      }),
+    create: protectedProcedure
+      .input(z.object({
+        inventoryId: z.number(),
+        productId: z.number(),
+        adjustmentType: z.enum(["damage", "shrinkage", "correction", "found", "expired", "returned"]),
+        quantityChange: z.number(),
+        reason: z.string().min(1, "Reason is required"),
+        photoUrl: z.string().optional(),
+        level: z.enum(["warehouse", "operator", "machine"]),
+        locationId: z.number().optional(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        return await db.createInventoryAdjustment({
+          ...input,
+          performedBy: ctx.user.id,
+          performedByName: ctx.user.name || "Unknown",
+        });
       }),
   }),
 });

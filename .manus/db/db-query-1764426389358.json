@@ -1,0 +1,9 @@
+{
+  "query": "CREATE TABLE IF NOT EXISTS `incidents` (\n  `id` int AUTO_INCREMENT PRIMARY KEY,\n  `machineId` int NOT NULL,\n  `incidentType` enum('offline','malfunction','low_stock','temperature_alert','payment_error') NOT NULL,\n  `status` enum('open','in_progress','resolved','closed') NOT NULL DEFAULT 'open',\n  `severity` enum('low','medium','high','critical') NOT NULL DEFAULT 'medium',\n  `description` text,\n  `detectedAt` timestamp NULL DEFAULT CURRENT_TIMESTAMP,\n  `assignedTo` int,\n  `resolvedAt` timestamp NULL,\n  `resolutionNotes` text,\n  `createdAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,\n  `updatedAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP\n)",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3FfdjCLoumdFxBM.root --database CnvwHcg9Gg9M7uweMepDrE --execute CREATE TABLE IF NOT EXISTS `incidents` (\n  `id` int AUTO_INCREMENT PRIMARY KEY,\n  `machineId` int NOT NULL,\n  `incidentType` enum('offline','malfunction','low_stock','temperature_alert','payment_error') NOT NULL,\n  `status` enum('open','in_progress','resolved','closed') NOT NULL DEFAULT 'open',\n  `severity` enum('low','medium','high','critical') NOT NULL DEFAULT 'medium',\n  `description` text,\n  `detectedAt` timestamp NULL DEFAULT CURRENT_TIMESTAMP,\n  `assignedTo` int,\n  `resolvedAt` timestamp NULL,\n  `resolutionNotes` text,\n  `createdAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,\n  `updatedAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP\n)",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 54
+}

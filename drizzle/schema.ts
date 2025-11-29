@@ -76,6 +76,23 @@ export const inventory = mysqlTable("inventory", {
 	updatedAt: timestamp({ mode: 'string' }).defaultNow().onUpdateNow().notNull(),
 });
 
+export const inventoryAdjustments = mysqlTable("inventoryAdjustments", {
+	id: int().autoincrement().notNull(),
+	inventoryId: int().notNull(),
+	productId: int().notNull(),
+	adjustmentType: mysqlEnum(['damage','shrinkage','correction','found','expired','returned']).notNull(),
+	quantityBefore: int().notNull(),
+	quantityAfter: int().notNull(),
+	quantityChange: int().notNull(),
+	reason: text().notNull(),
+	photoUrl: text(),
+	performedBy: int().notNull(),
+	performedByName: varchar({ length: 255 }),
+	level: mysqlEnum(['warehouse','operator','machine']).notNull(),
+	locationId: int(),
+	createdAt: timestamp({ mode: 'string' }).default(sql`CURRENT_TIMESTAMP`).notNull(),
+});
+
 export const machines = mysqlTable("machines", {
 	id: int().autoincrement().notNull(),
 	name: varchar({ length: 255 }).notNull(),
@@ -133,6 +150,14 @@ export const stockTransfers = mysqlTable("stockTransfers", {
 	priority: mysqlEnum(['low','normal','urgent']).default('normal').notNull(),
 	status: mysqlEnum(['pending','approved','rejected','completed']).default('pending').notNull(),
 	notes: text(),
+	approvedBy: int(),
+	approvedAt: timestamp({ mode: 'string' }),
+	rejectedBy: int(),
+	rejectedAt: timestamp({ mode: 'string' }),
+	fromLevel: mysqlEnum(['warehouse','operator','machine']),
+	toLevel: mysqlEnum(['warehouse','operator','machine']),
+	fromLocationId: int(),
+	toLocationId: int(),
 	createdAt: timestamp({ mode: 'string' }).default('CURRENT_TIMESTAMP').notNull(),
 	updatedAt: timestamp({ mode: 'string' }).defaultNow().onUpdateNow().notNull(),
 });
@@ -240,12 +265,12 @@ export const incidents = mysqlTable("incidents", {
 	status: mysqlEnum(['open','in_progress','resolved','closed']).default('open').notNull(),
 	severity: mysqlEnum(['low','medium','high','critical']).default('medium').notNull(),
 	description: text(),
-	detectedAt: timestamp({ mode: 'string' }).defaultNow().notNull(),
+	detectedAt: timestamp({ mode: 'string' }).default(sql`CURRENT_TIMESTAMP`),
 	assignedTo: int(),
 	resolvedAt: timestamp({ mode: 'string' }),
 	resolutionNotes: text(),
-	createdAt: timestamp({ mode: 'string' }).default('CURRENT_TIMESTAMP').notNull(),
-	updatedAt: timestamp({ mode: 'string' }).defaultNow().onUpdateNow().notNull(),
+	createdAt: timestamp({ mode: 'string' }).default(sql`CURRENT_TIMESTAMP`).notNull(),
+	updatedAt: timestamp({ mode: 'string' }).default(sql`CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP`).notNull(),
 });
 
 // Type exports for database operations
@@ -269,3 +294,7 @@ export type InsertProduct = typeof products.$inferInsert;
 
 export type Transaction = typeof transactions.$inferSelect;
 export type InsertTransaction = typeof transactions.$inferInsert;
+export type StockTransfer = typeof stockTransfers.$inferSelect;
+export type InsertStockTransfer = typeof stockTransfers.$inferInsert;
+export type InventoryAdjustment = typeof inventoryAdjustments.$inferSelect;
+export type InsertInventoryAdjustment = typeof inventoryAdjustments.$inferInsert;

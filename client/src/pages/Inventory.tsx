@@ -20,11 +20,14 @@ import {
 import { trpc } from "@/lib/trpc";
 import { toast } from "sonner";
 import { StockTransferModal } from "@/components/StockTransferModal";
+import { InventoryAdjustmentModal } from "@/components/InventoryAdjustmentModal";
 
 export default function Inventory() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedLevel, setSelectedLevel] = useState<"all" | "warehouse" | "operator" | "machine">("all");
   const [expandedProducts, setExpandedProducts] = useState<Set<number>>(new Set());
+  const [adjustmentModalOpen, setAdjustmentModalOpen] = useState(false);
+  const [selectedInventoryItem, setSelectedInventoryItem] = useState<any>(null);
 
   // Fetch inventory data
   const { data: inventoryData, isLoading } = trpc.inventory.getAll.useQuery();

@@ -21,6 +21,8 @@ import Reports from "./pages/Reports";
 import AccessRequests from "./pages/AccessRequests";
 import DigestSettings from "./pages/DigestSettings";
 import NotificationPreferences from "./pages/NotificationPreferences";
+import AdminTransfers from "./pages/AdminTransfers";
+import TransferHistory from "./pages/TransferHistory";
 
 function Router() {
   // make sure to consider if you need authentication for certain routes
@@ -43,6 +45,8 @@ function Router() {
               <Route path={"/access-requests"} component={AccessRequests} />
               <Route path={"/digest-settings"} component={DigestSettings} />
               <Route path={"/notification-preferences"} component={NotificationPreferences} />
+              <Route path={"/admin/transfers"} component={AdminTransfers} />
+              <Route path={"/inventory/transfer-history"} component={TransferHistory} />
               <Route path={"/master-data"} component={MasterData} />
               <Route path={"/components/:id"} component={ComponentLifecycle} />
               <Route path={"/reports"} component={Reports} />

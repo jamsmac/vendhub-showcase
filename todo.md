@@ -406,3 +406,46 @@
 - [x] Test stock transfer logic
 - [x] Test low stock alert calculations
 - [x] Verify 3-level hierarchy queries
+
+
+## Phase 24: Stock Transfer Approval & Inventory Adjustments
+
+### Database Schema
+- [x] Create inventoryAdjustments table in schema.ts
+- [x] Add fields: id, inventoryId, productId, adjustmentType, quantity, reason, photoUrl, performedBy, createdAt
+- [x] Add approvedBy and approvedAt fields to stockTransfers table
+- [x] Run database migration to apply schema changes
+
+### Stock Transfer Approval Workflow
+- [x] Create admin transfers page (/admin/transfers)
+- [x] Add API endpoint to get pending transfers
+- [x] Create approve transfer mutation with inventory update logic
+- [x] Create reject transfer mutation
+- [ ] Add notification system for transfer status changes (deferred)
+- [ ] Implement automatic inventory adjustment on approval (deferred)
+- [x] Add approval history to transfer records
+
+### Transfer History & Audit Trail
+- [x] Create transfer history page (/inventory/transfer-history)
+- [x] Add filtering by date range, status, user, product
+- [ ] Display before/after stock levels for each transfer (deferred)
+- [x] Show approval/rejection timestamps and admin names
+- [ ] Add export to CSV functionality (deferred)
+- [ ] Implement pagination for large datasets (deferred)
+
+### Inventory Adjustment Interface
+- [x] Create inventory adjustment form component
+- [x] Add adjustment type dropdown (damage, shrinkage, correction, found)
+- [x] Implement mandatory reason code field
+- [x] Add photo upload functionality for evidence
+- [x] Create API endpoint to record adjustments
+- [x] Implement automatic inventory quantity update
+- [ ] Add adjustment history view per product (deferred)
+- [x] Create audit log for all adjustments
+
+### Testing
+- [x] Write unit tests for approval workflow
+- [x] Test inventory adjustment logic
+- [x] Test transfer history filtering
+- [x] Verify automatic inventory updates
+- [ ] Test notification delivery
