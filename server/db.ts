@@ -297,12 +297,17 @@ export async function getAccessRequestByTelegramId(telegramId: string) {
   return result[0] || null;
 }
 
-export async function approveAccessRequest(id: number, approvedBy: number) {
+export async function approveAccessRequest(id: number, approvedBy: number, role?: string) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
   
+  const updateData: any = { status: "approved", approvedBy, approvedAt: new Date() };
+  if (role) {
+    updateData.requestedRole = role;
+  }
+  
   await db.update(accessRequests)
-    .set({ status: "approved", approvedBy, approvedAt: new Date() })
+    .set(updateData)
     .where(eq(accessRequests.id, id));
 }
 

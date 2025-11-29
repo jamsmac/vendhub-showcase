@@ -114,9 +114,9 @@ export const appRouter = router({
       return await db.getPendingAccessRequests();
     }),
     approve: protectedProcedure
-      .input(z.object({ id: z.number(), approvedBy: z.number() }))
+      .input(z.object({ id: z.number(), approvedBy: z.number(), role: z.string().optional() }))
       .mutation(async ({ input }) => {
-        await db.approveAccessRequest(input.id, input.approvedBy);
+        await db.approveAccessRequest(input.id, input.approvedBy, input.role);
         
         // Get request details to send notification
         const requests = await db.getAllAccessRequests();

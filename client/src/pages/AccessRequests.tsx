@@ -23,7 +23,14 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Check, X, Clock, User, Calendar, Search } from "lucide-react";
+import { Check, X, Clock, User, Calendar, Search, ChevronDown } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { toast } from "sonner";
 
 export default function AccessRequests() {
@@ -32,6 +39,7 @@ export default function AccessRequests() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedRequests, setSelectedRequests] = useState<Set<number>>(new Set());
   const [bulkAction, setBulkAction] = useState<"approve" | "reject" | null>(null);
+  const [roleOverrides, setRoleOverrides] = useState<Map<number, string>>(new Map());
 
   const { data: allRequests, refetch } = trpc.accessRequests.list.useQuery();
   const { data: pendingRequests } = trpc.accessRequests.pending.useQuery();
@@ -107,10 +115,18 @@ export default function AccessRequests() {
     const approvedBy = 1;
 
     if (action === "approve") {
-      approveMutation.mutate({ id: selectedRequest, approvedBy });
+      // Use role override if set, otherwise use requested role
+      const role = roleOverrides.get(selectedRequest);
+      approveMutation.mutate({ id: selectedRequest, approvedBy, role });
     } else if (action === "reject") {
       rejectMutation.mutate({ id: selectedRequest, approvedBy });
     }
+  };
+
+  const handleRoleChange = (requestId: number, newRole: string) => {
+    const newOverrides = new Map(roleOverrides);
+    newOverrides.set(requestId, newRole);
+    setRoleOverrides(newOverrides);
   };
 
   const toggleSelection = (id: number) => {
@@ -361,7 +377,27 @@ export default function AccessRequests() {
                           <TableCell className="text-slate-300 font-mono text-sm">
                             {request.telegramId}
                           </TableCell>
-                          <TableCell>{getRoleBadge(request.requestedRole)}</TableCell>
+                          <TableCell>
+                            <Select
+                              value={roleOverrides.get(request.id) || request.requestedRole}
+                              onValueChange={(value) => handleRoleChange(request.id, value)}
+                            >
+                              <SelectTrigger className="w-[140px] bg-slate-800/50 border-slate-700 text-white">
+                                <SelectValue />
+                              </SelectTrigger>
+                              <SelectContent className="bg-slate-800 border-slate-700">
+                                <SelectItem value="operator" className="text-white hover:bg-slate-700">
+                                  Оператор
+                                </SelectItem>
+                                <SelectItem value="manager" className="text-white hover:bg-slate-700">
+                                  Менеджер
+                                </SelectItem>
+                                <SelectItem value="admin" className="text-white hover:bg-slate-700">
+                                  Администратор
+                                </SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </TableCell>
                           <TableCell className="text-slate-400">
                             <div className="flex items-center gap-2">
                               <Calendar className="w-4 h-4" />
@@ -437,7 +473,27 @@ export default function AccessRequests() {
                             <TableCell className="text-slate-300 font-mono text-sm">
                               {request.telegramId}
                             </TableCell>
-                            <TableCell>{getRoleBadge(request.requestedRole)}</TableCell>
+                            <TableCell>
+                            <Select
+                              value={roleOverrides.get(request.id) || request.requestedRole}
+                              onValueChange={(value) => handleRoleChange(request.id, value)}
+                            >
+                              <SelectTrigger className="w-[140px] bg-slate-800/50 border-slate-700 text-white">
+                                <SelectValue />
+                              </SelectTrigger>
+                              <SelectContent className="bg-slate-800 border-slate-700">
+                                <SelectItem value="operator" className="text-white hover:bg-slate-700">
+                                  Оператор
+                                </SelectItem>
+                                <SelectItem value="manager" className="text-white hover:bg-slate-700">
+                                  Менеджер
+                                </SelectItem>
+                                <SelectItem value="admin" className="text-white hover:bg-slate-700">
+                                  Администратор
+                                </SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </TableCell>
                             <TableCell className="text-slate-400">{formatDate(request.createdAt)}</TableCell>
                             <TableCell className="text-slate-400">
                               {request.approvedAt ? formatDate(request.approvedAt) : "—"}
@@ -499,7 +555,27 @@ export default function AccessRequests() {
                           <TableCell className="text-slate-300 font-mono text-sm">
                             {request.telegramId}
                           </TableCell>
-                          <TableCell>{getRoleBadge(request.requestedRole)}</TableCell>
+                          <TableCell>
+                            <Select
+                              value={roleOverrides.get(request.id) || request.requestedRole}
+                              onValueChange={(value) => handleRoleChange(request.id, value)}
+                            >
+                              <SelectTrigger className="w-[140px] bg-slate-800/50 border-slate-700 text-white">
+                                <SelectValue />
+                              </SelectTrigger>
+                              <SelectContent className="bg-slate-800 border-slate-700">
+                                <SelectItem value="operator" className="text-white hover:bg-slate-700">
+                                  Оператор
+                                </SelectItem>
+                                <SelectItem value="manager" className="text-white hover:bg-slate-700">
+                                  Менеджер
+                                </SelectItem>
+                                <SelectItem value="admin" className="text-white hover:bg-slate-700">
+                                  Администратор
+                                </SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </TableCell>
                           <TableCell className="text-slate-400">{formatDate(request.createdAt)}</TableCell>
                           <TableCell>{getStatusBadge(request.status)}</TableCell>
                           <TableCell className="text-right">

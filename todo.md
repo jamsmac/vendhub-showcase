@@ -75,3 +75,4 @@
 ## New Features - Access Requests
 - [x] Add search bar to filter access requests by name or Telegram ID
 - [x] Add bulk selection with checkboxes for mass approve/reject actions
+- [x] Add role dropdown to change user role before approving request
