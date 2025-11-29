@@ -4,7 +4,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { AlertTriangle, ArrowRightLeft, Box, Package, Search, ShoppingCart, Truck, Warehouse } from "lucide-react";
+import { StockTransferModal } from "@/components/StockTransferModal";
+import { AlertTriangle, Box, Package, Search, ShoppingCart, Truck, Warehouse } from "lucide-react";
 
 const warehouseStock = [
   { id: 1, name: "Cola Zero 330ml", category: "Drinks", quantity: 2500, minLevel: 500, status: "good" },
@@ -38,10 +39,7 @@ export default function Inventory() {
             <p className="text-muted-foreground mt-1">3-Level Stock Tracking System</p>
           </div>
           <div className="flex gap-3">
-            <button className="px-4 py-2 rounded-lg bg-white/5 border border-white/10 text-sm font-medium hover:bg-white/10 transition-colors backdrop-blur-md flex items-center gap-2 text-white">
-              <ArrowRightLeft className="w-4 h-4" />
-              Transfer Stock
-            </button>
+            <StockTransferModal />
             <button className="px-4 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-medium hover:bg-primary/90 transition-colors shadow-lg shadow-primary/25 flex items-center gap-2">
               <ShoppingCart className="w-4 h-4" />
               Order Supplies
