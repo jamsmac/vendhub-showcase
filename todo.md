@@ -308,3 +308,66 @@
 - [x] Add navigation route for Machines page
 - [x] Update sidebar navigation to include Machines link
 - [x] Test Machines page functionality
+
+
+## Phase 17: Machine Detail Page
+- [ ] Create MachineDetail page component
+- [ ] Display complete machine information (name, serial, model, location, status)
+- [ ] Add revenue chart showing daily/weekly/monthly trends
+- [ ] Implement maintenance history timeline
+- [ ] Show inventory levels for machine
+- [ ] Add edit machine dialog with form validation
+- [ ] Implement status update functionality
+- [ ] Add photo gallery for machine
+- [ ] Create maintenance log entry form
+- [ ] Add navigation back to machines list
+
+## Phase 18: Tasks Module with Kanban Board
+- [ ] Create Tasks page with kanban layout
+- [ ] Implement drag-and-drop functionality between columns
+- [ ] Add task creation dialog with priority and due date
+- [ ] Create task assignment to team members
+- [ ] Add task status columns (pending, in-progress, completed)
+- [ ] Implement task filtering and search
+- [ ] Add task detail view/edit modal
+- [ ] Show task statistics dashboard
+- [ ] Add photo upload for task completion
+- [ ] Implement task notifications
+
+## Phase 19: 3-Level Inventory Tracking
+- [ ] Design 3-level inventory database schema (products → components → raw materials)
+- [ ] Create Inventory page with hierarchical view
+- [ ] Implement stock level tracking with alerts
+- [ ] Add inventory transfer functionality between machines
+- [ ] Create low stock alerts and notifications
+- [ ] Implement inventory adjustment forms
+- [ ] Add inventory history tracking
+- [ ] Create inventory reports and analytics
+- [ ] Implement barcode/SKU search
+- [ ] Add bulk inventory operations
+
+
+## Phase 20: Complete Tasks Module with Drag-and-Drop
+- [ ] Complete drag-and-drop functionality implementation in Tasks.tsx
+- [ ] Add task creation dialog with form validation
+- [ ] Implement task detail modal
+- [ ] Enable status updates via drag-and-drop between columns
+- [ ] Add task statistics cards (total, pending, in-progress, completed)
+- [ ] Test drag-and-drop functionality across all browsers
+- [ ] Add task assignment dropdown
+- [ ] Implement task priority selection
+
+## Phase 21: Fix TypeScript Errors
+- [ ] Fix Date type assignments in server/db.ts (lines 617, 654)
+- [ ] Verify getUserByTelegramId function exists in server/db.ts
+- [ ] Fix all remaining TypeScript compilation errors
+- [ ] Run full test suite to ensure no regressions
+- [ ] Verify dev server compiles without errors
+
+## Phase 22: Final Checkpoint
+- [ ] Test all implemented features end-to-end
+- [ ] Verify Machine Detail page with revenue charts
+- [ ] Test Tasks module drag-and-drop functionality
+- [ ] Verify all navigation links work correctly
+- [ ] Check responsive design on mobile/tablet
+- [ ] Save comprehensive checkpoint with all features

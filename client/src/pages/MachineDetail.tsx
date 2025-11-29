@@ -33,6 +33,15 @@ import {
 } from "lucide-react";
 import { formatCurrency } from "@/lib/currency";
 import { toast } from "sonner";
+import {
+  LineChart,
+  Line,
+  CartesianGrid,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+} from "recharts";
 
 export default function MachineDetail() {
   const [, params] = useRoute("/machines/:id");
@@ -271,6 +280,56 @@ export default function MachineDetail() {
             </CardContent>
           </Card>
         </div>
+
+        {/* Revenue Chart */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <TrendingUp className="w-5 h-5" />
+              Revenue Trends
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="h-[300px] w-full">
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart data={[
+                  { month: 'Jan', revenue: 8500 },
+                  { month: 'Feb', revenue: 9200 },
+                  { month: 'Mar', revenue: 10100 },
+                  { month: 'Apr', revenue: 9800 },
+                  { month: 'May', revenue: 11200 },
+                  { month: 'Jun', revenue: 10500 },
+                  { month: 'Jul', revenue: 12000 },
+                  { month: 'Aug', revenue: 11800 },
+                  { month: 'Sep', revenue: 10900 },
+                  { month: 'Oct', revenue: 11500 },
+                  { month: 'Nov', revenue: 12400 },
+                  { month: 'Dec', revenue: 10300 },
+                ]}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,0,0,0.1)" />
+                  <XAxis dataKey="month" stroke="#888" />
+                  <YAxis stroke="#888" />
+                  <Tooltip
+                    contentStyle={{
+                      backgroundColor: 'white',
+                      border: '1px solid #e5e7eb',
+                      borderRadius: '8px',
+                    }}
+                    formatter={(value) => formatCurrency(value as number)}
+                  />
+                  <Line
+                    type="monotone"
+                    dataKey="revenue"
+                    stroke="hsl(var(--primary))"
+                    strokeWidth={3}
+                    dot={{ fill: 'hsl(var(--primary))', r: 4 }}
+                    activeDot={{ r: 6 }}
+                  />
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
+          </CardContent>
+        </Card>
 
         {/* Machine Information */}
         <Card>

@@ -70,11 +70,11 @@ export async function upsertUser(user: InsertUser): Promise<void> {
     }
 
     if (!values.lastSignedIn) {
-      values.lastSignedIn = new Date();
+      values.lastSignedIn = new Date().toISOString();
     }
 
     if (Object.keys(updateSet).length === 0) {
-      updateSet.lastSignedIn = new Date();
+      updateSet.lastSignedIn = new Date().toISOString();
     }
 
     await db.insert(users).values(values).onDuplicateKeyUpdate({
@@ -201,8 +201,8 @@ export async function getTransactionsByDateRange(startDate: Date, endDate: Date)
     .from(transactions)
     .where(
       and(
-        gte(transactions.createdAt, startDate),
-        sql`${transactions.createdAt} <= ${endDate}`
+        gte(transactions.createdAt, startDate.toISOString()),
+        sql`${transactions.createdAt} <= ${endDate.toISOString()}`
       )
     )
     .orderBy(desc(transactions.createdAt));
@@ -218,7 +218,7 @@ export async function getDashboardStats() {
   const revenueResult = await db
     .select({ total: sql<number>`SUM(${transactions.amount})` })
     .from(transactions)
-    .where(gte(transactions.createdAt, sevenDaysAgo));
+    .where(gte(transactions.createdAt, sevenDaysAgo.toISOString()));
 
   const machineStats = await db
     .select({
@@ -302,7 +302,7 @@ export async function approveAccessRequest(id: number, approvedBy: number, role?
   const db = await getDb();
   if (!db) throw new Error("Database not available");
   
-  const updateData: any = { status: "approved", approvedBy, approvedAt: new Date() };
+  const updateData: any = { status: "approved", approvedBy, approvedAt: new Date().toISOString() };
   if (role) {
     updateData.requestedRole = role;
   }
@@ -325,7 +325,7 @@ export async function rejectAccessRequest(id: number, approvedBy: number) {
   if (!db) throw new Error("Database not available");
   
   await db.update(accessRequests)
-    .set({ status: "rejected", approvedBy, approvedAt: new Date() })
+    .set({ status: "rejected", approvedBy, approvedAt: new Date().toISOString() })
     .where(eq(accessRequests.id, id));
   
   // Create audit log entry
@@ -336,7 +336,7 @@ export async function rejectAccessRequest(id: number, approvedBy: number) {
   });
 }
 
-export async function createAuditLog(log: Omit<InsertAccessRequestAuditLog, "id" | "createdAt">) {
+export async function createAuditLog(log: Omit<InsertAccessRequestAuditLog, "id" | "createdAt" | "performedByName">) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
   
@@ -345,8 +345,12 @@ export async function createAuditLog(log: Omit<InsertAccessRequestAuditLog, "id"
   const performedByName = performer[0]?.name || "Unknown";
   
   await db.insert(accessRequestAuditLogs).values({
-    ...log,
+    accessRequestId: log.accessRequestId,
+    action: log.action,
+    performedBy: log.performedBy,
     performedByName,
+    assignedRole: log.assignedRole,
+    notes: log.notes,
   });
 }
 
@@ -375,16 +379,16 @@ export async function getAllAuditLogs(startDate?: string, endDate?: string, acti
     end.setHours(23, 59, 59, 999);
     
     conditions.push(
-      gte(accessRequestAuditLogs.createdAt, start),
-      sql`${accessRequestAuditLogs.createdAt} <= ${end}`
+      gte(accessRequestAuditLogs.createdAt, start.toISOString()),
+      sql`${accessRequestAuditLogs.createdAt} <= ${end.toISOString()}`
     );
   } else if (startDate) {
     const start = new Date(startDate);
-    conditions.push(gte(accessRequestAuditLogs.createdAt, start));
+    conditions.push(gte(accessRequestAuditLogs.createdAt, start.toISOString()));
   } else if (endDate) {
     const end = new Date(endDate);
     end.setHours(23, 59, 59, 999);
-    conditions.push(sql`${accessRequestAuditLogs.createdAt} <= ${end}`);
+    conditions.push(sql`${accessRequestAuditLogs.createdAt} <= ${end.toISOString()}`);
   }
   
   // Apply action type filtering if provided
@@ -603,7 +607,7 @@ export async function updateMachineData(id: number, data: Partial<{
   location: string;
   latitude: string;
   longitude: string;
-  status: string;
+  status: 'active' | 'maintenance' | 'offline' | 'retired';
   lastMaintenance: Date;
   nextServiceDue: Date;
   photo: string;
@@ -612,9 +616,18 @@ export async function updateMachineData(id: number, data: Partial<{
   const db = await getDb();
   if (!db) throw new Error("Database not available");
   
+  // Convert Date objects to ISO strings for database storage
+  const updateData: any = { ...data };
+  if (data.lastMaintenance) {
+    updateData.lastMaintenance = data.lastMaintenance.toISOString();
+  }
+  if (data.nextServiceDue) {
+    updateData.nextServiceDue = data.nextServiceDue.toISOString();
+  }
+  
   return await db.update(machines).set({
-    ...data,
-    updatedAt: new Date(),
+    ...updateData,
+    updatedAt: new Date().toISOString(),
   }).where(eq(machines.id, id));
 }
 
@@ -651,8 +664,19 @@ export async function updateMachineRevenue(id: number, amount: number) {
   return await db.update(machines).set({
     totalRevenue: machine.totalRevenue + amount,
     totalSales: machine.totalSales + 1,
-    updatedAt: new Date(),
+    updatedAt: new Date().toISOString(),
   }).where(eq(machines.id, id));
 }
 
 
+
+/**
+ * Get user by Telegram ID
+ */
+export async function getUserByTelegramId(telegramId: string) {
+  const db = await getDb();
+  if (!db) return null;
+  
+  const result = await db.select().from(users).where(eq(users.telegramId, telegramId));
+  return result[0] || null;
+}

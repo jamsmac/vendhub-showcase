@@ -247,3 +247,25 @@ export const incidents = mysqlTable("incidents", {
 	createdAt: timestamp({ mode: 'string' }).default('CURRENT_TIMESTAMP').notNull(),
 	updatedAt: timestamp({ mode: 'string' }).defaultNow().onUpdateNow().notNull(),
 });
+
+// Type exports for database operations
+export type User = typeof users.$inferSelect;
+export type InsertUser = typeof users.$inferInsert;
+
+export type AccessRequest = typeof accessRequests.$inferSelect;
+export type InsertAccessRequest = typeof accessRequests.$inferInsert;
+
+export type AccessRequestAuditLog = typeof accessRequestAuditLogs.$inferSelect;
+export type InsertAccessRequestAuditLog = typeof accessRequestAuditLogs.$inferInsert;
+
+export type Machine = typeof machines.$inferSelect;
+export type InsertMachine = typeof machines.$inferInsert;
+
+export type Task = typeof tasks.$inferSelect;
+export type InsertTask = typeof tasks.$inferInsert;
+
+export type Product = typeof products.$inferSelect;
+export type InsertProduct = typeof products.$inferInsert;
+
+export type Transaction = typeof transactions.$inferSelect;
+export type InsertTransaction = typeof transactions.$inferInsert;
