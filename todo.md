@@ -577,3 +577,30 @@
 - [x] Write unit tests for auth service (18 tests passing)
 - [x] Test registration flow
 - [x] Test login flow
+
+## Advanced Authentication Features
+### Password Reset Flow
+- [ ] Add password reset tokens table to database
+- [ ] Create password reset request endpoint
+- [ ] Create password reset confirmation endpoint
+- [ ] Send password reset email with token link
+- [ ] Add password reset UI pages
+- [ ] Add token expiration (1 hour)
+- [ ] Test password reset flow
+
+### Email Verification
+- [ ] Add email verification tokens table to database
+- [ ] Add emailVerified field to users table
+- [ ] Send verification email on registration
+- [ ] Create email verification endpoint
+- [ ] Add resend verification email endpoint
+- [ ] Add email verification UI
+- [ ] Test email verification flow
+
+### OAuth Account Linking
+- [ ] Update OAuth handlers to check existing email
+- [ ] Create account linking confirmation UI
+- [ ] Allow users to link OAuth to existing account
+- [ ] Allow users to unlink OAuth accounts
+- [ ] Add linked accounts management page
+- [ ] Test account linking flow
