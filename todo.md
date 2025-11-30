@@ -2027,3 +2027,137 @@ All tasks completed:
 - [x] Import Alerts page in App.tsx
 - [x] Add AlertCircle icon to navigation
 - [x] Update navigation with "Оповещения" (Notifications) label
+
+
+## Authentication System Implementation (NEW)
+
+### Phase 1: Registration & Login Pages
+- [ ] Remove role selection from Registration page
+- [ ] Simplify Registration to only email + password fields
+- [ ] Simplify Login to only email + password fields
+- [ ] Remove OnboardingWizard component (role selection)
+- [ ] Update auth routing to skip role selection
+
+### Phase 2: Automatic Account Creation on Approval
+- [ ] Generate username from full name (e.g., "aziz_petrov")
+- [ ] Generate temporary password (8+ chars, uppercase, lowercase, numbers)
+- [ ] Create user account automatically when admin approves request
+- [ ] Link Telegram ID to created user account
+- [ ] Mark account as "first_login_required" flag
+
+### Phase 3: Send Credentials via Telegram
+- [ ] Send Telegram message with username and temporary password
+- [ ] Format message: "Доступ предоставлен! Логин: {username}, Пароль: {temp_password}"
+- [ ] Include link to web application
+- [ ] Send via Telegram Bot API after account creation
+
+### Phase 4: Mandatory Password Change on First Login
+- [ ] Detect first login (check "first_login_required" flag)
+- [ ] Show password change dialog on login
+- [ ] Require new password before accessing dashboard
+- [ ] Validate password strength (8+ chars, uppercase, lowercase, numbers)
+- [ ] Clear "first_login_required" flag after successful change
+- [ ] Show profile completion form after password change
+
+### Phase 5: Access & Refresh Token System
+- [ ] Implement JWT-based token generation
+- [ ] Access token: 15-30 minutes expiration
+- [ ] Refresh token: 7-30 days expiration
+- [ ] Store refresh tokens in database
+- [ ] Implement token refresh endpoint
+- [ ] Implement automatic token refresh in frontend
+- [ ] Implement token rotation on refresh
+
+### Phase 6: Two-Factor Authentication (2FA)
+- [ ] Make 2FA mandatory for SuperAdmin and Admin roles
+- [ ] Implement TOTP (Time-based One-Time Password) with Google Authenticator
+- [ ] Generate QR code for 2FA setup
+- [ ] Store 2FA secret in database
+- [ ] Verify 6-digit codes on login
+- [ ] Block login without correct 2FA code
+- [ ] Implement backup codes for account recovery
+
+### Phase 7: Brute-Force Protection
+- [ ] Track failed login attempts per user
+- [ ] Lock account after 5 failed attempts
+- [ ] Implement 15-minute lockout period
+- [ ] Log all failed attempts with IP address
+- [ ] Show lockout message to user
+- [ ] Allow admin to unlock accounts manually
+- [ ] Send email notification on account lockout
+
+### Phase 8: Password Recovery
+- [ ] Implement "Forgot Password" page
+- [ ] Send password reset email with time-limited link
+- [ ] Validate reset token expiration (24 hours)
+- [ ] Allow user to set new password
+- [ ] Invalidate all refresh tokens on password reset
+- [ ] Logout user from all devices on password reset
+- [ ] Log password reset in audit log
+
+### Phase 9: Session Management & Logout
+- [ ] Implement logout endpoint
+- [ ] Invalidate refresh token on logout
+- [ ] Clear session cookies
+- [ ] Logout user from current device only
+- [ ] Implement "logout from all devices" option
+- [ ] Log logout events in audit log
+- [ ] Handle token expiration gracefully
+
+### Phase 10: Account Blocking & Admin Controls
+- [ ] Add "blocked" status to users table
+- [ ] Implement block/unblock endpoints
+- [ ] Immediately terminate all active sessions on block
+- [ ] Invalidate all tokens on block
+- [ ] Prevent login attempts from blocked accounts
+- [ ] Log blocking action with reason
+- [ ] Show "Account blocked" message to user
+- [ ] Allow admin to provide unblock reason
+
+### Phase 11: Telegram Bot Commands for Authenticated Users
+- [ ] Implement /tasks command - show today's tasks
+- [ ] Implement /status command - show task status
+- [ ] Implement /complete command - mark task as completed
+- [ ] Implement /photo command - upload task photo
+- [ ] Implement /location command - send geolocation
+- [ ] Implement /help command - show available commands
+- [ ] Restrict commands based on user role
+- [ ] Log all bot interactions in audit log
+
+### Phase 12: Testing & Verification
+- [ ] Test registration and login flows
+- [ ] Test automatic account creation on approval
+- [ ] Test temporary password and first login
+- [ ] Test token refresh mechanism
+- [ ] Test 2FA setup and verification
+- [ ] Test brute-force protection
+- [ ] Test password recovery
+- [ ] Test session management
+- [ ] Test account blocking
+- [ ] Test Telegram bot commands
+- [ ] Test audit logging
+- [ ] Verify all security features work correctly
+
+
+## Authentication System Implementation
+- [x] Fix syntax errors in routers.ts (remove duplicate closing braces)
+- [x] Add missing createUser function to db.ts
+- [x] Update approve access request endpoint to generate credentials
+- [x] Generate temporary username from full name
+- [x] Generate temporary password (8+ chars with uppercase, lowercase, numbers, special chars)
+- [x] Create user account automatically on access request approval
+- [x] Update Login component to use username instead of email
+- [x] Add getUserByUsername function to db-auth.ts
+- [x] Update auth router login endpoint to support username
+- [ ] Add isTemporaryPassword and isFirstLogin fields to users table schema
+- [ ] Implement mandatory password change on first login
+- [ ] Create ChangePasswordOnFirstLogin component
+- [ ] Update App.tsx to show password change screen after first login
+- [ ] Implement access token and refresh token system
+- [ ] Implement 2FA for SuperAdmin and Admin roles
+- [ ] Implement brute-force protection and account lockout
+- [ ] Implement password recovery via email
+- [ ] Implement session management and logout
+- [ ] Implement account blocking and admin controls
+- [ ] Implement Telegram bot commands for authenticated users
+- [ ] Test all authentication flows end-to-end

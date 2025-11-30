@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';
 import { toast } from 'sonner';
-import { Mail, Lock, Briefcase, Eye, EyeOff } from 'lucide-react';
+import { Mail, Lock, Briefcase, Eye, EyeOff, User } from 'lucide-react';
 import { trpc } from '@/lib/trpc';
 
 interface LoginProps {
@@ -14,7 +14,7 @@ interface LoginProps {
 export default function Login({ onLoginSuccess, onSwitchToRegister }: LoginProps) {
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
-    email: '',
+    username: '',
     password: '',
     rememberMe: false,
   });
@@ -30,8 +30,8 @@ export default function Login({ onLoginSuccess, onSwitchToRegister }: LoginProps
   };
 
   const validateForm = () => {
-    if (!formData.email.includes('@')) {
-      toast.error('Пожалуйста, введите корректный email');
+    if (!formData.username.trim()) {
+      toast.error('Пожалуйста, введите логин');
       return false;
     }
     if (!formData.password) {
@@ -48,7 +48,7 @@ export default function Login({ onLoginSuccess, onSwitchToRegister }: LoginProps
 
     try {
       const result = await loginMutation.mutateAsync({
-        email: formData.email,
+        username: formData.username,
         password: formData.password,
       });
 
@@ -81,18 +81,18 @@ export default function Login({ onLoginSuccess, onSwitchToRegister }: LoginProps
         {/* Form */}
         <Card className="p-8 bg-slate-800 border-slate-700 mb-6">
           <form onSubmit={handleSubmit} className="space-y-4">
-            {/* Email */}
+            {/* Username */}
             <div>
               <label className="block text-sm font-medium text-slate-300 mb-2">
-                <Mail className="inline w-4 h-4 mr-2" />
-                Email
+                <User className="inline w-4 h-4 mr-2" />
+                Логин
               </label>
               <Input
-                type="email"
-                name="email"
-                value={formData.email}
+                type="text"
+                name="username"
+                value={formData.username}
                 onChange={handleInputChange}
-                placeholder="your@email.com"
+                placeholder="ivan_petrov"
                 className="bg-slate-700 border-slate-600 text-white placeholder:text-slate-500"
                 disabled={isLoading}
               />

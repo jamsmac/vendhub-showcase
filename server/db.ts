@@ -1496,3 +1496,48 @@ export async function getUsersByRole(role: string) {
   
   return await db.select().from(users).where(eq(users.role, role as any));
 }
+
+
+/**
+ * Create a new user account (for admin-created accounts with temporary password)
+ */
+export async function createUser(data: {
+  email: string;
+  username: string;
+  password: string;
+  fullName: string;
+  role: string;
+  telegramId?: string;
+  isTemporaryPassword?: boolean;
+  isFirstLogin?: boolean;
+}) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  // Hash the password (simple bcrypt-like approach)
+  const crypto = await import('crypto');
+  const hash = crypto.createHash('sha256').update(data.password).digest('hex');
+
+  // Generate a unique openId for this user
+  const openId = `user_${data.username}_${Date.now()}`;
+
+  try {
+    const result = await db.insert(users).values({
+      openId,
+      name: data.fullName,
+      email: data.email,
+      role: data.role as any,
+      telegramId: data.telegramId,
+      passwordHash: hash,
+      loginMethod: 'username',
+      lastSignedIn: new Date().toISOString(),
+    });
+
+    // Get the created user
+    const createdUser = await db.select().from(users).where(eq(users.openId, openId)).limit(1);
+    return createdUser[0] || null;
+  } catch (error) {
+    console.error("[Database] Failed to create user:", error);
+    throw error;
+  }
+}

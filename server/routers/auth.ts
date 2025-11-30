@@ -62,15 +62,15 @@ export const authRouter = router({
   login: publicProcedure
     .input(
       z.object({
-        email: z.string().email("Invalid email address"),
+        username: z.string().min(1, "Username is required"),
         password: z.string().min(1, "Password is required"),
       })
     )
     .mutation(async ({ input, ctx }) => {
-      // Find user
-      const user = await dbAuth.getUserByEmail(input.email);
+      // Find user by username
+      const user = await dbAuth.getUserByUsername(input.username);
       if (!user) {
-        throw new Error("Invalid email or password");
+        throw new Error("Invalid username or password");
       }
 
       // Verify password
@@ -119,6 +119,7 @@ export const authRouter = router({
           email: user.email,
           name: user.name,
           role: user.role,
+          needsPasswordChange: user.isTemporaryPassword || false,
         },
         token: tokens.accessToken,
       };

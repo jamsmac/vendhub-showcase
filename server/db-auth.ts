@@ -205,3 +205,17 @@ export async function updateLastSignedIn(userId: number) {
     lastSignedIn: new Date().toISOString(),
   }).where(eq(users.id, userId));
 }
+
+
+/**
+ * Get user by username
+ */
+export async function getUserByUsername(username: string) {
+  const db = await getDb();
+  if (!db) throw new Error('Database not connected');
+  
+  // Search by name field (which stores the username)
+  return db.query.users.findFirst({
+    where: eq(users.name, username),
+  });
+}
