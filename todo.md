@@ -921,3 +921,59 @@ All tasks completed:
 - [x] Add smooth transition when switching filters
 - [x] Show "Нет записей" message when filter returns empty results
 - [x] Maintain timeline icons and styling for filtered results
+
+
+## Phase 32: Date Range Picker for Maintenance History
+
+### Date Range UI Components
+- [ ] Add date range filter section above operation type filters
+- [ ] Create preset period buttons (Последний месяц / 3 месяца / 6 месяцев / Год / Всё время)
+- [ ] Add custom date range picker with start and end date inputs
+- [ ] Style preset buttons with active state
+- [ ] Add calendar icon to date inputs
+- [ ] Make date range section responsive
+
+### Date Range State Management
+- [ ] Add useState for selected date range (start, end)
+- [ ] Add useState for active preset period
+- [ ] Implement preset button click handlers
+- [ ] Implement custom date input change handlers
+- [ ] Calculate date ranges for each preset option
+
+### Filtering Logic
+- [ ] Filter maintenance history by date range
+- [ ] Combine date range filter with operation type filter
+- [ ] Update record counts in operation type filters based on date range
+- [ ] Handle edge cases (invalid dates, future dates)
+- [ ] Show filtered date range in UI
+
+### UX Enhancements
+- [ ] Clear date range button
+- [ ] Show active date range indicator
+- [ ] Smooth transitions when changing filters
+- [ ] Update "Нет записей" message to include date range context
+
+
+## Phase 32 Completion Status
+
+All tasks completed:
+- [x] Add date range filter section above operation type filters
+- [x] Create preset period buttons (Последний месяц / 3 месяца / 6 месяцев / Год / Всё время)
+- [x] Add custom date range picker with start and end date inputs
+- [x] Style preset buttons with active state
+- [x] Add calendar icon to date inputs
+- [x] Make date range section responsive
+- [x] Add useState for selected date range (start, end)
+- [x] Add useState for active preset period
+- [x] Implement preset button click handlers
+- [x] Implement custom date input change handlers
+- [x] Calculate date ranges for each preset option
+- [x] Filter maintenance history by date range
+- [x] Combine date range filter with operation type filter
+- [x] Update record counts in operation type filters based on date range
+- [x] Handle edge cases (invalid dates, future dates)
+- [x] Show filtered date range in UI
+- [x] Clear date range button (via preset selection)
+- [x] Show active date range indicator
+- [x] Smooth transitions when changing filters
+- [x] Update "Нет записей" message to include date range context

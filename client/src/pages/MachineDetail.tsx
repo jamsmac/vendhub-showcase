@@ -54,12 +54,53 @@ export default function MachineDetail() {
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [isMaintenanceOpen, setIsMaintenanceOpen] = useState(false);
   const [maintenanceFilter, setMaintenanceFilter] = useState<string>("Все");
+  const [dateRangePreset, setDateRangePreset] = useState<string>("Всё время");
+  const [customDateRange, setCustomDateRange] = useState<{ start: string; end: string }>({
+    start: "",
+    end: "",
+  });
   const [editData, setEditData] = useState<any>(null);
   const [maintenanceData, setMaintenanceData] = useState({
     description: "",
     cost: "",
     nextServiceDue: "",
   });
+
+  // Calculate date range based on preset
+  const getDateRangeFromPreset = (preset: string): { start: Date | null; end: Date | null } => {
+    const now = new Date();
+    const end = now;
+    let start: Date | null = null;
+
+    switch (preset) {
+      case "Последний месяц":
+        start = new Date(now.getFullYear(), now.getMonth() - 1, now.getDate());
+        break;
+      case "3 месяца":
+        start = new Date(now.getFullYear(), now.getMonth() - 3, now.getDate());
+        break;
+      case "6 месяцев":
+        start = new Date(now.getFullYear(), now.getMonth() - 6, now.getDate());
+        break;
+      case "Год":
+        start = new Date(now.getFullYear() - 1, now.getMonth(), now.getDate());
+        break;
+      case "Всё время":
+        return { start: null, end: null };
+      case "Произвольный":
+        if (customDateRange.start && customDateRange.end) {
+          return {
+            start: new Date(customDateRange.start),
+            end: new Date(customDateRange.end),
+          };
+        }
+        return { start: null, end: null };
+      default:
+        return { start: null, end: null };
+    }
+
+    return { start, end };
+  };
 
   // Mock machine data (replace with real API call)
   const mockMachine = {
@@ -598,31 +639,106 @@ export default function MachineDetail() {
             </Dialog>
             </div>
             
-            {/* Filter Buttons */}
+            {/* Date Range Filters */}
+            <div className="space-y-3 mb-4">
+              <div className="flex items-center gap-2 text-sm text-gray-600">
+                <Calendar className="w-4 h-4" />
+                <span className="font-medium">Период:</span>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {[
+                  "Всё время",
+                  "Последний месяц",
+                  "3 месяца",
+                  "6 месяцев",
+                  "Год",
+                  "Произвольный",
+                ].map((preset) => (
+                  <Button
+                    key={preset}
+                    variant={dateRangePreset === preset ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => {
+                      setDateRangePreset(preset);
+                      if (preset !== "Произвольный") {
+                        setCustomDateRange({ start: "", end: "" });
+                      }
+                    }}
+                  >
+                    {preset}
+                  </Button>
+                ))}
+              </div>
+              
+              {/* Custom Date Range Inputs */}
+              {dateRangePreset === "Произвольный" && (
+                <div className="flex gap-2 items-center">
+                  <div className="flex-1">
+                    <label className="text-xs text-gray-600">От:</label>
+                    <Input
+                      type="date"
+                      value={customDateRange.start}
+                      onChange={(e) =>
+                        setCustomDateRange({ ...customDateRange, start: e.target.value })
+                      }
+                      className="mt-1"
+                    />
+                  </div>
+                  <div className="flex-1">
+                    <label className="text-xs text-gray-600">До:</label>
+                    <Input
+                      type="date"
+                      value={customDateRange.end}
+                      onChange={(e) =>
+                        setCustomDateRange({ ...customDateRange, end: e.target.value })
+                      }
+                      className="mt-1"
+                    />
+                  </div>
+                </div>
+              )}
+            </div>
+            
+            {/* Operation Type Filter Buttons */}
+            <div className="flex items-center gap-2 text-sm text-gray-600 mb-2">
+              <span className="font-medium">Тип операции:</span>
+            </div>
             <div className="flex flex-wrap gap-2">
-              {[
-                { label: "Все", value: "Все", count: mockMaintenanceHistory.length },
-                { 
-                  label: "Ремонт", 
-                  value: "Ремонт", 
-                  count: mockMaintenanceHistory.filter(r => r.type === "Ремонт").length 
-                },
-                { 
-                  label: "Пополнение", 
-                  value: "Пополнение", 
-                  count: mockMaintenanceHistory.filter(r => r.type === "Пополнение").length 
-                },
-                { 
-                  label: "Обслуживание", 
-                  value: "Обслуживание", 
-                  count: mockMaintenanceHistory.filter(r => r.type === "Обслуживание").length 
-                },
-                { 
-                  label: "Инспекция", 
-                  value: "Инспекция", 
-                  count: mockMaintenanceHistory.filter(r => r.type === "Инспекция").length 
-                },
-              ].map((filter) => (
+              {(() => {
+                // Calculate date-filtered history for counts
+                const dateRange = getDateRangeFromPreset(dateRangePreset);
+                let dateFilteredForCounts = mockMaintenanceHistory;
+                
+                if (dateRange.start && dateRange.end) {
+                  dateFilteredForCounts = mockMaintenanceHistory.filter(record => {
+                    const recordDate = record.date;
+                    return recordDate >= dateRange.start! && recordDate <= dateRange.end!;
+                  });
+                }
+                
+                return [
+                  { label: "Все", value: "Все", count: dateFilteredForCounts.length },
+                  { 
+                    label: "Ремонт", 
+                    value: "Ремонт", 
+                    count: dateFilteredForCounts.filter(r => r.type === "Ремонт").length 
+                  },
+                  { 
+                    label: "Пополнение", 
+                    value: "Пополнение", 
+                    count: dateFilteredForCounts.filter(r => r.type === "Пополнение").length 
+                  },
+                  { 
+                    label: "Обслуживание", 
+                    value: "Обслуживание", 
+                    count: dateFilteredForCounts.filter(r => r.type === "Обслуживание").length 
+                  },
+                  { 
+                    label: "Инспекция", 
+                    value: "Инспекция", 
+                    count: dateFilteredForCounts.filter(r => r.type === "Инспекция").length 
+                  },
+                ].map((filter) => (
                 <Button
                   key={filter.value}
                   variant={maintenanceFilter === filter.value ? "default" : "outline"}
@@ -638,15 +754,28 @@ export default function MachineDetail() {
                     {filter.count}
                   </Badge>
                 </Button>
-              ))}
+                ));
+              })()}
             </div>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
               {(() => {
+                // Apply date range filter
+                const dateRange = getDateRangeFromPreset(dateRangePreset);
+                let dateFilteredHistory = mockMaintenanceHistory;
+                
+                if (dateRange.start && dateRange.end) {
+                  dateFilteredHistory = mockMaintenanceHistory.filter(record => {
+                    const recordDate = record.date;
+                    return recordDate >= dateRange.start! && recordDate <= dateRange.end!;
+                  });
+                }
+                
+                // Apply operation type filter
                 const filteredHistory = maintenanceFilter === "Все" 
-                  ? mockMaintenanceHistory 
-                  : mockMaintenanceHistory.filter(r => r.type === maintenanceFilter);
+                  ? dateFilteredHistory 
+                  : dateFilteredHistory.filter(r => r.type === maintenanceFilter);
                 
                 if (filteredHistory.length === 0) {
                   return (
