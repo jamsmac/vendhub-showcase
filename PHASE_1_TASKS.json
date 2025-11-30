@@ -1,0 +1,930 @@
+{
+  "phase": {
+    "id": "PHASE-1",
+    "name": "Priorities and Basic Assignment",
+    "description": "Phase 1 focuses on implementing the foundation for task prioritization and basic operator assignment",
+    "duration": "5 working days",
+    "startDate": "2025-12-02",
+    "endDate": "2025-12-06",
+    "totalHours": 40,
+    "teamSize": "2-3 developers",
+    "status": "Not Started"
+  },
+  "epics": [
+    {
+      "id": "EPIC-1",
+      "name": "Task Priority System Implementation",
+      "description": "Implement comprehensive priority system with 4 levels, visual indicators, and filtering capabilities",
+      "duration": "2 days",
+      "storyPoints": 21,
+      "status": "Not Started",
+      "tasks": [
+        {
+          "id": "TASK-101",
+          "name": "Design Priority System Data Model",
+          "type": "Backend/Database",
+          "priority": "High",
+          "estimatedHours": 3,
+          "storyPoints": 5,
+          "assignee": "Backend Developer",
+          "status": "Not Started",
+          "dependencies": [],
+          "description": "Define and document the data model for task priorities. Create database schema updates and TypeScript interfaces for priority management.",
+          "acceptanceCriteria": [
+            "Priority enum defined with 4 levels (URGENT, HIGH, MEDIUM, LOW)",
+            "Priority values assigned (1-4 or similar)",
+            "Color codes assigned to each priority",
+            "Icon/emoji assigned to each priority",
+            "Database migration script created",
+            "TypeScript interfaces created",
+            "Documentation updated with priority definitions"
+          ],
+          "subtasks": [
+            "Create priority enum in shared types",
+            "Define color palette for priorities",
+            "Create database migration",
+            "Update TypeScript interfaces",
+            "Document priority system"
+          ],
+          "filesAffected": [
+            {
+              "path": "shared/types/priority.ts",
+              "action": "NEW"
+            },
+            {
+              "path": "drizzle/migrations/add-task-priority.sql",
+              "action": "NEW"
+            },
+            {
+              "path": "shared/const.ts",
+              "action": "MODIFY"
+            }
+          ]
+        },
+        {
+          "id": "TASK-102",
+          "name": "Create Priority Badge Component",
+          "type": "Frontend/UI",
+          "priority": "High",
+          "estimatedHours": 2,
+          "storyPoints": 3,
+          "assignee": "Frontend Developer",
+          "status": "Not Started",
+          "dependencies": ["TASK-101"],
+          "description": "Create a reusable PriorityBadge component that displays priority with color, icon, and label.",
+          "acceptanceCriteria": [
+            "Component accepts priority level as prop",
+            "Displays correct color for each priority",
+            "Displays correct icon for each priority",
+            "Displays localized label (Russian)",
+            "Responsive sizing (sm, md, lg variants)",
+            "Accessible (proper ARIA labels)",
+            "Storybook story created"
+          ],
+          "subtasks": [
+            "Create component file",
+            "Implement priority color mapping",
+            "Implement priority icon mapping",
+            "Add Russian translations",
+            "Create Storybook story",
+            "Add unit tests"
+          ],
+          "filesAffected": [
+            {
+              "path": "client/src/components/PriorityBadge.tsx",
+              "action": "NEW"
+            },
+            {
+              "path": "client/src/components/__tests__/PriorityBadge.test.tsx",
+              "action": "NEW"
+            }
+          ]
+        },
+        {
+          "id": "TASK-103",
+          "name": "Update Task Card Component with Priority Display",
+          "type": "Frontend/UI",
+          "priority": "High",
+          "estimatedHours": 3,
+          "storyPoints": 5,
+          "assignee": "Frontend Developer",
+          "status": "Not Started",
+          "dependencies": ["TASK-102"],
+          "description": "Update existing task card component to display priority badge prominently.",
+          "acceptanceCriteria": [
+            "Priority badge displayed at top-right of card",
+            "Priority badge uses correct color and icon",
+            "Priority affects card border or background color (subtle)",
+            "Priority visible in all kanban columns",
+            "Mobile responsive layout maintained",
+            "Card layout doesn't break with priority",
+            "Hover effects work correctly"
+          ],
+          "subtasks": [
+            "Add priority prop to task card",
+            "Position priority badge",
+            "Add subtle background color tint",
+            "Test mobile layout",
+            "Update component tests"
+          ],
+          "filesAffected": [
+            {
+              "path": "client/src/components/TaskCard.tsx",
+              "action": "MODIFY"
+            },
+            {
+              "path": "client/src/components/__tests__/TaskCard.test.tsx",
+              "action": "MODIFY"
+            }
+          ]
+        },
+        {
+          "id": "TASK-104",
+          "name": "Implement Priority Filtering UI",
+          "type": "Frontend/UI",
+          "priority": "High",
+          "estimatedHours": 4,
+          "storyPoints": 8,
+          "assignee": "Frontend Developer",
+          "status": "Not Started",
+          "dependencies": ["TASK-102", "TASK-103"],
+          "description": "Create filter UI for filtering tasks by priority level.",
+          "acceptanceCriteria": [
+            "Filter button in task header",
+            "Filter modal/dropdown shows all 4 priorities",
+            "Multi-select capability (can select multiple)",
+            "Checkboxes for each priority",
+            "Task count per priority displayed",
+            "All Priorities option",
+            "Quick filter buttons (Urgent+High, Medium+, etc.)",
+            "Apply and Clear buttons",
+            "Filter state persists during session",
+            "Visual indicator of active filters"
+          ],
+          "subtasks": [
+            "Create FilterButton component",
+            "Create PriorityFilterModal component",
+            "Implement filter state management",
+            "Add quick filter buttons",
+            "Connect to task filtering logic",
+            "Add tests"
+          ],
+          "filesAffected": [
+            {
+              "path": "client/src/components/PriorityFilterModal.tsx",
+              "action": "NEW"
+            },
+            {
+              "path": "client/src/pages/Tasks.tsx",
+              "action": "MODIFY"
+            },
+            {
+              "path": "client/src/hooks/useTaskFilter.ts",
+              "action": "NEW"
+            }
+          ]
+        },
+        {
+          "id": "TASK-105",
+          "name": "Implement Priority Sorting",
+          "type": "Frontend/Logic",
+          "priority": "Medium",
+          "estimatedHours": 2,
+          "storyPoints": 3,
+          "assignee": "Frontend Developer",
+          "status": "Not Started",
+          "dependencies": ["TASK-104"],
+          "description": "Add sorting functionality by priority level.",
+          "acceptanceCriteria": [
+            "Sort dropdown in task header",
+            "Sort by Priority (High → Low)",
+            "Sort by Priority (Low → High)",
+            "Sort by Due Date",
+            "Sort by Created Date",
+            "Sort by Assignee",
+            "Visual indicator of current sort",
+            "Ascending/Descending toggle",
+            "Sort preference persists",
+            "Works with filters"
+          ],
+          "subtasks": [
+            "Create SortDropdown component",
+            "Implement sort logic",
+            "Add sort state management",
+            "Test sort combinations",
+            "Add tests"
+          ],
+          "filesAffected": [
+            {
+              "path": "client/src/components/SortDropdown.tsx",
+              "action": "NEW"
+            },
+            {
+              "path": "client/src/pages/Tasks.tsx",
+              "action": "MODIFY"
+            },
+            {
+              "path": "client/src/hooks/useTaskSort.ts",
+              "action": "NEW"
+            }
+          ]
+        },
+        {
+          "id": "TASK-106",
+          "name": "Update Task Creation Form with Priority",
+          "type": "Frontend/UI",
+          "priority": "High",
+          "estimatedHours": 3,
+          "storyPoints": 5,
+          "assignee": "Frontend Developer",
+          "status": "Not Started",
+          "dependencies": ["TASK-102"],
+          "description": "Add priority selection to task creation dialog.",
+          "acceptanceCriteria": [
+            "Priority dropdown in create task form",
+            "All 4 priorities available",
+            "Default priority is Medium",
+            "Visual preview of priority badge",
+            "Priority is required field",
+            "Help text explaining priorities",
+            "Form validation works",
+            "Priority saved with task"
+          ],
+          "subtasks": [
+            "Add priority field to form",
+            "Create priority select component",
+            "Add form validation",
+            "Add help text",
+            "Test form submission",
+            "Add tests"
+          ],
+          "filesAffected": [
+            {
+              "path": "client/src/pages/Tasks.tsx",
+              "action": "MODIFY"
+            },
+            {
+              "path": "client/src/components/CreateTaskDialog.tsx",
+              "action": "MODIFY"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "EPIC-2",
+      "name": "Basic Task Assignment System",
+      "description": "Implement basic operator assignment functionality with dropdown selection and workload display",
+      "duration": "2.5 days",
+      "storyPoints": 18,
+      "status": "Not Started",
+      "tasks": [
+        {
+          "id": "TASK-201",
+          "name": "Create Operator Data Model",
+          "type": "Backend/Database",
+          "priority": "High",
+          "estimatedHours": 2,
+          "storyPoints": 3,
+          "assignee": "Backend Developer",
+          "status": "Not Started",
+          "dependencies": [],
+          "description": "Define operator/team member data model and database schema.",
+          "acceptanceCriteria": [
+            "Operator table schema defined",
+            "Required fields: id, name, email, phone, role, status",
+            "Optional fields: avatar, department, availability",
+            "Database migration created",
+            "TypeScript interfaces created",
+            "Sample data/seed script created"
+          ],
+          "subtasks": [
+            "Design operator schema",
+            "Create database migration",
+            "Create TypeScript interfaces",
+            "Create seed data script",
+            "Document schema"
+          ],
+          "filesAffected": [
+            {
+              "path": "drizzle/migrations/add-operators-table.sql",
+              "action": "NEW"
+            },
+            {
+              "path": "shared/types/operator.ts",
+              "action": "NEW"
+            },
+            {
+              "path": "scripts/seed-operators.ts",
+              "action": "NEW"
+            }
+          ]
+        },
+        {
+          "id": "TASK-202",
+          "name": "Create Operator Avatar Component",
+          "type": "Frontend/UI",
+          "priority": "Medium",
+          "estimatedHours": 2,
+          "storyPoints": 3,
+          "assignee": "Frontend Developer",
+          "status": "Not Started",
+          "dependencies": ["TASK-201"],
+          "description": "Create reusable OperatorAvatar component for displaying operator profile.",
+          "acceptanceCriteria": [
+            "Component displays avatar image if available",
+            "Falls back to initials if no image",
+            "Shows operator name on hover",
+            "Multiple size variants (sm, md, lg)",
+            "Circular design",
+            "Accessible (alt text, title)",
+            "Storybook story created"
+          ],
+          "subtasks": [
+            "Create component",
+            "Implement avatar fallback",
+            "Add size variants",
+            "Create Storybook story",
+            "Add tests"
+          ],
+          "filesAffected": [
+            {
+              "path": "client/src/components/OperatorAvatar.tsx",
+              "action": "NEW"
+            },
+            {
+              "path": "client/src/components/__tests__/OperatorAvatar.test.tsx",
+              "action": "NEW"
+            }
+          ]
+        },
+        {
+          "id": "TASK-203",
+          "name": "Create Operator Assignment Dropdown",
+          "type": "Frontend/UI",
+          "priority": "High",
+          "estimatedHours": 4,
+          "storyPoints": 8,
+          "assignee": "Frontend Developer",
+          "status": "Not Started",
+          "dependencies": ["TASK-202"],
+          "description": "Create dropdown component for assigning tasks to operators.",
+          "acceptanceCriteria": [
+            "Dropdown shows list of available operators",
+            "Shows operator avatar and name",
+            "Shows current task count per operator",
+            "Search functionality to filter operators",
+            "Unassigned option",
+            "Displays operator status (Available/Busy/On Leave)",
+            "Smooth animations",
+            "Mobile responsive",
+            "Keyboard navigation support"
+          ],
+          "subtasks": [
+            "Create OperatorSelect component",
+            "Implement search/filter",
+            "Add operator status display",
+            "Add keyboard navigation",
+            "Add tests"
+          ],
+          "filesAffected": [
+            {
+              "path": "client/src/components/OperatorSelect.tsx",
+              "action": "NEW"
+            },
+            {
+              "path": "client/src/components/__tests__/OperatorSelect.test.tsx",
+              "action": "NEW"
+            }
+          ]
+        },
+        {
+          "id": "TASK-204",
+          "name": "Update Task Card with Assignee Display",
+          "type": "Frontend/UI",
+          "priority": "High",
+          "estimatedHours": 3,
+          "storyPoints": 5,
+          "assignee": "Frontend Developer",
+          "status": "Not Started",
+          "dependencies": ["TASK-202", "TASK-203"],
+          "description": "Update task card to display and allow changing assignee.",
+          "acceptanceCriteria": [
+            "Assignee displayed on task card",
+            "Shows avatar and name",
+            "Click to open assignment dropdown",
+            "Assign button if unassigned",
+            "Reassignment works",
+            "Visual feedback on assignment",
+            "Mobile friendly"
+          ],
+          "subtasks": [
+            "Add assignee section to task card",
+            "Integrate OperatorSelect",
+            "Handle assignment changes",
+            "Add visual feedback",
+            "Test mobile layout"
+          ],
+          "filesAffected": [
+            {
+              "path": "client/src/components/TaskCard.tsx",
+              "action": "MODIFY"
+            }
+          ]
+        },
+        {
+          "id": "TASK-205",
+          "name": "Implement Operator Workload Display",
+          "type": "Frontend/UI",
+          "priority": "Medium",
+          "estimatedHours": 3,
+          "storyPoints": 5,
+          "assignee": "Frontend Developer",
+          "status": "Not Started",
+          "dependencies": ["TASK-201", "TASK-203"],
+          "description": "Display operator workload metrics in assignment dropdown and operator list.",
+          "acceptanceCriteria": [
+            "Show total assigned tasks per operator",
+            "Show tasks by status (Pending/In Progress)",
+            "Show average completion time",
+            "Show operator availability status",
+            "Visual indicator for overloaded operators",
+            "Tooltip with detailed metrics",
+            "Updates in real-time"
+          ],
+          "subtasks": [
+            "Create OperatorWorkload component",
+            "Implement workload calculation",
+            "Add visual indicators",
+            "Create tooltip",
+            "Add tests"
+          ],
+          "filesAffected": [
+            {
+              "path": "client/src/components/OperatorWorkload.tsx",
+              "action": "NEW"
+            },
+            {
+              "path": "client/src/hooks/useOperatorWorkload.ts",
+              "action": "NEW"
+            }
+          ]
+        },
+        {
+          "id": "TASK-206",
+          "name": "Add Assignment to Task Creation Form",
+          "type": "Frontend/UI",
+          "priority": "High",
+          "estimatedHours": 2,
+          "storyPoints": 3,
+          "assignee": "Frontend Developer",
+          "status": "Not Started",
+          "dependencies": ["TASK-203", "TASK-106"],
+          "description": "Add operator assignment field to task creation form.",
+          "acceptanceCriteria": [
+            "Assign to dropdown in create task form",
+            "Shows available operators",
+            "Optional field (can create unassigned)",
+            "Shows operator workload",
+            "Assignment saved with task",
+            "Form validation works"
+          ],
+          "subtasks": [
+            "Add assignment field to form",
+            "Integrate OperatorSelect",
+            "Handle form submission",
+            "Add tests"
+          ],
+          "filesAffected": [
+            {
+              "path": "client/src/pages/Tasks.tsx",
+              "action": "MODIFY"
+            },
+            {
+              "path": "client/src/components/CreateTaskDialog.tsx",
+              "action": "MODIFY"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "EPIC-3",
+      "name": "Data Integration & Backend Connection",
+      "description": "Connect frontend components to backend API and implement data persistence",
+      "duration": "1.5 days",
+      "storyPoints": 12,
+      "status": "Not Started",
+      "tasks": [
+        {
+          "id": "TASK-301",
+          "name": "Create Backend API Endpoints for Tasks",
+          "type": "Backend/API",
+          "priority": "High",
+          "estimatedHours": 4,
+          "storyPoints": 8,
+          "assignee": "Backend Developer",
+          "status": "Not Started",
+          "dependencies": ["TASK-101", "TASK-201"],
+          "description": "Create REST API endpoints for task management with priority and assignment.",
+          "acceptanceCriteria": [
+            "GET /api/tasks - List all tasks with filters",
+            "GET /api/tasks/:id - Get task details",
+            "POST /api/tasks - Create task with priority",
+            "PUT /api/tasks/:id - Update task",
+            "PATCH /api/tasks/:id/priority - Update priority",
+            "PATCH /api/tasks/:id/assign - Assign to operator",
+            "All endpoints return correct status codes",
+            "Error handling implemented",
+            "Input validation implemented",
+            "API documentation created"
+          ],
+          "subtasks": [
+            "Create task routes",
+            "Implement list endpoint with filters",
+            "Implement create endpoint",
+            "Implement update endpoints",
+            "Add input validation",
+            "Add error handling",
+            "Create API documentation"
+          ],
+          "filesAffected": [
+            {
+              "path": "server/routes/tasks.ts",
+              "action": "NEW"
+            },
+            {
+              "path": "server/controllers/taskController.ts",
+              "action": "NEW"
+            },
+            {
+              "path": "server/services/taskService.ts",
+              "action": "NEW"
+            }
+          ]
+        },
+        {
+          "id": "TASK-302",
+          "name": "Create Backend API Endpoints for Operators",
+          "type": "Backend/API",
+          "priority": "High",
+          "estimatedHours": 2,
+          "storyPoints": 3,
+          "assignee": "Backend Developer",
+          "status": "Not Started",
+          "dependencies": ["TASK-201"],
+          "description": "Create REST API endpoints for operator management.",
+          "acceptanceCriteria": [
+            "GET /api/operators - List all operators",
+            "GET /api/operators/:id - Get operator details",
+            "GET /api/operators/:id/workload - Get operator workload",
+            "POST /api/operators - Create operator",
+            "PUT /api/operators/:id - Update operator",
+            "All endpoints working correctly",
+            "Error handling implemented"
+          ],
+          "subtasks": [
+            "Create operator routes",
+            "Implement list endpoint",
+            "Implement workload endpoint",
+            "Add error handling",
+            "Create API documentation"
+          ],
+          "filesAffected": [
+            {
+              "path": "server/routes/operators.ts",
+              "action": "NEW"
+            },
+            {
+              "path": "server/controllers/operatorController.ts",
+              "action": "NEW"
+            }
+          ]
+        },
+        {
+          "id": "TASK-303",
+          "name": "Connect Frontend to Backend API",
+          "type": "Frontend/Integration",
+          "priority": "High",
+          "estimatedHours": 3,
+          "storyPoints": 5,
+          "assignee": "Frontend Developer",
+          "status": "Not Started",
+          "dependencies": ["TASK-301", "TASK-302"],
+          "description": "Replace mock data with real API calls in Tasks page.",
+          "acceptanceCriteria": [
+            "Tasks loaded from API",
+            "Operators loaded from API",
+            "Create task calls API",
+            "Update task calls API",
+            "Assign task calls API",
+            "Error handling implemented",
+            "Loading states shown",
+            "No console errors"
+          ],
+          "subtasks": [
+            "Create API client/hooks",
+            "Replace mock data",
+            "Implement error handling",
+            "Add loading states",
+            "Test all flows"
+          ],
+          "filesAffected": [
+            {
+              "path": "client/src/pages/Tasks.tsx",
+              "action": "MODIFY"
+            },
+            {
+              "path": "client/src/lib/api.ts",
+              "action": "MODIFY"
+            },
+            {
+              "path": "client/src/hooks/useTasks.ts",
+              "action": "NEW"
+            }
+          ]
+        },
+        {
+          "id": "TASK-304",
+          "name": "Implement Mock Data for Development",
+          "type": "Backend/Data",
+          "priority": "Medium",
+          "estimatedHours": 2,
+          "storyPoints": 3,
+          "assignee": "Backend Developer",
+          "status": "Not Started",
+          "dependencies": ["TASK-301", "TASK-302"],
+          "description": "Create seed/mock data for development and testing.",
+          "acceptanceCriteria": [
+            "Mock tasks created with all priority levels",
+            "Mock operators created",
+            "Mock task assignments created",
+            "Data realistic and diverse",
+            "Seed script works correctly",
+            "Can be run multiple times safely"
+          ],
+          "subtasks": [
+            "Create seed script",
+            "Generate mock tasks",
+            "Generate mock operators",
+            "Generate mock assignments",
+            "Test seed script"
+          ],
+          "filesAffected": [
+            {
+              "path": "scripts/seed-tasks.ts",
+              "action": "NEW"
+            },
+            {
+              "path": "scripts/seed-assignments.ts",
+              "action": "NEW"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "EPIC-4",
+      "name": "Testing & Quality Assurance",
+      "description": "Comprehensive testing of Phase 1 features",
+      "duration": "1 day",
+      "storyPoints": 9,
+      "status": "Not Started",
+      "tasks": [
+        {
+          "id": "TASK-401",
+          "name": "Unit Tests for Components",
+          "type": "QA/Testing",
+          "priority": "High",
+          "estimatedHours": 3,
+          "storyPoints": 5,
+          "assignee": "Frontend Developer",
+          "status": "Not Started",
+          "dependencies": ["All frontend tasks"],
+          "description": "Write unit tests for all new components.",
+          "acceptanceCriteria": [
+            "PriorityBadge component tested (100% coverage)",
+            "OperatorAvatar component tested (100% coverage)",
+            "OperatorSelect component tested (100% coverage)",
+            "PriorityFilterModal tested (100% coverage)",
+            "All tests passing",
+            "No console warnings"
+          ],
+          "subtasks": [
+            "Write PriorityBadge tests",
+            "Write OperatorAvatar tests",
+            "Write OperatorSelect tests",
+            "Write filter tests",
+            "Run coverage report"
+          ],
+          "filesAffected": [
+            {
+              "path": "Multiple test files",
+              "action": "NEW"
+            }
+          ]
+        },
+        {
+          "id": "TASK-402",
+          "name": "Integration Tests for API",
+          "type": "QA/Testing",
+          "priority": "High",
+          "estimatedHours": 2,
+          "storyPoints": 3,
+          "assignee": "Backend Developer",
+          "status": "Not Started",
+          "dependencies": ["TASK-301", "TASK-302"],
+          "description": "Write integration tests for API endpoints.",
+          "acceptanceCriteria": [
+            "Task endpoints tested",
+            "Operator endpoints tested",
+            "Priority filtering tested",
+            "Assignment tested",
+            "All tests passing",
+            "Edge cases covered"
+          ],
+          "subtasks": [
+            "Write endpoint tests",
+            "Test filtering",
+            "Test assignment",
+            "Test error cases",
+            "Run test suite"
+          ],
+          "filesAffected": [
+            {
+              "path": "Multiple test files",
+              "action": "NEW"
+            }
+          ]
+        },
+        {
+          "id": "TASK-403",
+          "name": "Manual Testing & QA",
+          "type": "QA/Testing",
+          "priority": "High",
+          "estimatedHours": 2,
+          "storyPoints": 3,
+          "assignee": "QA Engineer",
+          "status": "Not Started",
+          "dependencies": ["All tasks"],
+          "description": "Manual testing of all Phase 1 features.",
+          "acceptanceCriteria": [
+            "All features tested on desktop",
+            "All features tested on mobile",
+            "All features tested on tablet",
+            "Cross-browser testing (Chrome, Firefox, Safari)",
+            "No visual bugs",
+            "No functional bugs",
+            "Performance acceptable",
+            "Accessibility checked"
+          ],
+          "subtasks": [
+            "Test create task with priority",
+            "Test filter by priority",
+            "Test sort by priority",
+            "Test assign task to operator",
+            "Test reassign task",
+            "Test view operator workload",
+            "Test mobile layout",
+            "Test keyboard navigation"
+          ],
+          "filesAffected": [
+            {
+              "path": "Test report document",
+              "action": "NEW"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "timeline": {
+    "day1": {
+      "date": "2025-12-02",
+      "dayName": "Monday",
+      "tasks": ["TASK-101", "TASK-102", "TASK-201", "TASK-202"],
+      "totalHours": 9,
+      "focus": "Data models and basic components"
+    },
+    "day2": {
+      "date": "2025-12-03",
+      "dayName": "Tuesday",
+      "tasks": ["TASK-103", "TASK-104", "TASK-203", "TASK-204"],
+      "totalHours": 10,
+      "focus": "UI components and integration"
+    },
+    "day3": {
+      "date": "2025-12-04",
+      "dayName": "Wednesday",
+      "tasks": ["TASK-105", "TASK-106", "TASK-205", "TASK-206"],
+      "totalHours": 8,
+      "focus": "Filtering, sorting, and forms"
+    },
+    "day4": {
+      "date": "2025-12-05",
+      "dayName": "Thursday",
+      "tasks": ["TASK-301", "TASK-302", "TASK-303", "TASK-304"],
+      "totalHours": 11,
+      "focus": "Backend API and integration"
+    },
+    "day5": {
+      "date": "2025-12-06",
+      "dayName": "Friday",
+      "tasks": ["TASK-401", "TASK-402", "TASK-403"],
+      "totalHours": 6,
+      "focus": "Testing and QA"
+    }
+  },
+  "resourceAllocation": {
+    "frontendDeveloper": {
+      "totalHours": 35,
+      "tasks": [
+        "TASK-102",
+        "TASK-103",
+        "TASK-104",
+        "TASK-105",
+        "TASK-106",
+        "TASK-202",
+        "TASK-203",
+        "TASK-204",
+        "TASK-205",
+        "TASK-206",
+        "TASK-303",
+        "TASK-401"
+      ]
+    },
+    "backendDeveloper": {
+      "totalHours": 15,
+      "tasks": [
+        "TASK-101",
+        "TASK-201",
+        "TASK-301",
+        "TASK-302",
+        "TASK-304",
+        "TASK-402"
+      ]
+    },
+    "qaEngineer": {
+      "totalHours": 5,
+      "tasks": ["TASK-403"]
+    }
+  },
+  "successCriteria": {
+    "functional": [
+      "All 4 priority levels implemented",
+      "Priority filtering works correctly",
+      "Priority sorting works correctly",
+      "Tasks can be assigned to operators",
+      "Operator workload displayed",
+      "API endpoints working",
+      "Frontend-backend integration complete"
+    ],
+    "quality": [
+      "Unit test coverage > 80%",
+      "Integration test coverage > 80%",
+      "No critical bugs",
+      "No console errors/warnings",
+      "Performance acceptable (< 2s load time)",
+      "Mobile responsive",
+      "Accessibility compliant (WCAG 2.1 AA)"
+    ],
+    "documentation": [
+      "API documentation complete",
+      "Component documentation complete",
+      "Code comments where needed",
+      "Readme updated"
+    ]
+  },
+  "risks": [
+    {
+      "risk": "API delays",
+      "probability": "Medium",
+      "impact": "High",
+      "mitigation": "Start with mock data, integrate later"
+    },
+    {
+      "risk": "Performance issues",
+      "probability": "Low",
+      "impact": "Medium",
+      "mitigation": "Performance testing on Day 4"
+    },
+    {
+      "risk": "Mobile layout issues",
+      "probability": "Medium",
+      "impact": "Medium",
+      "mitigation": "Test mobile early (Day 2)"
+    },
+    {
+      "risk": "Integration bugs",
+      "probability": "Medium",
+      "impact": "High",
+      "mitigation": "Comprehensive integration tests"
+    },
+    {
+      "risk": "Scope creep",
+      "probability": "High",
+      "impact": "Medium",
+      "mitigation": "Strict adherence to requirements"
+    }
+  ]
+}

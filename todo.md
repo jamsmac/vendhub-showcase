@@ -373,6 +373,67 @@
 - [ ] Save comprehensive checkpoint with all features
 
 
+## Phase 30: Reference Books (Справочники) Implementation
+
+### Database & Schema ✅
+- [x] Create locations table (Локации)
+- [x] Create categories table (Категории)
+- [x] Create units table (Единицы измерения)
+- [x] Create machineTypes table (Типы аппаратов)
+- [x] Create componentTypes table (Типы компонентов)
+- [x] Create taskTypes table (Типы задач)
+- [x] Create supplierTypes table (Типы поставщиков)
+- [x] Create referenceBookAuditLog table
+- [x] Create SQL migration (0013_reference_books.sql)
+- [x] Create Drizzle schema (schema-reference-books.ts)
+- [x] Create indexes and views
+- [x] Create stored procedures
+
+### API Endpoints
+- [ ] Add referenceBooks router to main tRPC router
+- [ ] Implement locations CRUD endpoints
+- [ ] Implement categories CRUD endpoints
+- [ ] Implement units CRUD endpoints
+- [ ] Implement machineTypes CRUD endpoints
+- [ ] Implement componentTypes CRUD endpoints
+- [ ] Implement taskTypes CRUD endpoints
+- [ ] Implement supplierTypes CRUD endpoints
+- [ ] Add validation schemas for all entities
+- [ ] Write unit tests for API endpoints
+
+### UI Components
+- [ ] Create ReferenceBookForm component
+- [ ] Create ReferenceBookTable component
+- [ ] Create ReferenceBookModal component
+- [ ] Create search and filter functionality
+- [ ] Add loading states and error handling
+
+### Pages
+- [ ] Create /master-data page with tabs
+- [ ] Create individual reference book pages
+- [ ] Add navigation links to sidebar
+- [ ] Test all CRUD operations
+
+### Integration
+- [ ] Integrate locations with machines module
+- [ ] Integrate categories with products module
+- [ ] Integrate units with products module
+- [ ] Integrate machineTypes with machines module
+- [ ] Integrate taskTypes with tasks module
+- [ ] Integrate supplierTypes with suppliers module
+
+### AI-Agent Integration
+- [ ] Create AI-agents for each reference book
+- [ ] Add suggestion generation
+- [ ] Add learning mechanism
+- [ ] Test with real data
+
+### Bulk Operations
+- [ ] Implement bulk import from Excel/CSV
+- [ ] Implement bulk export to Excel/CSV
+- [ ] Implement bulk update operations
+- [ ] Add import preview and validation
+
 ## Phase 23: Inventory Tracking System (3-Level Hierarchy)
 
 ### Database & API

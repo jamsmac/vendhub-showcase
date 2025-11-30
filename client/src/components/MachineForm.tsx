@@ -9,6 +9,14 @@ import { Card } from "@/components/ui/card";
 import { toast } from "sonner";
 import { AiAgentSuggestions } from "./AiAgentSuggestions";
 import { trpc } from "@/lib/trpc";
+import { useDictionaryOptions } from "@/hooks/useDictionaries";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface MachineFormProps {
   machineId?: number;
@@ -23,8 +31,13 @@ export function MachineForm({ machineId, onSuccess, onCancel }: MachineFormProps
     model: "",
     location: "",
     status: "active",
+    locationType: "",
     notes: "",
   });
+
+  // Load dictionary options
+  const machineStatuses = useDictionaryOptions('machine_statuses');
+  const locationTypes = useDictionaryOptions('location_types');
 
   const [showAiSuggestions, setShowAiSuggestions] = useState(false);
   const [aiAgentId, setAiAgentId] = useState<number | null>(null);
@@ -43,6 +56,13 @@ export function MachineForm({ machineId, onSuccess, onCancel }: MachineFormProps
   // Note: Machines create/update endpoints need to be added to routers.ts
   const createMutation = { mutateAsync: async (data: any) => {}, isPending: false };
   const updateMutation = { mutateAsync: async (data: any) => {}, isPending: false };
+
+  const handleSelectChange = (name: string, value: string) => {
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -159,18 +179,36 @@ export function MachineForm({ machineId, onSuccess, onCancel }: MachineFormProps
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-2">Status</label>
-            <select
-              name="status"
-              value={formData.status}
-              onChange={handleInputChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              <option value="active">Active</option>
-              <option value="maintenance">Maintenance</option>
-              <option value="offline">Offline</option>
-              <option value="retired">Retired</option>
-            </select>
+            <label className="block text-sm font-medium mb-2">Статус</label>
+            <Select value={formData.status} onValueChange={(value) => handleSelectChange('status', value)}>
+              <SelectTrigger className="border-gray-300">
+                <SelectValue placeholder="Выберите статус" />
+              </SelectTrigger>
+              <SelectContent>
+                {machineStatuses.map((option) => (
+                  <SelectItem key={option.value} value={option.value}>
+                    {option.icon && <span className="mr-2">{option.icon}</span>}
+                    {option.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium mb-2">Тип локации</label>
+            <Select value={formData.locationType} onValueChange={(value) => handleSelectChange('locationType', value)}>
+              <SelectTrigger className="border-gray-300">
+                <SelectValue placeholder="Выберите тип локации" />
+              </SelectTrigger>
+              <SelectContent>
+                {locationTypes.map((option) => (
+                  <SelectItem key={option.value} value={option.value}>
+                    {option.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
         </div>
 
