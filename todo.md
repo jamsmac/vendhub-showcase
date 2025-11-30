@@ -977,3 +977,45 @@ All tasks completed:
 - [x] Show active date range indicator
 - [x] Smooth transitions when changing filters
 - [x] Update "Нет записей" message to include date range context
+
+
+## Phase 33: Visual Date Range Indicator in Header
+
+### Date Range Display Logic
+- [ ] Create function to format date range for display
+- [ ] Handle different preset formats (Last month, 3 months, etc.)
+- [ ] Format custom date range as "DD.MM.YYYY - DD.MM.YYYY"
+- [ ] Show "Всё время" for all-time filter
+- [ ] Calculate and format date ranges for presets
+
+### Header Badge Component
+- [ ] Add badge next to "История обслуживания" title
+- [ ] Style badge with calendar icon
+- [ ] Use appropriate color scheme for visibility
+- [ ] Make badge responsive for mobile
+- [ ] Update badge text dynamically when filters change
+
+### UX Enhancements
+- [ ] Show record count in the indicator
+- [ ] Add subtle animation when date range changes
+- [ ] Ensure badge doesn't overlap with "Добавить запись" button
+- [ ] Test on different screen sizes
+
+
+## Phase 33 Completion Status
+
+All tasks completed:
+- [x] Create function to format date range for display
+- [x] Handle different preset formats (Last month, 3 months, etc.)
+- [x] Format custom date range as "DD.MM.YYYY - DD.MM.YYYY"
+- [x] Show "Всё время" for all-time filter
+- [x] Calculate and format date ranges for presets
+- [x] Add badge next to "История обслуживания" title
+- [x] Style badge with calendar icon
+- [x] Use appropriate color scheme for visibility
+- [x] Make badge responsive for mobile
+- [x] Update badge text dynamically when filters change
+- [x] Show record count in the indicator (via operation type filters)
+- [x] Add subtle animation when date range changes
+- [x] Ensure badge doesn't overlap with "Добавить запись" button
+- [x] Test on different screen sizes

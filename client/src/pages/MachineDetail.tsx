@@ -102,6 +102,28 @@ export default function MachineDetail() {
     return { start, end };
   };
 
+  // Format date range for display
+  const formatDateRangeDisplay = (): string => {
+    if (dateRangePreset === "Всё время") {
+      return "Всё время";
+    }
+    
+    const dateRange = getDateRangeFromPreset(dateRangePreset);
+    if (!dateRange.start || !dateRange.end) {
+      return "Всё время";
+    }
+    
+    const formatDate = (date: Date) => {
+      return date.toLocaleDateString("ru-RU", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+      });
+    };
+    
+    return `${formatDate(dateRange.start)} - ${formatDate(dateRange.end)}`;
+  };
+
   // Mock machine data (replace with real API call)
   const mockMachine = {
     id: machineId || 1,
@@ -576,7 +598,13 @@ export default function MachineDetail() {
         <Card>
           <CardHeader>
             <div className="flex items-center justify-between mb-4">
-              <CardTitle>История обслуживания</CardTitle>
+              <div className="flex items-center gap-3">
+                <CardTitle>История обслуживания</CardTitle>
+                <Badge variant="secondary" className="gap-1.5 px-2.5 py-1">
+                  <Calendar className="w-3.5 h-3.5" />
+                  {formatDateRangeDisplay()}
+                </Badge>
+              </div>
               <Dialog open={isMaintenanceOpen} onOpenChange={setIsMaintenanceOpen}>
                 <DialogTrigger asChild>
                   <Button size="sm" variant="outline" className="gap-2">
