@@ -1,0 +1,73 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: vendhub-manager
+    ports:
+      - '3000:3000'
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      DATABASE_URL: ${DATABASE_URL}
+      JWT_SECRET: ${JWT_SECRET}
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}
+      TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN}
+      TELEGRAM_OWNER_ID: ${TELEGRAM_OWNER_ID}
+      OWNER_NAME: ${OWNER_NAME}
+      OWNER_OPEN_ID: ${OWNER_OPEN_ID}
+      OAUTH_SERVER_URL: ${OAUTH_SERVER_URL}
+      VITE_OAUTH_PORTAL_URL: ${VITE_OAUTH_PORTAL_URL}
+      VITE_APP_TITLE: ${VITE_APP_TITLE}
+      VITE_APP_LOGO: ${VITE_APP_LOGO}
+      VITE_ANALYTICS_ENDPOINT: ${VITE_ANALYTICS_ENDPOINT}
+      VITE_ANALYTICS_WEBSITE_ID: ${VITE_ANALYTICS_WEBSITE_ID}
+      VITE_APP_ID: ${VITE_APP_ID}
+      VITE_FRONTEND_FORGE_API_URL: ${VITE_FRONTEND_FORGE_API_URL}
+      VITE_FRONTEND_FORGE_API_KEY: ${VITE_FRONTEND_FORGE_API_KEY}
+      BUILT_IN_FORGE_API_URL: ${BUILT_IN_FORGE_API_URL}
+      BUILT_IN_FORGE_API_KEY: ${BUILT_IN_FORGE_API_KEY}
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:3000/health']
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 5s
+    restart: unless-stopped
+    networks:
+      - vendhub-network
+    volumes:
+      - app-logs:/app/logs
+    depends_on:
+      - mysql
+
+  mysql:
+    image: mysql:8.0-alpine
+    container_name: vendhub-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-vendhub}
+      MYSQL_USER: ${MYSQL_USER:-vendhub}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-vendhub123}
+    ports:
+      - '3306:3306'
+    healthcheck:
+      test: ['CMD', 'mysqladmin', 'ping', '-h', 'localhost']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+    networks:
+      - vendhub-network
+    volumes:
+      - mysql-data:/var/lib/mysql
+
+networks:
+  vendhub-network:
+    driver: bridge
+
+volumes:
+  app-logs:
+  mysql-data:

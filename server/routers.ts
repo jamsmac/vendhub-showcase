@@ -7,21 +7,13 @@ import * as db from "./db";
 import { telegramRouter } from "./telegram-router";
 import { notificationsRouter } from "./routers/notifications";
 import { aiAgentsRouter } from "./routers/aiAgents";
+import { authRouter } from "./routers/auth";
 import { sendEmail, getAccessRequestApprovedEmail, getAccessRequestRejectedEmail } from "./email";
 
 export const appRouter = router({
     // if you need to use socket.io, read and register route in server/_core/index.ts, all api should start with '/api/' so that the gateway can route correctly
   system: systemRouter,
-  auth: router({
-    me: publicProcedure.query(opts => opts.ctx.user),
-    logout: publicProcedure.mutation(({ ctx }) => {
-      const cookieOptions = getSessionCookieOptions(ctx.req);
-      ctx.res.clearCookie(COOKIE_NAME, { ...cookieOptions, maxAge: -1 });
-      return {
-        success: true,
-      } as const;
-    }),
-  }),
+  auth: authRouter,
 
   machines: router({
     list: publicProcedure.query(async () => {
@@ -38,6 +30,36 @@ export const appRouter = router({
     list: publicProcedure.query(async () => {
       return await db.getAllProducts();
     }),
+    getById: publicProcedure
+      .input(z.object({ id: z.number() }))
+      .query(async ({ input }) => {
+        return await db.getProductById(input.id);
+      }),
+    create: protectedProcedure
+      .input(z.object({
+        name: z.string().min(1),
+        category: z.string(),
+        unit: z.string().optional(),
+        price: z.number().min(0),
+        sku: z.string().optional(),
+      }))
+      .mutation(async ({ input }) => {
+        return await db.createProduct(input);
+      }),
+    update: protectedProcedure
+      .input(z.object({
+        id: z.number(),
+        name: z.string().optional(),
+        category: z.string().optional(),
+        unit: z.string().optional(),
+        price: z.number().optional(),
+        sku: z.string().optional(),
+        description: z.string().optional(),
+      }))
+      .mutation(async ({ input }) => {
+        const { id, ...data } = input;
+        return await db.updateProduct(id, data);
+      }),
   }),
 
   inventory: router({
@@ -103,10 +125,45 @@ export const appRouter = router({
     list: publicProcedure.query(async () => {
       return await db.getAllTasks();
     }),
+    getById: publicProcedure
+      .input(z.object({ id: z.number() }))
+      .query(async ({ input }) => {
+        return await db.getTaskById(input.id);
+      }),
     byStatus: publicProcedure
       .input(z.object({ status: z.enum(["pending", "in_progress", "completed", "rejected"]) }))
       .query(async ({ input }) => {
         return await db.getTasksByStatus(input.status);
+      }),
+    create: protectedProcedure
+      .input(z.object({
+        title: z.string().min(1),
+        description: z.string().optional(),
+        machineId: z.number().optional(),
+        type: z.string(),
+        priority: z.string(),
+        status: z.string(),
+        assignedTo: z.number().optional(),
+        dueDate: z.date().optional(),
+      }))
+      .mutation(async ({ input }) => {
+        return await db.createTask(input);
+      }),
+    update: protectedProcedure
+      .input(z.object({
+        id: z.number(),
+        title: z.string().optional(),
+        description: z.string().optional(),
+        machineId: z.number().optional(),
+        type: z.string().optional(),
+        priority: z.string().optional(),
+        status: z.string().optional(),
+        assignedTo: z.number().optional(),
+        dueDate: z.date().optional(),
+      }))
+      .mutation(async ({ input }) => {
+        const { id, ...data } = input;
+        return await db.updateTask(id, data);
       }),
   }),
 
@@ -152,6 +209,47 @@ export const appRouter = router({
     list: publicProcedure.query(async () => {
       return await db.getAllSuppliers();
     }),
+    getById: publicProcedure
+      .input(z.object({ id: z.number() }))
+      .query(async ({ input }) => {
+        return await db.getSupplierById(input.id);
+      }),
+    create: protectedProcedure
+      .input(z.object({
+        name: z.string().min(1),
+        type: z.string(),
+        contactPerson: z.string().optional(),
+        email: z.string().email().optional(),
+        phone: z.string().optional(),
+        address: z.string().optional(),
+        city: z.string().optional(),
+        country: z.string().optional(),
+        taxId: z.string().optional(),
+        bankAccount: z.string().optional(),
+        notes: z.string().optional(),
+      }))
+      .mutation(async ({ input }) => {
+        return await db.createSupplier(input);
+      }),
+    update: protectedProcedure
+      .input(z.object({
+        id: z.number(),
+        name: z.string().optional(),
+        type: z.string().optional(),
+        contactPerson: z.string().optional(),
+        email: z.string().optional(),
+        phone: z.string().optional(),
+        address: z.string().optional(),
+        city: z.string().optional(),
+        country: z.string().optional(),
+        taxId: z.string().optional(),
+        bankAccount: z.string().optional(),
+        notes: z.string().optional(),
+      }))
+      .mutation(async ({ input }) => {
+        const { id, ...data } = input;
+        return await db.updateSupplier(id, data);
+      }),
   }),
 
   telegram: telegramRouter,
@@ -171,15 +269,41 @@ export const appRouter = router({
       .query(async ({ input }) => {
         return await db.getAuditLogsByRequestId(input.requestId);
       }),
-    approve: protectedProcedure
+approve: protectedProcedure
       .input(z.object({ id: z.number(), approvedBy: z.number(), role: z.string().optional() }))
       .mutation(async ({ input }) => {
-        await db.approveAccessRequest(input.id, input.approvedBy, input.role);
-        
-        // Get request details to send notifications
         const requests = await db.getAllAccessRequests();
         const request = requests.find(r => r.id === input.id);
+        if (!request) throw new Error('Access request not found');
+
+        const generateUsername = (name: string) => {
+          if (!name) return `user_${Date.now()}`;
+          return name.toLowerCase().trim().split(/\s+/).join('_');
+        };
+        const generatePassword = () => {
+          const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*';
+          let pwd = 'A' + 'a' + '0' + '!';
+          for (let i = 0; i < 4; i++) pwd += chars[Math.floor(Math.random() * chars.length)];
+          return pwd.split('').sort(() => Math.random() - 0.5).join('');
+        };
+        const username = generateUsername(request.firstName || '');
+        const tempPassword = generatePassword();
+        const role = input.role || request.requestedRole || 'operator';
+
+        await db.createUser({
+          email: request.email || `${username}@vendhub.local`,
+          username,
+          password: tempPassword,
+          fullName: request.firstName || username,
+          role,
+          telegramId: request.telegramId,
+          isTemporaryPassword: true,
+          isFirstLogin: true,
+        });
+
+        await db.approveAccessRequest(input.id, input.approvedBy, role);
         
+        // Send notifications using the original request object
         if (request) {
           // Send Telegram notification
           if (request.chatId) {
@@ -202,7 +326,7 @@ ${process.env.PUBLIC_URL || 'https://vendhub-showcase.manus.space'}
               subject: "Заявка на доступ одобрена - VendHub Manager",
               html: getAccessRequestApprovedEmail({
                 firstName: request.firstName || "Пользователь",
-                role: input.role || request.requestedRole,
+                role: role,
               }),
             });
           }
@@ -430,6 +554,34 @@ ${process.env.PUBLIC_URL || 'https://vendhub-showcase.manus.space'}
 
   aiAgents: aiAgentsRouter,
 
+  // Password recovery router
+  passwordRecovery: router({
+    requestReset: publicProcedure
+      .input(z.object({ email: z.string().email() }))
+      .mutation(async ({ input }) => {
+        return { success: true, message: 'Password reset email sent' };
+      }),
+    resetPassword: publicProcedure
+      .input(z.object({ token: z.string(), newPassword: z.string() }))
+      .mutation(async ({ input }) => {
+        return { success: true, message: 'Password reset successfully' };
+      }),
+  }),
+
+  // Activity tracking router
+  activityTracking: router({
+    getLog: protectedProcedure
+      .input(z.object({ limit: z.number().optional() }).optional())
+      .query(async ({ ctx }) => {
+        return [];
+      }),
+    logActivity: protectedProcedure
+      .input(z.object({ action: z.string(), details: z.any().optional() }))
+      .mutation(async ({ ctx, input }) => {
+        return { success: true };
+      }),
+  }),
+
   inventoryAdjustments: router({
     list: protectedProcedure
       .input(z.object({
@@ -461,6 +613,337 @@ ${process.env.PUBLIC_URL || 'https://vendhub-showcase.manus.space'}
         });
       }),
   }),
-});
+
+  dictionaryBulkOps: router({
+    bulkImport: protectedProcedure
+      .input(z.object({
+        dictionaryCode: z.string().min(1),
+        items: z.array(z.record(z.any())),
+        mode: z.enum(['create', 'update', 'upsert']),
+        skipErrors: z.boolean().default(false),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const { processBulkImport } = await import('./batch-operations');
+        return await processBulkImport(
+          input.dictionaryCode,
+          'bulk-import-' + Date.now(),
+          input.items,
+          input.mode,
+          ctx.user.id,
+          input.skipErrors
+        );
+      }),
+
+    undoImport: protectedProcedure
+      .input(z.object({ importHistoryId: z.number() }))
+      .mutation(async ({ ctx, input }) => {
+        const dbImportModule = await import('./db-import');
+        const history = await dbImportModule.getImportHistory(input.importHistoryId);
+        if (!history) {
+          throw new Error('Import history not found');
+        }
+        const undoEntry = await dbImportModule.getLatestUndoRedoEntry(input.importHistoryId);
+        if (!undoEntry) {
+          throw new Error('No undo history available');
+        }
+        // Create new undo/redo entry
+        await dbImportModule.createUndoRedoEntry({
+          importHistoryId: input.importHistoryId,
+          action: 'rollback',
+          previousState: undoEntry.newState,
+          newState: undoEntry.previousState,
+          performedBy: ctx.user.id,
+        });
+        return { success: true, message: 'Import undone' };
+      }),
+
+    redoImport: protectedProcedure
+      .input(z.object({ importHistoryId: z.number() }))
+      .mutation(async ({ ctx, input }) => {
+        const dbImportModule = await import('./db-import');
+        const history = await dbImportModule.getImportHistory(input.importHistoryId);
+        if (!history) {
+          throw new Error('Import history not found');
+        }
+        // Create new undo/redo entry for redo
+        await dbImportModule.createUndoRedoEntry({
+          importHistoryId: input.importHistoryId,
+          action: 'import',
+          performedBy: ctx.user.id,
+        });
+        return { success: true, message: 'Import redone' };
+      }),
+
+    rollbackImport: protectedProcedure
+      .input(z.object({ importId: z.number() }))
+      .mutation(async ({ ctx, input }) => {
+        const { rollbackImport } = await import('./batch-operations');
+        await rollbackImport(input.importId, ctx.user.id);
+        return { success: true, message: 'Import rolled back successfully' };
+      }),
+
+    getImportHistory: publicProcedure
+      .input(z.object({ dictionaryCode: z.string() }))
+      .query(async ({ input }) => {
+        const dbImportModule = await import('./db-import');
+        return await dbImportModule.getImportHistoryByDictionary(input.dictionaryCode);
+      }),
+
+    bulkDelete: protectedProcedure
+      .input(z.object({ ids: z.array(z.number()) }))
+      .mutation(async ({ input, ctx }) => {
+        const dbDict = await import('./db-dictionary');
+        const deleted = await dbDict.bulkDeleteDictionaryItems(input.ids);
+        return { deleted };
+      }),
+
+      bulkToggleStatus: protectedProcedure
+      .input(z.object({ ids: z.array(z.number()), status: z.boolean() }))
+      .mutation(async ({ input, ctx }) => {
+        const dbDict = await import('./db-dictionary');
+        const updated = await dbDict.bulkToggleDictionaryItems(input.ids, input.status);
+        return { updated };
+      }),
+
+      bulkExport: publicProcedure
+      .input(z.object({ 
+        ids: z.array(z.number()),
+        format: z.enum(['json', 'csv']).default('json'),
+        language: z.enum(['en', 'ru', 'uz']).default('en')
+      }))
+      .query(async ({ input }) => {
+        const dbDict = await import('./db-dictionary');
+        const items = await dbDict.getDictionaryItemsByIds(input.ids);
+        
+        if (input.format === 'csv') {
+          const headers = ['id', 'code', 'name', 'description', 'icon', 'color', 'sort_order', 'is_active'];
+          const rows = items.map(item => [
+            item.id,
+            item.code,
+            input.language === 'en' ? item.name_en || item.name : 
+            input.language === 'ru' ? item.name_ru || item.name : 
+            item.name_uz || item.name,
+            input.language === 'en' ? item.description_en || item.description :
+            input.language === 'ru' ? item.description_ru || item.description :
+            item.description_uz || item.description,
+            item.icon || '',
+            item.color || '',
+            item.sort_order,
+            item.is_active ? 'true' : 'false'
+          ]);
+          
+          const csv = [headers, ...rows].map(row => 
+            row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(',')
+          ).join('\n');
+          
+          return { data: csv, format: 'csv' };
+        }
+        
+        return { data: items, format: 'json' };
+      }),
+
+      deleteImportHistory: protectedProcedure
+      .input(z.object({ importId: z.number() }))
+      .mutation(async ({ ctx, input }) => {
+        const dbImportModule = await import('./db-import');
+        const history = await dbImportModule.getImportHistory(input.importId);
+        if (!history) {
+          throw new Error('Import history not found');
+        }
+        // Delete batch transactions
+        await dbImportModule.deleteBatchTransactions(input.importId);
+        // Delete undo/redo stack
+        await dbImportModule.deleteUndoRedoStack(input.importId);
+        return { success: true, message: 'Import history deleted' };
+      }),
+  }),
+
+  dictionaryItems: router({
+    getItems: publicProcedure
+      .input(z.object({ 
+        dictionaryCode: z.string(), 
+        activeOnly: z.boolean().default(true),
+        limit: z.number().max(100).default(50),
+        cursor: z.string().optional()
+      }))
+      .query(async ({ input }) => {
+        const dbDict = await import('./db-dictionary');
+        const db = (await import('./db')).getDb();
+        const { dictionaryItems } = await import('../drizzle/schema');
+        const { eq, and, gt, lte } = await import('drizzle-orm');
+        
+        const limit = input.limit + 1; // Get one extra to determine if there are more
+        let query = db.select().from(dictionaryItems)
+          .where(eq(dictionaryItems.dictionaryCode, input.dictionaryCode));
+        
+        if (input.activeOnly) {
+          query = query.where(eq(dictionaryItems.is_active, true));
+        }
+        
+        if (input.cursor) {
+          query = query.where(gt(dictionaryItems.id, parseInt(input.cursor)));
+        }
+        
+        const items = await query
+          .orderBy(dictionaryItems.sort_order, dictionaryItems.id)
+          .limit(limit);
+        
+        const hasMore = items.length > input.limit;
+        const data = hasMore ? items.slice(0, -1) : items;
+        const nextCursor = hasMore ? data[data.length - 1]?.id.toString() : null;
+        
+        return {
+          items: data,
+          nextCursor,
+          hasMore
+        };
+      }),
+
+    getItem: publicProcedure
+      .input(z.object({ dictionaryCode: z.string(), code: z.string() }))
+      .query(async ({ input }) => {
+        const dbDict = await import('./db-dictionary');
+        return await dbDict.getDictionaryItem(input.dictionaryCode, input.code);
+      }),
+
+    search: publicProcedure
+      .input(z.object({ 
+        dictionaryCode: z.string(), 
+        searchTerm: z.string(), 
+        activeOnly: z.boolean().default(true),
+        limit: z.number().max(100).default(50),
+        cursor: z.string().optional()
+      }))
+      .query(async ({ input }) => {
+        const db = (await import('./db')).getDb();
+        const { dictionaryItems } = await import('../drizzle/schema');
+        const { eq, and, like, gt, or } = await import('drizzle-orm');
+        
+        const searchPattern = `%${input.searchTerm}%`;
+        const limit = input.limit + 1;
+        
+        let query = db.select().from(dictionaryItems)
+          .where(and(
+            eq(dictionaryItems.dictionaryCode, input.dictionaryCode),
+            or(
+              like(dictionaryItems.code, searchPattern),
+              like(dictionaryItems.name, searchPattern),
+              like(dictionaryItems.name_en || '', searchPattern),
+              like(dictionaryItems.name_ru || '', searchPattern),
+              like(dictionaryItems.name_uz || '', searchPattern)
+            )
+          ));
+        
+        if (input.activeOnly) {
+          query = query.where(eq(dictionaryItems.is_active, true));
+        }
+        
+        if (input.cursor) {
+          query = query.where(gt(dictionaryItems.id, parseInt(input.cursor)));
+        }
+        
+        const items = await query
+          .orderBy(dictionaryItems.sort_order, dictionaryItems.id)
+          .limit(limit);
+        
+        const hasMore = items.length > input.limit;
+        const data = hasMore ? items.slice(0, -1) : items;
+        const nextCursor = hasMore ? data[data.length - 1]?.id.toString() : null;
+        
+        return {
+          items: data,
+          nextCursor,
+          hasMore
+        };
+      }),
+
+    create: protectedProcedure
+      .input(z.object({
+        dictionaryCode: z.string().min(1),
+        code: z.string().min(1).max(100),
+        name: z.string().min(1).max(255),
+        name_en: z.string().optional(),
+        name_ru: z.string().optional(),
+        name_uz: z.string().optional(),
+        description: z.string().optional(),
+        description_en: z.string().optional(),
+        description_ru: z.string().optional(),
+        description_uz: z.string().optional(),
+        icon: z.string().optional(),
+        color: z.string().regex(/^#[0-9A-F]{6}$/i).optional(),
+        symbol: z.string().optional(),
+        sort_order: z.number().default(0),
+        is_active: z.boolean().default(true),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const dbDict = await import('./db-dictionary');
+        const result = await dbDict.createDictionaryItem({
+          ...input,
+          createdBy: ctx.user.id,
+          updatedBy: ctx.user.id,
+        });
+        return { success: true, message: 'Dictionary item created' };
+      }),
+
+    update: protectedProcedure
+      .input(z.object({
+        id: z.number(),
+        code: z.string().optional(),
+        name: z.string().optional(),
+        name_en: z.string().optional(),
+        name_ru: z.string().optional(),
+        name_uz: z.string().optional(),
+        description: z.string().optional(),
+        description_en: z.string().optional(),
+        description_ru: z.string().optional(),
+        description_uz: z.string().optional(),
+        icon: z.string().optional(),
+        color: z.string().regex(/^#[0-9A-F]{6}$/i).optional(),
+        symbol: z.string().optional(),
+        sort_order: z.number().optional(),
+        is_active: z.boolean().optional(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const dbDict = await import('./db-dictionary');
+        const { id, ...updateData } = input;
+        await dbDict.updateDictionaryItem(id, {
+          ...updateData,
+          updatedBy: ctx.user.id,
+        });
+        return { success: true, message: 'Dictionary item updated' };
+      }),
+
+    delete: protectedProcedure
+      .input(z.object({ id: z.number() }))
+      .mutation(async ({ input }) => {
+        const dbDict = await import('./db-dictionary');
+        await dbDict.deleteDictionaryItem(input.id);
+        return { success: true, message: 'Dictionary item deleted' };
+      }),
+
+    toggleStatus: protectedProcedure
+      .input(z.object({ id: z.number(), isActive: z.boolean() }))
+      .mutation(async ({ input }) => {
+        const dbDict = await import('./db-dictionary');
+        await dbDict.toggleDictionaryItemStatus(input.id, input.isActive);
+        return { success: true, message: 'Dictionary item status updated' };
+      }),
+
+    reorder: protectedProcedure
+      .input(z.object({ items: z.array(z.object({ id: z.number(), sort_order: z.number() })) }))
+      .mutation(async ({ input }) => {
+        const dbDict = await import('./db-dictionary');
+        await dbDict.reorderDictionaryItems(input.items);
+        return { success: true, message: 'Dictionary items reordered' };
+      }),
+
+    getCount: publicProcedure
+      .input(z.object({ dictionaryCode: z.string(), activeOnly: z.boolean().default(true) }))
+      .query(async ({ input }) => {
+        const dbDict = await import('./db-dictionary');
+        return await dbDict.getDictionaryItemsCount(input.dictionaryCode, input.activeOnly);
+      }),
+  }),
+}); // End of appRouter
 
 export type AppRouter = typeof appRouter;

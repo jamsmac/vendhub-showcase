@@ -63,6 +63,70 @@ export class PasswordService {
   }
 
   /**
+   * Validate password strength with detailed errors
+   * @param password - Password to validate
+   * @returns Object with validation result and error array
+   */
+  static validatePasswordStrength(password: string): { isValid: boolean; errors: string[] } {
+    const errors: string[] = [];
+
+    if (!password) {
+      errors.push('Password is required');
+      return { isValid: false, errors };
+    }
+
+    if (password.length < 8) {
+      errors.push('Password must be at least 8 characters long');
+    }
+
+    if (!/[A-Z]/.test(password)) {
+      errors.push('Password must contain at least one uppercase letter');
+    }
+
+    if (!/[a-z]/.test(password)) {
+      errors.push('Password must contain at least one lowercase letter');
+    }
+
+    if (!/[0-9]/.test(password)) {
+      errors.push('Password must contain at least one number');
+    }
+
+    return {
+      isValid: errors.length === 0,
+      errors,
+    };
+  }
+
+  /**
+   * Generate a temporary password for new users
+   * Format: 10 random characters with uppercase, lowercase, and numbers
+   * @returns Temporary password
+   */
+  static generateTemporaryPassword(): string {
+    const uppercase = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    const lowercase = 'abcdefghijklmnopqrstuvwxyz';
+    const numbers = '0123456789';
+    const allChars = uppercase + lowercase + numbers;
+
+    let password = '';
+    // Ensure at least one of each type
+    password += uppercase[Math.floor(Math.random() * uppercase.length)];
+    password += lowercase[Math.floor(Math.random() * lowercase.length)];
+    password += numbers[Math.floor(Math.random() * numbers.length)];
+
+    // Fill the rest with random characters
+    for (let i = password.length; i < 10; i++) {
+      password += allChars[Math.floor(Math.random() * allChars.length)];
+    }
+
+    // Shuffle the password
+    return password
+      .split('')
+      .sort(() => Math.random() - 0.5)
+      .join('');
+  }
+
+  /**
    * Validate email format
    * @param email - Email to validate
    * @returns True if email is valid

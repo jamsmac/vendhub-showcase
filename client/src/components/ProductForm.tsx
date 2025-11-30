@@ -6,8 +6,16 @@ import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { toast } from "sonner";
 import { AiAgentSuggestions } from "./AiAgentSuggestions";
+import { useDictionaryOptions } from "@/hooks/useDictionaries";
 import { trpc } from "@/lib/trpc";
 
 interface ProductFormProps {
@@ -20,6 +28,7 @@ export function ProductForm({ productId, onSuccess, onCancel }: ProductFormProps
   const [formData, setFormData] = useState({
     name: "",
     category: "",
+    unit: "",
     price: "",
     sku: "",
     description: "",
@@ -27,6 +36,10 @@ export function ProductForm({ productId, onSuccess, onCancel }: ProductFormProps
 
   const [showAiSuggestions, setShowAiSuggestions] = useState(false);
   const [aiAgentId, setAiAgentId] = useState<number | null>(null);
+
+  // Get dictionary options
+  const categoryOptions = useDictionaryOptions('product_categories');
+  const unitOptions = useDictionaryOptions('units_of_measure');
 
   // Get or create AI agent for products
   const { data: productAgent } = trpc.aiAgents.getByType.useQuery(
@@ -39,10 +52,9 @@ export function ProductForm({ productId, onSuccess, onCancel }: ProductFormProps
     }
   }, [productAgent]);
 
-  // Note: Products create/update endpoints need to be added to routers.ts
-  // For now, using mock mutations
-  const createMutation = { mutateAsync: async (data: any) => {}, isPending: false };
-  const updateMutation = { mutateAsync: async (data: any) => {}, isPending: false };
+  // Use real tRPC endpoints
+  const createMutation = trpc.products.create.useMutation();
+  const updateMutation = trpc.products.update.useMutation();
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -65,18 +77,23 @@ export function ProductForm({ productId, onSuccess, onCancel }: ProductFormProps
     e.preventDefault();
 
     try {
+      const productData = {
+        name: formData.name,
+        category: formData.category,
+        unit: formData.unit || undefined,
+        price: parseFloat(formData.price) || 0,
+        sku: formData.sku || undefined,
+        description: formData.description || undefined,
+      };
+
       if (productId) {
-        // await updateMutation.mutateAsync({
-        //   id: productId,
-        //   ...formData,
-        //   price: parseFloat(formData.price) || 0,
-        // });
+        await updateMutation.mutateAsync({
+          id: productId,
+          ...productData,
+        });
         toast.success("Product updated successfully");
       } else {
-        // await createMutation.mutateAsync({
-        //   ...formData,
-        //   price: parseFloat(formData.price) || 0,
-        // });
+        await createMutation.mutateAsync(productData);
         toast.success("Product created successfully");
       }
 
@@ -130,18 +147,40 @@ export function ProductForm({ productId, onSuccess, onCancel }: ProductFormProps
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-2">Category</label>
-            <Input
-              type="text"
-              name="category"
-              value={formData.category}
-              onChange={handleInputChange}
-              placeholder="e.g., Beverages"
-            />
+            <label className="block text-sm font-medium mb-2">Category *</label>
+            <Select value={formData.category} onValueChange={(value) => setFormData({ ...formData, category: value })}>
+              <SelectTrigger>
+                <SelectValue placeholder="Select category" />
+              </SelectTrigger>
+              <SelectContent>
+                {categoryOptions.map((option) => (
+                  <SelectItem key={option.value} value={option.value}>
+                    {option.icon && <span className="mr-2">{option.icon}</span>}
+                    {option.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-2">Price (UZS)</label>
+            <label className="block text-sm font-medium mb-2">Unit of Measure</label>
+            <Select value={formData.unit} onValueChange={(value) => setFormData({ ...formData, unit: value })}>
+              <SelectTrigger>
+                <SelectValue placeholder="Select unit" />
+              </SelectTrigger>
+              <SelectContent>
+                {unitOptions.map((option) => (
+                  <SelectItem key={option.value} value={option.value}>
+                    {option.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium mb-2">Price (UZS) *</label>
             <Input
               type="number"
               name="price"
@@ -149,6 +188,7 @@ export function ProductForm({ productId, onSuccess, onCancel }: ProductFormProps
               onChange={handleInputChange}
               placeholder="0"
               step="0.01"
+              required
             />
           </div>
 

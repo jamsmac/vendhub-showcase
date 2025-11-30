@@ -1,0 +1,377 @@
+[2025-11-30T19:38:00.422Z] ============================================================
+[2025-11-30T19:38:00.424Z] Database Process Cleanup Utility
+[2025-11-30T19:38:00.424Z] ============================================================
+[2025-11-30T19:38:00.425Z] Starting cleanup of stale database processes...
+[2025-11-30T19:38:00.454Z] No stale processes found
+[2025-11-30T19:38:00.455Z] ============================================================
+[2025-11-30T19:38:00.455Z] Cleanup completed
+[2025-11-30T19:38:00.455Z] ============================================================
+[2025-11-30T19:38:03.043Z] ============================================================
+[2025-11-30T19:38:03.045Z] Database Process Cleanup Utility
+[2025-11-30T19:38:03.045Z] ============================================================
+[2025-11-30T19:38:03.045Z] Starting cleanup of stale database processes...
+[2025-11-30T19:38:03.074Z] No stale processes found
+[2025-11-30T19:38:03.074Z] Cleaning up build artifacts...
+[2025-11-30T19:38:03.080Z] Cleaned dist
+[2025-11-30T19:38:03.080Z] ============================================================
+[2025-11-30T19:38:03.080Z] Cleanup completed
+[2025-11-30T19:38:03.081Z] ============================================================
+[2025-11-30T19:38:05.702Z] ============================================================
+[2025-11-30T19:38:05.704Z] Database Process Cleanup Utility
+[2025-11-30T19:38:05.705Z] ============================================================
+[2025-11-30T19:38:05.705Z] Starting cleanup of stale database processes...
+[2025-11-30T19:38:05.733Z] No stale processes found
+[2025-11-30T19:38:05.734Z] Cleaning up build artifacts...
+[2025-11-30T19:38:05.734Z] Checking for stale port locks...
+[2025-11-30T19:38:05.951Z] Found process on port 3000: PID 161766
+[2025-11-30T19:38:05.952Z] Sent SIGTERM to process 161766
+[2025-11-30T19:38:05.974Z] Process 161766 terminated successfully
+[2025-11-30T19:38:05.974Z] Found process on port 3000: PID 161766
+[2025-11-30T19:38:06.776Z] ============================================================
+[2025-11-30T19:38:06.776Z] Cleanup completed
+[2025-11-30T19:38:06.776Z] ============================================================
+[2025-11-30T19:38:44.347Z] ============================================================
+[2025-11-30T19:38:44.350Z] Database Process Cleanup Utility
+[2025-11-30T19:38:44.350Z] ============================================================
+[2025-11-30T19:38:44.350Z] Starting cleanup of stale database processes...
+[2025-11-30T19:38:44.380Z] Found 3 stale process(es):
+[2025-11-30T19:38:44.380Z]   - PID 162307: db:push
+[2025-11-30T19:38:44.380Z] Sent SIGTERM to process 162307
+[2025-11-30T19:38:49.380Z] Sent SIGKILL to process 162307
+[2025-11-30T19:38:49.380Z]   - PID 162318: db:push
+[2025-11-30T19:38:49.381Z] Sent SIGTERM to process 162318
+[2025-11-30T19:38:49.394Z] Process 162318 terminated successfully
+[2025-11-30T19:38:49.394Z]   - PID 162329: drizzle-kit generate && drizzle-kit migrate
+[2025-11-30T19:38:49.394Z] Successfully killed 3 stale process(es)
+[2025-11-30T19:38:49.394Z] Cleaning up build artifacts...
+[2025-11-30T19:38:49.399Z] Cleaned dist
+[2025-11-30T19:38:49.399Z] ============================================================
+[2025-11-30T19:38:49.399Z] Cleanup completed
+[2025-11-30T19:38:49.399Z] ============================================================
+[2025-11-30T19:41:27.808Z] ============================================================
+[2025-11-30T19:41:27.810Z] Database Process Cleanup Utility
+[2025-11-30T19:41:27.810Z] ============================================================
+[2025-11-30T19:41:27.810Z] Starting cleanup of stale database processes...
+[2025-11-30T19:41:27.840Z] Found 3 stale process(es):
+[2025-11-30T19:41:27.841Z]   - PID 162662: db:push
+[2025-11-30T19:41:27.841Z] Sent SIGTERM to process 162662
+[2025-11-30T19:41:32.841Z] Sent SIGKILL to process 162662
+[2025-11-30T19:41:32.841Z]   - PID 162673: db:push
+[2025-11-30T19:41:32.841Z] Sent SIGTERM to process 162673
+[2025-11-30T19:41:32.852Z] Process 162673 terminated successfully
+[2025-11-30T19:41:32.852Z]   - PID 162684: drizzle-kit generate && drizzle-kit migrate
+[2025-11-30T19:41:32.852Z] Successfully killed 3 stale process(es)
+[2025-11-30T19:41:32.853Z] Cleaning up build artifacts...
+[2025-11-30T19:41:32.858Z] Cleaned dist
+[2025-11-30T19:41:32.858Z] ============================================================
+[2025-11-30T19:41:32.858Z] Cleanup completed
+[2025-11-30T19:41:32.858Z] ============================================================
+[2025-11-30T19:44:46.640Z] ============================================================
+[2025-11-30T19:44:46.643Z] Database Process Cleanup Utility
+[2025-11-30T19:44:46.643Z] ============================================================
+[2025-11-30T19:44:46.643Z] Starting cleanup of stale database processes...
+[2025-11-30T19:44:46.671Z] Found 3 stale process(es):
+[2025-11-30T19:44:46.672Z]   - PID 163075: db:push
+[2025-11-30T19:44:46.672Z] Sent SIGTERM to process 163075
+[2025-11-30T19:44:51.672Z] Sent SIGKILL to process 163075
+[2025-11-30T19:44:51.672Z]   - PID 163090: db:push
+[2025-11-30T19:44:51.673Z] Sent SIGTERM to process 163090
+[2025-11-30T19:44:51.683Z] Process 163090 terminated successfully
+[2025-11-30T19:44:51.683Z]   - PID 163101: drizzle-kit generate && drizzle-kit migrate
+[2025-11-30T19:44:51.683Z] Successfully killed 3 stale process(es)
+[2025-11-30T19:44:51.683Z] Cleaning up build artifacts...
+[2025-11-30T19:44:51.688Z] Cleaned dist
+[2025-11-30T19:44:51.688Z] ============================================================
+[2025-11-30T19:44:51.688Z] Cleanup completed
+[2025-11-30T19:44:51.688Z] ============================================================
+[2025-11-30T19:50:20.004Z] ============================================================
+[2025-11-30T19:50:20.006Z] Database Process Cleanup Utility
+[2025-11-30T19:50:20.006Z] ============================================================
+[2025-11-30T19:50:20.006Z] Starting cleanup of stale database processes...
+[2025-11-30T19:50:20.036Z] Found 3 stale process(es):
+[2025-11-30T19:50:20.036Z]   - PID 163540: db:push
+[2025-11-30T19:50:20.036Z] Sent SIGTERM to process 163540
+[2025-11-30T19:50:25.037Z] Sent SIGKILL to process 163540
+[2025-11-30T19:50:25.037Z]   - PID 163551: db:push
+[2025-11-30T19:50:25.038Z] Sent SIGTERM to process 163551
+[2025-11-30T19:50:25.049Z] Process 163551 terminated successfully
+[2025-11-30T19:50:25.049Z]   - PID 163562: drizzle-kit generate && drizzle-kit migrate
+[2025-11-30T19:50:25.049Z] Successfully killed 3 stale process(es)
+[2025-11-30T19:50:25.049Z] Cleaning up build artifacts...
+[2025-11-30T19:50:25.054Z] Cleaned dist
+[2025-11-30T19:50:25.054Z] ============================================================
+[2025-11-30T19:50:25.054Z] Cleanup completed
+[2025-11-30T19:50:25.054Z] ============================================================
+[2025-11-30T19:54:42.134Z] ============================================================
+[2025-11-30T19:54:42.136Z] Database Process Cleanup Utility
+[2025-11-30T19:54:42.137Z] ============================================================
+[2025-11-30T19:54:42.137Z] Starting cleanup of stale database processes...
+[2025-11-30T19:54:42.168Z] Found 3 stale process(es):
+[2025-11-30T19:54:42.169Z]   - PID 163957: db:push
+[2025-11-30T19:54:42.169Z] Sent SIGTERM to process 163957
+[2025-11-30T19:54:47.169Z] Sent SIGKILL to process 163957
+[2025-11-30T19:54:47.169Z]   - PID 163968: db:push
+[2025-11-30T19:54:47.169Z] Sent SIGTERM to process 163968
+[2025-11-30T19:54:47.180Z] Process 163968 terminated successfully
+[2025-11-30T19:54:47.180Z]   - PID 163979: drizzle-kit generate && drizzle-kit migrate
+[2025-11-30T19:54:47.180Z] Successfully killed 3 stale process(es)
+[2025-11-30T19:54:47.180Z] Cleaning up build artifacts...
+[2025-11-30T19:54:47.185Z] Cleaned dist
+[2025-11-30T19:54:47.185Z] ============================================================
+[2025-11-30T19:54:47.185Z] Cleanup completed
+[2025-11-30T19:54:47.185Z] ============================================================
+[2025-11-30T20:02:27.077Z] ============================================================
+[2025-11-30T20:02:27.079Z] Database Process Cleanup Utility
+[2025-11-30T20:02:27.079Z] ============================================================
+[2025-11-30T20:02:27.079Z] Starting cleanup of stale database processes...
+[2025-11-30T20:02:27.108Z] Found 3 stale process(es):
+[2025-11-30T20:02:27.108Z]   - PID 165255: db:push
+[2025-11-30T20:02:27.108Z] Sent SIGTERM to process 165255
+[2025-11-30T20:02:32.108Z] Sent SIGKILL to process 165255
+[2025-11-30T20:02:32.108Z]   - PID 165267: db:push
+[2025-11-30T20:02:32.108Z] Sent SIGTERM to process 165267
+[2025-11-30T20:02:32.119Z] Process 165267 terminated successfully
+[2025-11-30T20:02:32.119Z]   - PID 165278: drizzle-kit generate && drizzle-kit migrate
+[2025-11-30T20:02:32.119Z] Successfully killed 3 stale process(es)
+[2025-11-30T20:02:32.119Z] Cleaning up build artifacts...
+[2025-11-30T20:02:32.120Z] ============================================================
+[2025-11-30T20:02:32.120Z] Cleanup completed
+[2025-11-30T20:02:32.120Z] ============================================================
+[2025-11-30T20:06:45.162Z] ============================================================
+[2025-11-30T20:06:45.164Z] Database Process Cleanup Utility
+[2025-11-30T20:06:45.164Z] ============================================================
+[2025-11-30T20:06:45.164Z] Starting cleanup of stale database processes...
+[2025-11-30T20:06:45.195Z] Found 6 stale process(es):
+[2025-11-30T20:06:45.196Z]   - PID 165311: drizzle-kit generate
+[2025-11-30T20:06:45.196Z] Sent SIGTERM to process 165311
+[2025-11-30T20:06:45.203Z] Process 165311 terminated successfully
+[2025-11-30T20:06:45.204Z]   - PID 165323: drizzle-kit generate
+[2025-11-30T20:06:45.204Z]   - PID 165324: drizzle-kit@0.31.7/node_modules/drizzle-kit/bin.cjs generate
+[2025-11-30T20:06:45.204Z] Sent SIGTERM to process 165324
+[2025-11-30T20:06:45.211Z] Process 165324 terminated successfully
+[2025-11-30T20:06:45.211Z]   - PID 168015: db:push
+[2025-11-30T20:06:45.212Z] Sent SIGTERM to process 168015
+[2025-11-30T20:06:50.212Z] Sent SIGKILL to process 168015
+[2025-11-30T20:06:50.212Z]   - PID 168026: db:push
+[2025-11-30T20:06:50.212Z] Sent SIGTERM to process 168026
+[2025-11-30T20:06:50.224Z] Process 168026 terminated successfully
+[2025-11-30T20:06:50.224Z]   - PID 168037: drizzle-kit generate && drizzle-kit migrate
+[2025-11-30T20:06:50.224Z] Successfully killed 6 stale process(es)
+[2025-11-30T20:06:50.224Z] Cleaning up build artifacts...
+[2025-11-30T20:06:50.230Z] Cleaned dist
+[2025-11-30T20:06:50.230Z] ============================================================
+[2025-11-30T20:06:50.230Z] Cleanup completed
+[2025-11-30T20:06:50.230Z] ============================================================
+[2025-11-30T20:08:09.311Z] ============================================================
+[2025-11-30T20:08:09.313Z] Database Process Cleanup Utility
+[2025-11-30T20:08:09.313Z] ============================================================
+[2025-11-30T20:08:09.313Z] Starting cleanup of stale database processes...
+[2025-11-30T20:08:09.341Z] Found 3 stale process(es):
+[2025-11-30T20:08:09.342Z]   - PID 168265: db:push
+[2025-11-30T20:08:09.342Z] Sent SIGTERM to process 168265
+[2025-11-30T20:08:14.342Z] Sent SIGKILL to process 168265
+[2025-11-30T20:08:14.342Z]   - PID 168277: db:push
+[2025-11-30T20:08:14.342Z] Sent SIGTERM to process 168277
+[2025-11-30T20:08:14.352Z] Process 168277 terminated successfully
+[2025-11-30T20:08:14.352Z]   - PID 168288: drizzle-kit generate && drizzle-kit migrate
+[2025-11-30T20:08:14.352Z] Successfully killed 3 stale process(es)
+[2025-11-30T20:08:14.352Z] Cleaning up build artifacts...
+[2025-11-30T20:08:14.352Z] ============================================================
+[2025-11-30T20:08:14.352Z] Cleanup completed
+[2025-11-30T20:08:14.352Z] ============================================================
+[2025-11-30T20:12:17.260Z] ============================================================
+[2025-11-30T20:12:17.262Z] Database Process Cleanup Utility
+[2025-11-30T20:12:17.262Z] ============================================================
+[2025-11-30T20:12:17.262Z] Starting cleanup of stale database processes...
+[2025-11-30T20:12:17.293Z] Found 3 stale process(es):
+[2025-11-30T20:12:17.294Z]   - PID 169398: db:push
+[2025-11-30T20:12:17.294Z] Sent SIGTERM to process 169398
+[2025-11-30T20:12:22.294Z] Sent SIGKILL to process 169398
+[2025-11-30T20:12:22.294Z]   - PID 169409: db:push
+[2025-11-30T20:12:22.295Z] Sent SIGTERM to process 169409
+[2025-11-30T20:12:22.309Z] Process 169409 terminated successfully
+[2025-11-30T20:12:22.309Z]   - PID 169420: drizzle-kit generate && drizzle-kit migrate
+[2025-11-30T20:12:22.309Z] Successfully killed 3 stale process(es)
+[2025-11-30T20:12:22.309Z] Cleaning up build artifacts...
+[2025-11-30T20:12:22.315Z] Cleaned dist
+[2025-11-30T20:12:22.315Z] ============================================================
+[2025-11-30T20:12:22.316Z] Cleanup completed
+[2025-11-30T20:12:22.316Z] ============================================================
+[2025-11-30T20:24:26.634Z] ============================================================
+[2025-11-30T20:24:26.636Z] Database Process Cleanup Utility
+[2025-11-30T20:24:26.636Z] ============================================================
+[2025-11-30T20:24:26.636Z] Starting cleanup of stale database processes...
+[2025-11-30T20:24:26.669Z] Found 3 stale process(es):
+[2025-11-30T20:24:26.669Z]   - PID 171239: db:push
+[2025-11-30T20:24:26.669Z] Sent SIGTERM to process 171239
+[2025-11-30T20:24:31.670Z] Sent SIGKILL to process 171239
+[2025-11-30T20:24:31.670Z]   - PID 171250: db:push
+[2025-11-30T20:24:31.671Z] Sent SIGTERM to process 171250
+[2025-11-30T20:24:31.682Z] Process 171250 terminated successfully
+[2025-11-30T20:24:31.682Z]   - PID 171261: drizzle-kit generate && drizzle-kit migrate
+[2025-11-30T20:24:31.682Z] Successfully killed 3 stale process(es)
+[2025-11-30T20:24:31.682Z] Cleaning up build artifacts...
+[2025-11-30T20:24:31.687Z] Cleaned dist
+[2025-11-30T20:24:31.687Z] ============================================================
+[2025-11-30T20:24:31.687Z] Cleanup completed
+[2025-11-30T20:24:31.687Z] ============================================================
+[2025-11-30T20:27:44.476Z] ============================================================
+[2025-11-30T20:27:44.478Z] Database Process Cleanup Utility
+[2025-11-30T20:27:44.478Z] ============================================================
+[2025-11-30T20:27:44.478Z] Starting cleanup of stale database processes...
+[2025-11-30T20:27:44.509Z] Found 3 stale process(es):
+[2025-11-30T20:27:44.509Z]   - PID 171574: db:push
+[2025-11-30T20:27:44.509Z] Sent SIGTERM to process 171574
+[2025-11-30T20:27:49.509Z] Sent SIGKILL to process 171574
+[2025-11-30T20:27:49.509Z]   - PID 171586: db:push
+[2025-11-30T20:27:49.509Z] Sent SIGTERM to process 171586
+[2025-11-30T20:27:49.525Z] Process 171586 terminated successfully
+[2025-11-30T20:27:49.525Z]   - PID 171599: drizzle-kit generate && drizzle-kit migrate
+[2025-11-30T20:27:49.525Z] Successfully killed 3 stale process(es)
+[2025-11-30T20:27:49.525Z] Cleaning up build artifacts...
+[2025-11-30T20:27:49.525Z] ============================================================
+[2025-11-30T20:27:49.525Z] Cleanup completed
+[2025-11-30T20:27:49.525Z] ============================================================
+[2025-11-30T20:30:04.967Z] ============================================================
+[2025-11-30T20:30:04.969Z] Database Process Cleanup Utility
+[2025-11-30T20:30:04.969Z] ============================================================
+[2025-11-30T20:30:04.969Z] Starting cleanup of stale database processes...
+[2025-11-30T20:30:05.000Z] Found 3 stale process(es):
+[2025-11-30T20:30:05.000Z]   - PID 172001: db:push
+[2025-11-30T20:30:05.000Z] Sent SIGTERM to process 172001
+[2025-11-30T20:30:10.000Z] Sent SIGKILL to process 172001
+[2025-11-30T20:30:10.000Z]   - PID 172012: db:push
+[2025-11-30T20:30:10.001Z] Sent SIGTERM to process 172012
+[2025-11-30T20:30:10.012Z] Process 172012 terminated successfully
+[2025-11-30T20:30:10.013Z]   - PID 172023: drizzle-kit generate && drizzle-kit migrate
+[2025-11-30T20:30:10.013Z] Successfully killed 3 stale process(es)
+[2025-11-30T20:30:10.013Z] Cleaning up build artifacts...
+[2025-11-30T20:30:10.018Z] Cleaned dist
+[2025-11-30T20:30:10.018Z] ============================================================
+[2025-11-30T20:30:10.018Z] Cleanup completed
+[2025-11-30T20:30:10.019Z] ============================================================
+[2025-11-30T20:37:02.937Z] ============================================================
+[2025-11-30T20:37:02.939Z] Database Process Cleanup Utility
+[2025-11-30T20:37:02.940Z] ============================================================
+[2025-11-30T20:37:02.940Z] Starting cleanup of stale database processes...
+[2025-11-30T20:37:02.976Z] Found 3 stale process(es):
+[2025-11-30T20:37:02.976Z]   - PID 172851: db:push
+[2025-11-30T20:37:02.976Z] Sent SIGTERM to process 172851
+[2025-11-30T20:37:07.976Z] Sent SIGKILL to process 172851
+[2025-11-30T20:37:07.976Z]   - PID 172862: db:push
+[2025-11-30T20:37:07.976Z] Sent SIGTERM to process 172862
+[2025-11-30T20:37:07.987Z] Process 172862 terminated successfully
+[2025-11-30T20:37:07.987Z]   - PID 172873: drizzle-kit generate && drizzle-kit migrate
+[2025-11-30T20:37:07.987Z] Successfully killed 3 stale process(es)
+[2025-11-30T20:37:07.987Z] Cleaning up build artifacts...
+[2025-11-30T20:37:07.992Z] Cleaned dist
+[2025-11-30T20:37:07.992Z] ============================================================
+[2025-11-30T20:37:07.992Z] Cleanup completed
+[2025-11-30T20:37:07.992Z] ============================================================
+[2025-11-30T20:41:56.520Z] ============================================================
+[2025-11-30T20:41:56.522Z] Database Process Cleanup Utility
+[2025-11-30T20:41:56.522Z] ============================================================
+[2025-11-30T20:41:56.522Z] Starting cleanup of stale database processes...
+[2025-11-30T20:41:56.553Z] Found 3 stale process(es):
+[2025-11-30T20:41:56.553Z]   - PID 173322: db:push
+[2025-11-30T20:41:56.554Z] Sent SIGTERM to process 173322
+[2025-11-30T20:42:01.554Z] Sent SIGKILL to process 173322
+[2025-11-30T20:42:01.554Z]   - PID 173333: db:push
+[2025-11-30T20:42:01.554Z] Sent SIGTERM to process 173333
+[2025-11-30T20:42:01.563Z] Process 173333 terminated successfully
+[2025-11-30T20:42:01.564Z]   - PID 173344: drizzle-kit generate && drizzle-kit migrate
+[2025-11-30T20:42:01.564Z] Successfully killed 3 stale process(es)
+[2025-11-30T20:42:01.564Z] Cleaning up build artifacts...
+[2025-11-30T20:42:01.568Z] Cleaned dist
+[2025-11-30T20:42:01.568Z] ============================================================
+[2025-11-30T20:42:01.568Z] Cleanup completed
+[2025-11-30T20:42:01.568Z] ============================================================
+[2025-11-30T20:45:24.192Z] ============================================================
+[2025-11-30T20:45:24.194Z] Database Process Cleanup Utility
+[2025-11-30T20:45:24.194Z] ============================================================
+[2025-11-30T20:45:24.194Z] Starting cleanup of stale database processes...
+[2025-11-30T20:45:24.224Z] Found 3 stale process(es):
+[2025-11-30T20:45:24.224Z]   - PID 173780: db:push
+[2025-11-30T20:45:24.224Z] Sent SIGTERM to process 173780
+[2025-11-30T20:45:29.224Z] Sent SIGKILL to process 173780
+[2025-11-30T20:45:29.224Z]   - PID 173791: db:push
+[2025-11-30T20:45:29.224Z] Sent SIGTERM to process 173791
+[2025-11-30T20:45:29.235Z] Process 173791 terminated successfully
+[2025-11-30T20:45:29.235Z]   - PID 173802: drizzle-kit generate && drizzle-kit migrate
+[2025-11-30T20:45:29.235Z] Successfully killed 3 stale process(es)
+[2025-11-30T20:45:29.235Z] Cleaning up build artifacts...
+[2025-11-30T20:45:29.240Z] Cleaned dist
+[2025-11-30T20:45:29.240Z] ============================================================
+[2025-11-30T20:45:29.240Z] Cleanup completed
+[2025-11-30T20:45:29.240Z] ============================================================
+[2025-11-30T20:47:42.653Z] ============================================================
+[2025-11-30T20:47:42.655Z] Database Process Cleanup Utility
+[2025-11-30T20:47:42.655Z] ============================================================
+[2025-11-30T20:47:42.656Z] Starting cleanup of stale database processes...
+[2025-11-30T20:47:42.686Z] Found 3 stale process(es):
+[2025-11-30T20:47:42.686Z]   - PID 174118: db:push
+[2025-11-30T20:47:42.686Z] Sent SIGTERM to process 174118
+[2025-11-30T20:47:47.687Z] Sent SIGKILL to process 174118
+[2025-11-30T20:47:47.687Z]   - PID 174129: db:push
+[2025-11-30T20:47:47.687Z] Sent SIGTERM to process 174129
+[2025-11-30T20:47:47.700Z] Process 174129 terminated successfully
+[2025-11-30T20:47:47.700Z]   - PID 174140: drizzle-kit generate && drizzle-kit migrate
+[2025-11-30T20:47:47.700Z] Successfully killed 3 stale process(es)
+[2025-11-30T20:47:47.701Z] Cleaning up build artifacts...
+[2025-11-30T20:47:47.706Z] Cleaned dist
+[2025-11-30T20:47:47.706Z] ============================================================
+[2025-11-30T20:47:47.706Z] Cleanup completed
+[2025-11-30T20:47:47.706Z] ============================================================
+[2025-11-30T20:50:53.427Z] ============================================================
+[2025-11-30T20:50:53.429Z] Database Process Cleanup Utility
+[2025-11-30T20:50:53.429Z] ============================================================
+[2025-11-30T20:50:53.429Z] Starting cleanup of stale database processes...
+[2025-11-30T20:50:53.459Z] Found 3 stale process(es):
+[2025-11-30T20:50:53.460Z]   - PID 174711: db:push
+[2025-11-30T20:50:53.460Z] Sent SIGTERM to process 174711
+[2025-11-30T20:50:58.460Z] Sent SIGKILL to process 174711
+[2025-11-30T20:50:58.460Z]   - PID 174723: db:push
+[2025-11-30T20:50:58.460Z] Sent SIGTERM to process 174723
+[2025-11-30T20:50:58.470Z] Process 174723 terminated successfully
+[2025-11-30T20:50:58.470Z]   - PID 174734: drizzle-kit generate && drizzle-kit migrate
+[2025-11-30T20:50:58.470Z] Successfully killed 3 stale process(es)
+[2025-11-30T20:50:58.470Z] Cleaning up build artifacts...
+[2025-11-30T20:50:58.470Z] ============================================================
+[2025-11-30T20:50:58.471Z] Cleanup completed
+[2025-11-30T20:50:58.471Z] ============================================================
+[2025-11-30T20:56:51.230Z] ============================================================
+[2025-11-30T20:56:51.233Z] Database Process Cleanup Utility
+[2025-11-30T20:56:51.233Z] ============================================================
+[2025-11-30T20:56:51.233Z] Starting cleanup of stale database processes...
+[2025-11-30T20:56:51.264Z] Found 3 stale process(es):
+[2025-11-30T20:56:51.264Z]   - PID 175612: db:push
+[2025-11-30T20:56:51.264Z] Sent SIGTERM to process 175612
+[2025-11-30T20:56:56.264Z] Sent SIGKILL to process 175612
+[2025-11-30T20:56:56.264Z]   - PID 175623: db:push
+[2025-11-30T20:56:56.265Z] Sent SIGTERM to process 175623
+[2025-11-30T20:56:56.279Z] Process 175623 terminated successfully
+[2025-11-30T20:56:56.279Z]   - PID 175634: drizzle-kit generate && drizzle-kit migrate
+[2025-11-30T20:56:56.279Z] Successfully killed 3 stale process(es)
+[2025-11-30T20:56:56.279Z] Cleaning up build artifacts...
+[2025-11-30T20:56:56.284Z] Cleaned dist
+[2025-11-30T20:56:56.284Z] ============================================================
+[2025-11-30T20:56:56.284Z] Cleanup completed
+[2025-11-30T20:56:56.284Z] ============================================================
+[2025-11-30T21:05:41.926Z] ============================================================
+[2025-11-30T21:05:41.928Z] Database Process Cleanup Utility
+[2025-11-30T21:05:41.928Z] ============================================================
+[2025-11-30T21:05:41.928Z] Starting cleanup of stale database processes...
+[2025-11-30T21:05:41.959Z] Found 3 stale process(es):
+[2025-11-30T21:05:41.960Z]   - PID 176357: db:push
+[2025-11-30T21:05:41.960Z] Sent SIGTERM to process 176357
+[2025-11-30T21:05:46.960Z] Sent SIGKILL to process 176357
+[2025-11-30T21:05:46.960Z]   - PID 176368: db:push
+[2025-11-30T21:05:46.960Z] Sent SIGTERM to process 176368
+[2025-11-30T21:05:46.971Z] Process 176368 terminated successfully
+[2025-11-30T21:05:46.971Z]   - PID 176379: drizzle-kit generate && drizzle-kit migrate
+[2025-11-30T21:05:46.971Z] Successfully killed 3 stale process(es)
+[2025-11-30T21:05:46.972Z] Cleaning up build artifacts...
+[2025-11-30T21:05:46.976Z] Cleaned dist
+[2025-11-30T21:05:46.977Z] ============================================================
+[2025-11-30T21:05:46.977Z] Cleanup completed
+[2025-11-30T21:05:46.977Z] ============================================================

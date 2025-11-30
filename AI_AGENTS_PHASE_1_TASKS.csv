@@ -1,0 +1,29 @@
+ID,Epic,Type,Title,Priority,Story Points,Hours,Assignee,Dependencies,Status
+TASK-AI-101,Epic 1,Design,Design Database Schema,Critical,3,4,Backend Lead,None,Ready
+TASK-AI-102,Epic 1,Backend,Create Database Migrations,Critical,5,8,Backend Dev 1,TASK-AI-101,Ready
+TASK-AI-103,Epic 1,Backend,Create Drizzle ORM Models,Critical,4,6,Backend Dev 1,TASK-AI-102,Ready
+TASK-AI-104,Epic 1,Backend,Create Database Indexes,High,3,4,Backend Dev 2,TASK-AI-102,Ready
+TASK-AI-105,Epic 1,Backend,Create Database Seed Data,Medium,3,5,Backend Dev 2,TASK-AI-103,Ready
+TASK-AI-106,Epic 1,Backend,Create Database Utilities,Medium,3,5,Backend Dev 2,TASK-AI-103,Ready
+TASK-AI-107,Epic 1,Testing,Database Testing Setup,High,3,5,QA Engineer,TASK-AI-103,Ready
+TASK-AI-108,Epic 1,Documentation,Database Documentation,Medium,2,3,Tech Lead,TASK-AI-103;TASK-AI-107,Ready
+TASK-AI-201,Epic 2,Design,Design File Storage Architecture,Critical,3,4,Backend Lead,None,Ready
+TASK-AI-202,Epic 2,Backend,Implement File Upload Handler,Critical,4,6,Backend Dev 1,TASK-AI-201,Ready
+TASK-AI-203,Epic 2,Backend,Implement File Storage Service,Critical,3,5,Backend Dev 1,TASK-AI-201,Ready
+TASK-AI-204,Epic 2,Backend,Create File Reference Management,High,3,5,Backend Dev 2,TASK-AI-202;TASK-AI-203,Ready
+TASK-AI-205,Epic 2,Backend,Implement File Cleanup System,Medium,2,3,Backend Dev 2,TASK-AI-204,Ready
+TASK-AI-206,Epic 2,Testing,File Management Testing,High,3,5,QA Engineer,TASK-AI-202;TASK-AI-203;TASK-AI-204,Ready
+TASK-AI-301,Epic 3,Design,Design Agent Framework Architecture,Critical,4,6,Tech Lead,None,Ready
+TASK-AI-302,Epic 3,Backend,Create Base Agent Class,Critical,5,8,Backend Dev 1,TASK-AI-301;TASK-AI-103,Ready
+TASK-AI-303,Epic 3,Backend,Create Learning Context Manager,Critical,4,6,Backend Dev 1,TASK-AI-301;TASK-AI-103,Ready
+TASK-AI-304,Epic 3,Backend,Create Interaction Logger,High,3,5,Backend Dev 2,TASK-AI-301;TASK-AI-103,Ready
+TASK-AI-305,Epic 3,Backend,Create Suggestion Generator,High,4,6,Backend Dev 2,TASK-AI-302;TASK-AI-303,Ready
+TASK-AI-306,Epic 3,Backend,Create Feedback Recorder,High,3,5,Backend Dev 2,TASK-AI-302;TASK-AI-303,Ready
+TASK-AI-307,Epic 3,Testing,Agent Framework Testing,High,2,4,QA Engineer,TASK-AI-302;TASK-AI-303;TASK-AI-304;TASK-AI-305;TASK-AI-306,Ready
+TASK-AI-401,Epic 4,Design,Design Machines Agent,High,2,3,Backend Lead,None,Ready
+TASK-AI-402,Epic 4,Backend,Implement Machines Agent Class,High,4,6,Backend Dev 1,TASK-AI-401;TASK-AI-302,Ready
+TASK-AI-403,Epic 4,Backend,Implement CSV Parser for Machines,High,3,5,Backend Dev 2,TASK-AI-402,Ready
+TASK-AI-404,Epic 4,Backend,Implement Pattern Extraction for Machines,High,4,6,Backend Dev 2,TASK-AI-402,Ready
+TASK-AI-405,Epic 4,Testing,Machines Agent Testing,High,3,5,QA Engineer,TASK-AI-402;TASK-AI-403;TASK-AI-404,Ready
+TASK-AI-501,Epic 5,Testing,Integration Testing,High,3,5,QA Engineer,TASK-AI-108;TASK-AI-206;TASK-AI-307;TASK-AI-405,Ready
+TASK-AI-502,Epic 5,Documentation,Phase 1 Documentation & Handoff,High,3,5,Tech Lead,TASK-AI-501,Ready

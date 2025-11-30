@@ -64,20 +64,6 @@
       "when": 1764421431725,
       "tag": "0008_boring_mattie_franklin",
       "breakpoints": true
-    },
-    {
-      "idx": 9,
-      "version": "5",
-      "when": 1764424050938,
-      "tag": "0009_outstanding_violations",
-      "breakpoints": true
-    },
-    {
-      "idx": 10,
-      "version": "5",
-      "when": 1764424060828,
-      "tag": "0010_absent_tyrannus",
-      "breakpoints": true
     }
   ]
 }

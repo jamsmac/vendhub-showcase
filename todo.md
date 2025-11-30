@@ -152,6 +152,43 @@
 - [x] Initialize scheduler on server startup
 - [ ] Add unsubscribe/preferences functionality (future enhancement)
 
+## Email & Telegram Notification Integration (COMPLETED)
+
+### Database Schema ✅
+- [x] notificationPreferences table: User notification settings
+- [x] alertNotifications table: Alert delivery tracking
+- [x] notificationLog table: Notification history
+
+### Notification Service ✅
+- [x] NotificationService.ts: Email and Telegram delivery
+- [x] SMTP email configuration
+- [x] Telegram Bot API integration
+- [x] Severity-based filtering (critical, warning, info)
+- [x] Quiet hours support
+- [x] Notification logging and retry logic
+
+### tRPC Endpoints ✅
+- [x] getPreferences: Fetch user notification settings
+- [x] updatePreferences: Save notification preferences
+- [x] sendTest: Send test notification via channel
+- [x] getStats: Notification statistics and metrics
+
+### UI Components ✅
+- [x] NotificationPreferences.tsx: Settings form with toggles
+- [x] Email alerts configuration (critical, warning, info)
+- [x] Telegram alerts configuration (critical, warning, info)
+- [x] Quiet hours time picker
+- [x] Timezone selector
+- [x] Test notification buttons
+- [x] Statistics display
+
+### User Settings Page ✅
+- [x] UserSettings.tsx: Main settings page with tabs
+- [x] Notifications tab with preferences
+- [x] Profile tab (placeholder)
+- [x] Security tab (placeholder)
+- [x] Responsive design with dark mode
+
 ## New Features - Role Change History
 - [x] Create role_changes database table
 - [x] Track role modifications with old/new values
@@ -372,6 +409,67 @@
 - [ ] Check responsive design on mobile/tablet
 - [ ] Save comprehensive checkpoint with all features
 
+
+## Phase 30: Reference Books (Справочники) Implementation
+
+### Database & Schema ✅
+- [x] Create locations table (Локации)
+- [x] Create categories table (Категории)
+- [x] Create units table (Единицы измерения)
+- [x] Create machineTypes table (Типы аппаратов)
+- [x] Create componentTypes table (Типы компонентов)
+- [x] Create taskTypes table (Типы задач)
+- [x] Create supplierTypes table (Типы поставщиков)
+- [x] Create referenceBookAuditLog table
+- [x] Create SQL migration (0013_reference_books.sql)
+- [x] Create Drizzle schema (schema-reference-books.ts)
+- [x] Create indexes and views
+- [x] Create stored procedures
+
+### API Endpoints
+- [ ] Add referenceBooks router to main tRPC router
+- [ ] Implement locations CRUD endpoints
+- [ ] Implement categories CRUD endpoints
+- [ ] Implement units CRUD endpoints
+- [ ] Implement machineTypes CRUD endpoints
+- [ ] Implement componentTypes CRUD endpoints
+- [ ] Implement taskTypes CRUD endpoints
+- [ ] Implement supplierTypes CRUD endpoints
+- [ ] Add validation schemas for all entities
+- [ ] Write unit tests for API endpoints
+
+### UI Components
+- [ ] Create ReferenceBookForm component
+- [ ] Create ReferenceBookTable component
+- [ ] Create ReferenceBookModal component
+- [ ] Create search and filter functionality
+- [ ] Add loading states and error handling
+
+### Pages
+- [ ] Create /master-data page with tabs
+- [ ] Create individual reference book pages
+- [ ] Add navigation links to sidebar
+- [ ] Test all CRUD operations
+
+### Integration
+- [ ] Integrate locations with machines module
+- [ ] Integrate categories with products module
+- [ ] Integrate units with products module
+- [ ] Integrate machineTypes with machines module
+- [ ] Integrate taskTypes with tasks module
+- [ ] Integrate supplierTypes with suppliers module
+
+### AI-Agent Integration
+- [ ] Create AI-agents for each reference book
+- [ ] Add suggestion generation
+- [ ] Add learning mechanism
+- [ ] Test with real data
+
+### Bulk Operations
+- [ ] Implement bulk import from Excel/CSV
+- [ ] Implement bulk export to Excel/CSV
+- [ ] Implement bulk update operations
+- [ ] Add import preview and validation
 
 ## Phase 23: Inventory Tracking System (3-Level Hierarchy)
 
@@ -1137,3 +1235,1042 @@ All tasks completed:
 - [x] Test with no filters (all time, all types)
 - [x] Verify calculations are correct
 - [x] Check mobile responsiveness
+
+
+## Authentication & Authorization Implementation (NEW)
+
+### Database & Schema
+- [x] Add sessions table for session management
+- [x] Add passwordRecovery table for password reset tokens
+- [x] Fix schema imports and unique index syntax
+
+### Password & Token Services
+- [x] Enhance PasswordService with bcrypt hashing
+- [x] Add password strength validation
+- [x] Add temporary password generation
+- [x] Create TokenService for JWT generation
+- [x] Implement token verification and expiration
+
+### Database Functions
+- [x] Create db-auth.ts with user CRUD operations
+- [x] Implement session management functions
+- [x] Implement password recovery token functions
+- [x] Add last signed-in timestamp tracking
+
+### Auth Endpoints (tRPC)
+- [x] Create auth router with register endpoint
+- [x] Implement login endpoint with token generation
+- [x] Add changePassword endpoint
+- [x] Add updateProfile endpoint
+- [x] Add logout endpoint
+- [x] Integrate with database and services
+
+### Login/Register UI
+- [x] Update Login component with tRPC integration
+- [x] Create Register component with password strength indicator
+- [x] Create AuthPage with toggle between login/register
+- [x] Add smooth transitions and validation feedback
+
+### Password Recovery
+- [x] Create passwordRecovery router with request/reset endpoints
+- [x] Implement token verification
+- [x] Add email resend functionality
+- [x] Create PasswordRecovery UI component with multi-step flow
+
+### RBAC (Role-Based Access Control)
+- [x] Create RBAC middleware with permission definitions
+- [x] Implement role hierarchy (user < operator < manager < admin)
+- [x] Add permission checking utilities
+- [x] Create tRPC RBAC middleware (requirePermission, requireRole, etc.)
+
+### Page-Level Access Control
+- [x] Create ProtectedRoute component
+- [x] Implement RoleBasedRender component
+- [x] Implement PermissionBasedRender component
+- [x] Create AccessDeniedPage
+- [x] Create useAuth hook for easy auth state access
+- [x] Create usePermission and useCanPerform hooks
+
+### Row-Level Security (RLS)
+- [x] Create RLS utilities for data filtering
+- [x] Implement resource-based filtering by role
+- [x] Add ownership-based access control
+- [x] Create RLS middleware for tRPC
+
+### Email Integration (TODO)
+- [ ] Set up email service (SendGrid, Mailgun, etc.)
+- [ ] Create email templates for password reset
+- [ ] Create email templates for account verification
+- [ ] Implement email sending in password recovery flow
+- [ ] Implement email sending in registration flow
+
+### Two-Factor Authentication (TODO)
+- [ ] Implement 2FA setup endpoint
+- [ ] Create 2FA verification during login
+- [ ] Add TOTP/SMS options
+- [ ] Create 2FA management UI
+
+### Testing (TODO)
+- [ ] Write vitest tests for auth endpoints
+- [ ] Test password hashing and verification
+- [ ] Test token generation and validation
+- [ ] Test RBAC middleware
+- [ ] Test RLS filtering
+- [ ] Integration tests for login/register flow
+
+
+## Admin User Management Panel Implementation (NEW)
+
+### Database & Schema
+- [x] Add status field to users table (active, suspended, inactive)
+- [x] Add suspension tracking fields (suspendedAt, suspendedReason, suspendedBy)
+- [x] Add status index for efficient filtering
+
+### Database Functions
+- [x] Create db-users.ts with user management operations
+- [x] Implement getAllUsers with filtering and pagination
+- [x] Implement getUserCount for pagination
+- [x] Implement updateUserRole with audit logging
+- [x] Implement suspendUser and reactivateUser functions
+- [x] Implement getUserStatistics for dashboard
+- [x] Implement getAllRoleChanges for audit log
+
+### tRPC Endpoints
+- [x] Create userManagement router with admin-only access
+- [x] Implement listUsers endpoint with search and filtering
+- [x] Implement getStatistics endpoint
+- [x] Implement updateRole endpoint with validation
+- [x] Implement suspendUser endpoint with reason tracking
+- [x] Implement reactivateUser endpoint
+- [x] Implement getRoleChangeHistory endpoint
+- [x] Implement exportUsers endpoint for CSV export
+
+### Frontend Components
+- [x] Create UserListTable component with filtering and search
+- [x] Add role, status, and date filters
+- [x] Implement CSV export functionality
+- [x] Create RoleAssignmentDialog with confirmation
+- [x] Add role descriptions and warnings
+- [x] Create SuspensionDialog with two-step confirmation
+- [x] Add audit trail notices
+- [x] Create AuditLogViewer component
+- [x] Implement audit log table with pagination
+- [x] Add CSV export for audit logs
+
+### Admin Page
+- [x] Create AdminUsers page layout
+- [x] Add statistics dashboard with key metrics
+- [x] Implement Users tab with UserListTable
+- [x] Implement Audit Log tab with AuditLogViewer
+- [x] Integrate all dialogs and handlers
+- [x] Add refresh functionality
+- [x] Protect page with admin-only access
+
+### Features Implemented
+- User listing with search and filtering
+- Role assignment with confirmation dialog
+- Account suspension/reactivation with reason tracking
+- Audit log viewing with CSV export
+- User statistics dashboard
+- Role change history tracking
+- CSV export for users and audit logs
+- Two-step confirmation for critical actions
+- Audit trail for all administrative actions
+
+
+## Comprehensive Activity Logging System (NEW)
+
+### Database Schema
+- [x] Create activityLogs table with full tracking (action, resource, method, status, IP, user agent, duration, etc.)
+- [x] Create loginAttempts table for tracking login attempts with failure reasons and lockout
+- [x] Create suspiciousActivities table for flagging and reviewing suspicious behavior
+- [x] Create apiRateLimits table for rate limiting and tracking
+- [x] Create dataAccessLogs table for sensitive data access tracking
+- [x] Add comprehensive indexes for efficient querying
+
+### Activity Logging Service (activityLogger.ts)
+- [x] Implement extractIpAddress function with proxy support (X-Forwarded-For, CF-Connecting-IP, etc.)
+- [x] Implement extractUserAgent and extractReferer functions
+- [x] Create logActivity function with request body sanitization
+- [x] Create logLoginAttempt function with automatic lockout after 5 failed attempts
+- [x] Create flagSuspiciousActivity function for security alerts
+- [x] Create logDataAccess function for sensitive data tracking
+- [x] Create checkRateLimit function with automatic flagging
+- [x] Implement getActivityLogs with filtering and pagination
+- [x] Implement getSuspiciousActivities with filtering
+
+### tRPC Middleware
+- [x] Create activityLoggingMiddleware for automatic API call logging
+- [x] Implement request/response tracking with timing
+- [x] Add rate limiting headers to responses
+- [x] Create resourceAccessMiddleware for tracking resource access
+- [x] Create sensitiveDataAccessMiddleware for sensitive operations
+
+### Login/Logout Tracking (activityTracking.ts)
+- [x] Create logLoginAttempt endpoint for recording login attempts
+- [x] Create logLogout endpoint for tracking logouts
+- [x] Create getActivityLogs endpoint (admin only)
+- [x] Create getSuspiciousActivities endpoint (admin only)
+- [x] Create getMyActivityLogs endpoint for user's own logs
+- [x] Create getMyLoginHistory endpoint for login history
+- [x] Create getActiveSessions endpoint for viewing active sessions
+- [x] Create exportActivityLogs endpoint for CSV export
+- [x] Create getActivityStatistics endpoint for analytics
+
+### Data Access Logging (dataAccessLogger.ts)
+- [x] Create logSensitiveDataAccess function
+- [x] Define SENSITIVE_DATA_TYPES constants
+- [x] Create createDataAccessLogger middleware factory
+- [x] Implement specialized loggers for each data type (users, financial, audit, roles, config, API keys, locations, inventory)
+
+### Frontend Components
+- [x] Create ActivityLogViewer component with filtering and search
+- [x] Add action, status, and IP address filters
+- [x] Implement pagination and CSV export
+- [x] Create SecurityDashboard component with metrics and suspicious activity detection
+- [x] Add tabs for suspicious activities, top IPs, and top endpoints
+- [x] Implement activity statistics visualization
+
+### Admin Security Page (AdminSecurity.tsx)
+- [x] Create comprehensive security monitoring page
+- [x] Add Security Dashboard tab with key metrics
+- [x] Add Activity Log tab with advanced filtering
+- [x] Add Sessions tab with session management info
+- [x] Add Guide tab with security best practices
+- [x] Protect page with admin-only access
+
+### Features Implemented
+- Comprehensive activity logging for all user actions
+- Login attempt tracking with automatic account lockout
+- API call logging with performance metrics
+- Sensitive data access tracking
+- Suspicious activity detection and flagging
+- Rate limiting with automatic alerts
+- IP address extraction with proxy support
+- Request body sanitization for security
+- Activity statistics and analytics
+- CSV export for compliance and auditing
+- Security dashboard with real-time metrics
+- Session management and monitoring
+- Best practices guide for administrators
+
+
+## Dynamic Permission Editor System (NEW)
+
+### Database Schema (5 new tables)
+- [x] Create permissions table with key, name, description, category, and risk level
+- [x] Create rolePermissions table to map permissions to roles dynamically
+- [x] Create permissionChanges table for auditing permission modifications
+- [x] Create permissionGroups table for grouping related permissions
+- [x] Create permissionGroupMembers table to link permissions to groups
+
+### Permission Management Service (db-permissions.ts)
+- [x] getAllPermissions: Fetch all permissions with filtering
+- [x] getPermissionsByCategory: Filter permissions by category
+- [x] getRolePermissions: Get all permissions for a specific role
+- [x] hasPermission: Check if a role has a specific permission
+- [x] grantPermission: Grant a permission to a role with audit logging
+- [x] revokePermission: Remove a permission from a role with audit logging
+- [x] updateRolePermissions: Bulk update all permissions for a role
+- [x] getPermissionChangeHistory: Audit trail of permission changes
+- [x] getPermissionGroups: Fetch permission groups
+- [x] getGroupPermissions: Get permissions in a group
+- [x] createPermission: Create new permission (for admins)
+- [x] updatePermission: Modify permission details
+- [x] deletePermission: Remove a permission
+- [x] getRoleHierarchy: Get all permissions for all roles
+- [x] getPermissionStats: Analytics on permission distribution
+
+### tRPC Endpoints (permissionsRouter)
+- [x] getAllPermissions: Query all permissions (admin only)
+- [x] getPermissionsByCategory: Filter by category (admin only)
+- [x] getRolePermissions: Get role's permissions (admin only)
+- [x] hasPermission: Check if role has permission (admin only)
+- [x] grantPermission: Grant permission to role (admin only, audited)
+- [x] revokePermission: Revoke permission from role (admin only, audited)
+- [x] updateRolePermissions: Bulk update permissions (admin only, audited)
+- [x] getPermissionChangeHistory: View audit trail (admin only)
+- [x] getPermissionGroups: Fetch groups (admin only)
+- [x] getGroupPermissions: Get group members (admin only)
+- [x] createPermission: Create new permission (admin only)
+- [x] updatePermission: Modify permission (admin only)
+- [x] deletePermission: Remove permission (admin only)
+- [x] getRoleHierarchy: View role hierarchy (admin only)
+- [x] getPermissionStats: View statistics (admin only)
+
+### Frontend Components
+- [x] PermissionMatrix: Interactive table with checkboxes for selecting permissions
+  * Search by name, key, or description
+  * Filter by category and risk level
+  * Group permissions by category
+  * Show risk level badges (low, medium, high, critical)
+  * Select/deselect all in category
+  * Display permission summary
+
+- [x] RolePreviewPanel: Real-time preview of what a role can access
+  * Role description and statistics
+  * Permissions grouped by category with tabs
+  * Visual indication of selected permissions
+  * Access summary showing capabilities (users, machines, inventory, reports, settings, audit)
+  * Risk level breakdown (critical, high risk counts)
+
+### Permission Hierarchy & Inheritance (usePermissionHierarchy.ts)
+- [x] ROLE_HIERARCHY: Define role levels (user < operator < manager < admin)
+- [x] DEFAULT_ROLE_PERMISSIONS: Pre-configured permissions for each role
+- [x] inheritsFrom: Check if role inherits from another
+- [x] getInheritedPermissions: Get permissions from role and lower roles
+- [x] getExclusivePermissions: Get role-specific permissions
+- [x] getMinimumRoleForPermission: Find minimum role for a permission
+- [x] isHighRiskPermission: Check if permission is high-risk
+- [x] getConfigurationWarnings: Validate role configuration
+- [x] suggestPermissionsForRole: Get recommended permissions
+- [x] getRoleDescription: Get role description
+- [x] getRoleDisplayName: Get role display name
+- [x] getRoleColor: Get role UI color
+
+### Permission Editor Page (AdminPermissions.tsx)
+- [x] Role selector with permission count display
+- [x] Permission matrix with advanced filtering
+- [x] Real-time preview panel showing accessible features
+- [x] Apply recommended permissions button
+- [x] Save/Discard changes functionality
+- [x] Unsaved changes warning
+- [x] Configuration warnings display
+- [x] Sticky action buttons at bottom
+- [x] Tabs for matrix view and preview view
+- [x] Loading states and error handling
+
+### Permission Validation (permissionValidator.ts)
+- [x] validatePermissions: Comprehensive validation of permission sets
+  * Detect conflicting permissions
+  * Detect suspicious combinations
+  * Detect missing related permissions
+  * Check for excessive critical/high-risk permissions
+  * Return errors, warnings, and suggestions
+
+- [x] detectConflicts: Find permission conflicts
+  * Delete without view/create
+  * Missing prerequisite permissions
+
+- [x] detectSuspiciousCombinations: Find unusual permission patterns
+  * Delete without create/update
+  * Excessive admin permissions
+  * Export without view
+
+- [x] detectMissingRelatedPermissions: Suggest related permissions
+  * Create requires view
+  * Update requires view
+  * Delete requires view and update
+  * Export requires view
+
+- [x] isSafeToGrant: Check if permission is safe for role
+  * Critical permissions only for admins
+  * High-risk permissions restricted for users
+
+- [x] getPermissionImpact: Assess permission impact
+  * Risk level
+  * Description
+  * Affected areas
+
+- [x] comparePermissions: Diff two permission sets
+  * Added permissions
+  * Removed permissions
+  * Unchanged permissions
+
+- [x] generateAuditMessage: Create audit trail message
+
+### Features Implemented
+- Dynamic permission management without hardcoding
+- Role-based permission assignment with inheritance
+- Real-time preview of role capabilities
+- Comprehensive validation and conflict detection
+- Audit logging for all permission changes
+- Permission grouping by category
+- Risk level assessment (low, medium, high, critical)
+- Recommended permissions for each role
+- Configuration warnings and suggestions
+- Bulk permission updates with change tracking
+- Permission statistics and analytics
+- Admin-only access control
+
+
+## Automated Process Cleanup System (NEW)
+
+### Cleanup Scripts (4 files)
+- [x] cleanup-db-processes.mjs: Main cleanup utility that kills stale database migration processes
+  * Detects processes matching patterns: db:push, db:pull, drizzle-kit, drizzle-migrate, pnpm db, tsx.*db, tsx.*migrate, esbuild.*service
+  * Graceful shutdown with SIGTERM (5 second timeout) then SIGKILL if needed
+  * Optional build artifact cleanup (--clean-build flag)
+  * Optional port lock cleanup (--clean-ports flag)
+  * Logging to .cleanup-log.txt file
+  * Exit codes: 0 for success, 1 for failure
+
+- [x] pre-migration.mjs: Pre-migration hook that runs before database operations
+  * Automatically called before pnpm db:push
+  * Runs cleanup-db-processes.mjs with --clean-build flag
+  * Cleans up dist directory to ensure fresh build
+  * Provides user feedback with emoji indicators
+
+- [x] pre-start.mjs: Pre-start hook that runs before dev server starts
+  * Automatically called before pnpm dev
+  * Runs cleanup-db-processes.mjs with --clean-build and --clean-ports flags
+  * Kills any processes using ports 3000, 5173, 5174, 8000, 8080
+  * Ensures clean startup environment
+  * Non-blocking: warns on errors but doesn't prevent startup
+
+- [x] monitor-processes.mjs: Real-time process monitor (optional background service)
+  * Runs continuously and checks for stale processes every 30 seconds
+  * Tracks process age and kills processes older than 5 minutes
+  * Kills drizzle-kit/db:push processes running longer than 2 minutes
+  * Maintains process tracking file (.tracked-processes.json)
+  * Logs to .process-monitor.log file
+  * Can be run as background service: node scripts/monitor-processes.mjs &
+
+### Package.json Script Updates
+- [x] dev: Now runs pre-start.mjs before starting dev server
+  * Command: node scripts/pre-start.mjs && NODE_ENV=development tsx watch server/_core/index.ts
+  * Automatically cleans up stale processes and ports before starting
+
+- [x] db:push: Now runs pre-migration.mjs before database operations
+  * Command: node scripts/pre-migration.mjs && drizzle-kit generate && drizzle-kit migrate
+  * Automatically cleans up stale processes and build artifacts before migration
+
+- [x] db:cleanup: Manual cleanup of stale database processes
+  * Command: node scripts/cleanup-db-processes.mjs
+  * Can be run manually anytime: pnpm db:cleanup
+
+- [x] db:cleanup:full: Full cleanup including build artifacts and port locks
+  * Command: node scripts/cleanup-db-processes.mjs --clean-build --clean-ports
+  * Can be run manually: pnpm db:cleanup:full
+
+- [x] cleanup:processes: Alias for db:cleanup
+  * Command: node scripts/cleanup-db-processes.mjs
+
+- [x] cleanup:all: Alias for db:cleanup:full
+  * Command: node scripts/cleanup-db-processes.mjs --clean-build --clean-ports
+
+### Features
+- Automatic cleanup before dev server starts
+- Automatic cleanup before database migrations
+- Manual cleanup commands for on-demand use
+- Real-time monitoring option for background cleanup
+- Graceful process termination with timeout
+- Comprehensive logging to files
+- Port lock detection and cleanup
+- Build artifact cleanup
+- Process tracking and history
+
+### How It Works
+1. **Dev Server Start:** When you run `pnpm dev`, pre-start.mjs runs first and:
+   - Kills all stale db:push, drizzle-kit, and other database processes
+   - Cleans up build artifacts (dist, .turbo, etc.)
+   - Kills any processes using common dev ports (3000, 5173, etc.)
+   - Then starts the dev server
+
+2. **Database Migration:** When you run `pnpm db:push`, pre-migration.mjs runs first and:
+   - Kills all stale database processes
+   - Cleans up build artifacts
+   - Then runs drizzle-kit generate and migrate
+
+3. **Manual Cleanup:** You can manually run cleanup anytime:
+   - `pnpm db:cleanup` - Kill stale database processes only
+   - `pnpm db:cleanup:full` - Kill processes, clean build artifacts, and free ports
+
+4. **Background Monitoring (Optional):** Run in another terminal:
+   - `node scripts/monitor-processes.mjs` - Continuously monitors and kills stale processes
+
+### Logging
+- `.cleanup-log.txt` - Log of all cleanup operations
+- `.process-monitor.log` - Log of background monitor activity
+- `.tracked-processes.json` - JSON file tracking monitored processes
+
+### Benefits
+- Prevents server crashes from stale processes
+- Eliminates database lock issues from orphaned migrations
+- Frees up memory and system resources
+- Ensures clean environment for dev and migrations
+- Automatic cleanup without manual intervention
+- Optional background monitoring for production environments
+
+
+## GitHub Actions, Docker & System Health (NEW)
+
+### GitHub Actions Workflow
+- [x] .github/workflows/cleanup.yml: Automated cleanup workflow that:
+  * Runs on every push to main/develop branches
+  * Runs on every pull request to main/develop branches
+  * Runs on schedule every 6 hours (cron job)
+  * Installs dependencies and runs cleanup script
+  * Kills stale database migration processes
+  * Cleans up build artifacts
+  * Frees up development ports
+  * Creates workflow summary with cleanup logs
+  * Posts failure notifications to PR comments
+  * Posts success notifications to PR comments
+  * Provides detailed health check report
+
+### Dockerfile & Docker Compose
+- [x] Dockerfile: Multi-stage production Docker image that:
+  * Stage 1: Dependencies - Installs pnpm and dependencies
+  * Stage 2: Builder - Builds the application with esbuild
+  * Stage 3: Runtime - Lean production image with only runtime dependencies
+  * Includes cleanup scripts for pre-startup cleanup
+  * Runs as non-root nodejs user for security
+  * Exposes port 3000
+  * Includes health check endpoint
+  * Startup script runs cleanup before starting app
+  * Multi-stage build for minimal image size
+
+- [x] docker-compose.yml: Development and production compose file that:
+  * App service with environment variables
+  * MySQL database service
+  * Health checks for both services
+  * Automatic restart policy
+  * Volume mounts for logs and database
+  * Network configuration for service communication
+  * Depends on MySQL before starting app
+
+### System Health Monitoring Service
+- [x] systemHealthService.ts: Backend service that monitors:
+  * Memory usage (total, used, free, percentage)
+  * CPU usage (cores, usage percentage, load average)
+  * Disk usage (total, used, free, percentage)
+  * Process list (top 10 processes)
+  * Stale processes detection
+  * System uptime
+  * Health status determination (healthy/warning/critical)
+  * Issue detection and reporting
+  * Process killing functionality
+  * Byte formatting utilities
+  * Uptime formatting utilities
+
+### tRPC System Health Endpoints
+- [x] systemHealth.ts: 8 tRPC endpoints for system monitoring:
+  * getHealth: Get current system health status (admin only)
+  * getProcesses: Get detailed process list (admin only)
+  * getStaleProcesses: Get list of stale processes (admin only)
+  * killProcess: Kill a specific process by PID (admin only)
+  * killAllStaleProcesses: Kill all stale processes (admin only)
+  * getMetrics: Get formatted metrics for dashboard (admin only)
+  * healthCheck: Public health endpoint for Docker/Kubernetes (no auth)
+
+### System Health Dashboard Widget
+- [x] SystemHealthWidget.tsx: React component that:
+  * Displays real-time system health metrics
+  * Shows memory, CPU, disk, and stale process metrics
+  * Color-coded status indicators (green/yellow/red)
+  * Progress bars for resource usage
+  * Auto-refresh every 30 seconds (toggleable)
+  * One-click cleanup button for stale processes
+  * Issues section with detailed problem list
+  * Status icons and badges
+  * Metric icons for visual distinction
+  * Last updated timestamp
+  * Responsive grid layout
+
+### Admin Dashboard Page
+- [x] AdminDashboard.tsx: Comprehensive admin dashboard that:
+  * Displays system health widget at the top
+  * Shows user statistics (total, active, admins, suspended)
+  * Quick action buttons for common admin tasks
+  * Links to user management, permissions, and security pages
+  * System information card (Node version, environment, platform)
+  * Help and documentation section
+  * Refresh button to reload all data
+  * Protected route (admin only)
+  * Responsive layout for mobile and desktop
+
+### Features
+- Automated cleanup on every push/PR in CI/CD
+- Scheduled cleanup every 6 hours in GitHub Actions
+- Docker health checks every 30 seconds
+- Real-time system monitoring in admin dashboard
+- One-click cleanup from admin UI
+- Automatic process killing on container startup
+- Public health endpoint for Kubernetes/Docker monitoring
+- Comprehensive logging and reporting
+- Issue detection and alerting
+- Non-blocking startup (warnings only)
+
+### How It Works
+
+**GitHub Actions Workflow:**
+1. Triggered on push, PR, or schedule (every 6 hours)
+2. Installs dependencies
+3. Runs cleanup script
+4. Creates workflow summary with logs
+5. Posts success/failure comments to PRs
+6. Provides health check report
+
+**Docker Deployment:**
+1. Multi-stage build for minimal image size
+2. Health check every 30 seconds
+3. Startup script runs cleanup before starting app
+4. Non-root user for security
+5. Automatic restart on failure
+6. MySQL database with health checks
+
+**Admin Dashboard:**
+1. Real-time system metrics with color-coded status
+2. Auto-refresh every 30 seconds
+3. One-click cleanup button for stale processes
+4. Issue detection and alerting
+5. Quick links to other admin pages
+6. System information display
+
+### Benefits
+- Prevents stale processes in CI/CD pipelines
+- Ensures clean Docker deployments
+- Real-time monitoring from admin UI
+- Automatic cleanup without manual intervention
+- Health checks for Docker/Kubernetes
+- Comprehensive logging and auditing
+- Non-blocking operations (warnings only)
+- Production-ready monitoring
+
+
+## Historical Performance Analytics (COMPLETED)
+
+### Database Schema ✅
+- [x] performanceMetrics table: Stores raw metrics every minute
+- [x] performanceMetricsHourly table: Hourly aggregated metrics
+- [x] performanceMetricsDaily table: Daily aggregated metrics
+
+### Performance Metrics Service ✅
+- [x] performanceMetricsService.ts: Automatic collection and aggregation
+
+### tRPC Endpoints (7 endpoints) ✅
+- [x] getMetricsRange, getHourlyMetrics, getDailyMetrics, getStatistics, getLast24Hours, getTrends, getDaySummary, comparePeriods
+
+### Chart Components ✅
+- [x] PerformanceLineChart, PerformanceAreaChart, HourlyPerformanceChart, PerformanceStatistics, PerformanceComparison
+
+### Admin Analytics Page ✅
+- [x] AdminAnalytics.tsx with 4 tabs (Overview, Trends, Statistics, Comparison)
+
+### Export Functionality ✅
+- [x] performanceExport.ts with CSV, JSON, and text export utilities
+
+---
+
+## Real-Time Performance Alerts (NEW)
+
+### Database Schema
+- [x] alertRules table: Stores alert configuration with metric, threshold, operator, escalation levels
+- [x] alertHistory table: Logs all triggered alerts with timestamp, metric value, rule ID, status
+- [x] alertEscalation table: Defines escalation policies (notify user, notify admin, auto-action)
+- [x] alertNotifications table: Tracks notification delivery
+
+### Alert Rules Service
+- [x] alertRulesService.ts: Complete service with:
+  * Checking metrics against rules with configurable operators
+  * Triggering notifications when thresholds exceeded
+  * Managing escalation policies with multi-level actions
+  * Tracking alert state (active, acknowledged, resolved)
+  * Preventing alert spam with cooldown periods
+  * Batch alert checking for all enabled rules
+
+### tRPC Endpoints
+- [x] createRule: Create new alert rule
+- [x] updateRule: Update existing rule
+- [x] deleteRule: Delete rule
+- [x] listRules: Get all rules
+- [x] getRule: Get single rule by ID
+- [x] getHistory: Get triggered alerts with filtering
+- [x] getActive: Get currently active alerts
+- [x] acknowledgeAlert: Mark alert as acknowledged
+- [x] resolveAlert: Mark alert as resolved
+- [x] testRule: Test rule with current metrics
+- [x] checkAll: Admin-only batch checking
+### Alert Configuration UI (COMPLETED)
+- [x] AlertRulesEditor component: Form to create/edit rules
+- [x] AlertRulesList component: List view with all rules
+- [x] AlertHistoryViewer component: Timeline view of triggered alertsFeatures
+- Configurable thresholds for each metric (memory, CPU, disk)
+- Multiple operators (>, <, >=, <=, ==)
+- Escalation policies (notify user, notify admin, auto-action)
+- Cooldown periods to prevent alert spam
+- Alert acknowledgment and resolution tracking
+- Alert history with filtering and search
+- Test alert functionality
+- Enable/disable rules without deleting
+
+---
+
+## Performance Recommendations Engine (NEW)
+
+### Analysis Service
+- [x] performanceRecommendationsService.ts: Complete service with:
+  * Analyzing historical data patterns from daily metrics
+  * Detecting peak usage times by hour
+  * Identifying trends (increasing, decreasing, stable)
+  * Calculating growth rates and days to threshold
+  * Generating actionable recommendations
+  * 24-hour caching to avoid repeated analysis
+
+### Recommendation Types
+- [x] Peak Usage Detection: "Peak memory at 2 PM (82%), consider scaling up"
+- [x] Trend Analysis: "Memory increasing 2%/day, critical in 5 days"
+- [x] Cost Optimization: "CPU 35% avg, consider downsizing to save 20-30%"
+- [x] Capacity Planning: "Disk 70% avg, plan upgrade for future growth"
+- [x] Performance Improvement: "Implement caching to reduce peak CPU by 15%"
+
+### tRPC Endpoints
+- [x] getAll: Get all recommendations with stats
+- [x] getByType: Filter by recommendation type
+- [x] getCritical: Get critical recommendations only
+- [x] getStats: Get summary statistics
+- [x] refresh: Force re-analysis (admin only)
+
+### Recommendation Display
+- [ ] RecommendationCard component: Single recommendation display
+- [ ] RecommendationsPanel component: List of all recommendations
+
+### Features
+- Automatic analysis of historical data
+- Pattern detection (peaks, trends, anomalies)
+- Actionable recommendations with estimated impact
+- Dismissal tracking to avoid duplicate suggestions
+- Implementation tracking for follow-up
+- Severity levels (info, warning, critical)
+- Time-based recommendations (daily, weekly, monthly)
+
+---
+
+## Custom Date Range Picker (NEW)
+
+### DateRangePicker Component
+- [x] client/src/components/DateRangePicker.tsx: Enhanced component with:
+  * Preset buttons (All Time, 24h, 7d, 30d, 90d)
+  * Dual month calendar view
+  * Start and end date selection
+  * Clear/Reset button
+  * Validation (end date >= start date)
+  * Responsive design for mobile
+  * Dark theme styling
+  * Backward compatible with existing API
+
+### Features
+- [x] Click start date, then end date to select range
+- [x] Keyboard navigation support
+- [x] Visual feedback for selected dates (blue/green)
+- [x] Disabled future dates
+- [x] Preset quick-select buttons
+- [x] Custom range selection with calendar
+- [x] Export selected range as ISO strings
+- [x] Multiple callback support (onDateRangeChange, onRangeChange, onPresetChange)
+
+### Integration
+- [x] Updated AdminAnalytics.tsx to use DateRangePicker
+- [x] Replaced fixed time range buttons with picker
+- [x] Added custom date range state management
+- [x] Updated chart titles to show selected range
+- [x] Integrated with existing chart queries
+
+
+## Alert Rules UI Components (COMPLETED)
+
+### AlertRulesEditor Component ✅
+- [x] Create AlertRulesEditor.tsx with form for creating/editing rules
+- [x] Form fields: name, description, metric selector, threshold input
+- [x] Operator selector (>, <, >=, <=, ==)
+- [x] Escalation level selector (low, medium, high, critical)
+- [x] Cooldown minutes input with validation
+- [x] Notification toggles (notifyUser, notifyAdmin)
+- [x] Auto-action selector (optional)
+- [x] Enable/disable toggle
+- [x] Submit and cancel buttons
+- [x] Form validation with error messages
+- [x] Loading state during submission
+
+### AlertRulesList Component ✅
+- [x] Create AlertRulesList.tsx with card-based view
+- [x] Display: name, metric, threshold, operator, status, escalation level
+- [x] Edit button for each rule
+- [x] Delete button with confirmation dialog
+- [x] Enable/disable status badge
+- [x] Test button to trigger test alert
+- [x] Search/filter by name or metric
+- [x] Sorting by name, metric, threshold
+- [x] Empty state when no rules exist
+- [x] Success/error toast notifications
+- [x] Responsive design with color-coded badges
+
+### AlertHistoryViewer Component ✅
+- [x] Create AlertHistoryViewer.tsx with timeline view
+- [x] Display: timestamp, metric, value, threshold, status
+- [x] Status badges (active, acknowledged, resolved)
+- [x] Acknowledge button for active alerts
+- [x] Resolve button for acknowledged alerts
+- [x] Filter by status and date range
+- [x] Search by metric
+- [x] Severity color coding
+- [x] Export button (CSV)
+- [x] Statistics cards (active, acknowledged, resolved counts)
+- [x] Date range picker integration
+
+### AlertsDashboard Page ✅
+- [x] Create Alerts.tsx page component
+- [x] Header with title and refresh button
+- [x] Tabs: Rules, History, Statistics
+- [x] Rules tab: AlertRulesList with create button
+- [x] History tab: AlertHistoryViewer with filters
+- [x] Statistics tab: Alert counts and tips
+- [x] Active alerts summary card with badge
+- [x] Quick actions (create rule, refresh, export)
+- [x] Responsive layout for mobile/tablet
+- [x] Protected route (admin only)
+
+### Integration ✅
+- [x] Add Alerts route to App.tsx
+- [x] Add Alerts link to sidebar navigation
+- [x] Import Alerts page in App.tsx
+- [x] Add AlertCircle icon to navigation
+- [x] Update navigation with "Оповещения" (Notifications) label
+
+
+## Authentication System Implementation (NEW)
+
+### Phase 1: Registration & Login Pages
+- [ ] Remove role selection from Registration page
+- [ ] Simplify Registration to only email + password fields
+- [ ] Simplify Login to only email + password fields
+- [ ] Remove OnboardingWizard component (role selection)
+- [ ] Update auth routing to skip role selection
+
+### Phase 2: Automatic Account Creation on Approval
+- [ ] Generate username from full name (e.g., "aziz_petrov")
+- [ ] Generate temporary password (8+ chars, uppercase, lowercase, numbers)
+- [ ] Create user account automatically when admin approves request
+- [ ] Link Telegram ID to created user account
+- [ ] Mark account as "first_login_required" flag
+
+### Phase 3: Send Credentials via Telegram
+- [ ] Send Telegram message with username and temporary password
+- [ ] Format message: "Доступ предоставлен! Логин: {username}, Пароль: {temp_password}"
+- [ ] Include link to web application
+- [ ] Send via Telegram Bot API after account creation
+
+### Phase 4: Mandatory Password Change on First Login
+- [ ] Detect first login (check "first_login_required" flag)
+- [ ] Show password change dialog on login
+- [ ] Require new password before accessing dashboard
+- [ ] Validate password strength (8+ chars, uppercase, lowercase, numbers)
+- [ ] Clear "first_login_required" flag after successful change
+- [ ] Show profile completion form after password change
+
+### Phase 5: Access & Refresh Token System
+- [ ] Implement JWT-based token generation
+- [ ] Access token: 15-30 minutes expiration
+- [ ] Refresh token: 7-30 days expiration
+- [ ] Store refresh tokens in database
+- [ ] Implement token refresh endpoint
+- [ ] Implement automatic token refresh in frontend
+- [ ] Implement token rotation on refresh
+
+### Phase 6: Two-Factor Authentication (2FA)
+- [ ] Make 2FA mandatory for SuperAdmin and Admin roles
+- [ ] Implement TOTP (Time-based One-Time Password) with Google Authenticator
+- [ ] Generate QR code for 2FA setup
+- [ ] Store 2FA secret in database
+- [ ] Verify 6-digit codes on login
+- [ ] Block login without correct 2FA code
+- [ ] Implement backup codes for account recovery
+
+### Phase 7: Brute-Force Protection
+- [ ] Track failed login attempts per user
+- [ ] Lock account after 5 failed attempts
+- [ ] Implement 15-minute lockout period
+- [ ] Log all failed attempts with IP address
+- [ ] Show lockout message to user
+- [ ] Allow admin to unlock accounts manually
+- [ ] Send email notification on account lockout
+
+### Phase 8: Password Recovery
+- [ ] Implement "Forgot Password" page
+- [ ] Send password reset email with time-limited link
+- [ ] Validate reset token expiration (24 hours)
+- [ ] Allow user to set new password
+- [ ] Invalidate all refresh tokens on password reset
+- [ ] Logout user from all devices on password reset
+- [ ] Log password reset in audit log
+
+### Phase 9: Session Management & Logout
+- [ ] Implement logout endpoint
+- [ ] Invalidate refresh token on logout
+- [ ] Clear session cookies
+- [ ] Logout user from current device only
+- [ ] Implement "logout from all devices" option
+- [ ] Log logout events in audit log
+- [ ] Handle token expiration gracefully
+
+### Phase 10: Account Blocking & Admin Controls
+- [ ] Add "blocked" status to users table
+- [ ] Implement block/unblock endpoints
+- [ ] Immediately terminate all active sessions on block
+- [ ] Invalidate all tokens on block
+- [ ] Prevent login attempts from blocked accounts
+- [ ] Log blocking action with reason
+- [ ] Show "Account blocked" message to user
+- [ ] Allow admin to provide unblock reason
+
+### Phase 11: Telegram Bot Commands for Authenticated Users
+- [ ] Implement /tasks command - show today's tasks
+- [ ] Implement /status command - show task status
+- [ ] Implement /complete command - mark task as completed
+- [ ] Implement /photo command - upload task photo
+- [ ] Implement /location command - send geolocation
+- [ ] Implement /help command - show available commands
+- [ ] Restrict commands based on user role
+- [ ] Log all bot interactions in audit log
+
+### Phase 12: Testing & Verification
+- [ ] Test registration and login flows
+- [ ] Test automatic account creation on approval
+- [ ] Test temporary password and first login
+- [ ] Test token refresh mechanism
+- [ ] Test 2FA setup and verification
+- [ ] Test brute-force protection
+- [ ] Test password recovery
+- [ ] Test session management
+- [ ] Test account blocking
+- [ ] Test Telegram bot commands
+- [ ] Test audit logging
+- [ ] Verify all security features work correctly
+
+
+## Authentication System Implementation
+- [x] Fix syntax errors in routers.ts (remove duplicate closing braces)
+- [x] Add missing createUser function to db.ts
+- [x] Update approve access request endpoint to generate credentials
+- [x] Generate temporary username from full name
+- [x] Generate temporary password (8+ chars with uppercase, lowercase, numbers, special chars)
+- [x] Create user account automatically on access request approval
+- [x] Update Login component to use username instead of email
+- [x] Add getUserByUsername function to db-auth.ts
+- [x] Update auth router login endpoint to support username
+- [x] Add isTemporaryPassword and isFirstLogin fields to users table schema
+- [x] Implement mandatory password change on first login
+- [x] Create MandatoryPasswordChange component
+- [x] Update App.tsx to show password change screen after first login
+- [ ] Implement access token and refresh token system
+- [ ] Implement 2FA for SuperAdmin and Admin roles
+- [ ] Implement brute-force protection and account lockout
+- [ ] Implement password recovery via email
+- [ ] Implement session management and logout
+- [ ] Implement account blocking and admin controls
+- [ ] Implement Telegram bot commands for authenticated users
+- [ ] Test all authentication flows end-to-end
+
+
+## Security Features - Brute-Force Protection
+- [x] Create loginAttempts database table (already in schema)
+- [x] Add database functions for login attempt tracking
+- [x] Create LoginAttemptService with all methods
+- [x] Implement login attempt checking in auth router
+- [x] Add account lockout logic (5 failed = 15 min lockout)
+- [ ] Add tRPC endpoints for admin to view/reset lockouts
+- [ ] Display lockout message on login page
+- [ ] Add unlock functionality in admin panel
+
+## Security Features - 2FA Implementation (TOTP)
+- [x] Install speakeasy and qrcode npm packages
+- [x] Create TwoFactorService with TOTP generation and verification
+- [x] Generate QR codes for authenticator apps
+- [x] Generate and verify backup codes
+- [x] Enable/disable 2FA for users
+- [ ] Create 2FA database tables for storing secrets
+- [ ] Add enable/disable 2FA endpoints
+- [ ] Create QR code generation endpoint
+- [ ] Create backup codes generation endpoint
+- [ ] Add 2FA verification step in login flow
+- [ ] Create TwoFactorSetup component
+- [ ] Create TwoFactorVerification component
+- [ ] Add 2FA management in user settings
+
+## Security Features - Password Recovery
+- [x] Create passwordRecovery database table (already in schema)
+- [x] Create PasswordRecoveryService with all methods
+- [x] Generate secure reset tokens
+- [x] Send password reset emails
+- [x] Verify reset tokens with expiration
+- [x] Reset password with token
+- [x] Rate limiting (max 3 requests per hour)
+- [ ] Add request password reset endpoint
+- [ ] Add verify reset token endpoint
+- [ ] Add reset password endpoint
+- [ ] Create PasswordRecovery component
+- [ ] Create ResetPassword component
+- [ ] Add password recovery link to login page
+
+
+## tRPC Endpoints - Security Features
+- [x] Add auth.requestPasswordReset() endpoint
+- [x] Add auth.verifyResetToken() endpoint
+- [x] Add auth.resetPassword() endpoint
+- [x] Add auth.enableTwoFactor() endpoint
+- [x] Add auth.disableTwoFactor() endpoint
+- [x] Add auth.getTwoFactorStatus() endpoint
+- [x] Add auth.verifyTwoFactor() endpoint
+- [x] Add admin.getLoginAttempts() endpoint
+- [x] Add admin.resetAccountLockout() endpoint
+- [x] Add admin.getSecurityStatistics() endpoint
+
+## Frontend Components - Security Features
+- [x] Create PasswordRecovery component (already exists)
+- [x] Create ResetPassword component (part of PasswordRecovery)
+- [x] Create TwoFactorSetup component
+- [x] Create TwoFactorVerification component
+- [x] Add password recovery link to Login page
+- [x] Add 2FA verification modal to Login page
+- [x] Add 2FA settings to UserSettings page
+- [x] Add form validation for all components
+- [x] Add error handling and toast notifications
+
+## Admin Dashboard - Security Widgets
+- [x] Create LoginAttemptsWidget component (integrated in SecurityDashboard)
+- [x] Create LockedAccountsWidget component (integrated in SecurityDashboard)
+- [x] Create PasswordRecoveryStatsWidget component (integrated in SecurityDashboard)
+- [x] Create SecurityAlertsWidget component (integrated in SecurityDashboard)
+- [x] Add security monitoring page to admin dashboard (SecurityDashboard exists)
+- [x] Add real-time updates for security metrics (auto-refresh implemented)
+- [x] Add export functionality for security logs (CSV export implemented)
+
+
+## Admin Panel Integration - Security Dashboard
+- [x] Find and examine admin panel structure
+- [x] Add SecurityDashboard route to admin navigation (/admin/security)
+- [x] Add Security group to VendHubLayout navigation
+- [x] Integrate SecurityDashboard component in AdminSecurity page
+- [x] Add role-based access control (admin/superadmin only)
+- [x] Implement locked account unlock functionality
+- [x] Add security alerts and notifications
+- [x] Create admin security monitoring page
+- [ ] Add real-time WebSocket updates for login attempts
+- [ ] Add email alerts for suspicious activities
+
+
+## Backup Code Management UI
+- [ ] Design backup code management system and database schema
+- [ ] Create backend services and tRPC endpoints for backup codes
+- [ ] Build BackupCodeManager component with view and download
+- [ ] Implement regenerate backup codes functionality with warnings
+- [ ] Integrate backup code management into UserSettings page
+- [ ] Test and deliver backup code management feature
+
+
+## Backup Code Management UI (COMPLETED)
+- [x] Design backup code management system and database schema
+- [x] Create backend services and tRPC endpoints for backup codes
+- [x] Build BackupCodeManager component with view and download
+- [x] Implement regenerate backup codes functionality with warnings
+- [x] Integrate backup code management into UserSettings page
+- [x] Test and deliver backup code management feature
+
+
+## tRPC Endpoints for Backup Codes
+- [x] Create tRPC endpoints for backup codes (getBackupCodes, regenerateBackupCodes, verifyBackupCode)
+- [x] Connect BackupCodeManager to tRPC queries
+- [x] Connect RegenerateBackupCodesDialog to tRPC mutations
+- [x] Test endpoints and UI integration
+- [x] Deploy and deliver tRPC integration

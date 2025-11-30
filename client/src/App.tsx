@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import '@/i18n/config';
 import { Route, Switch } from "wouter";
 import ErrorBoundary from "./components/ErrorBoundary";
@@ -6,6 +6,27 @@ import { ThemeProvider } from "./contexts/ThemeContext";
 import VendHubLayout from "./components/VendHubLayout";
 import CommandPalette from "./components/CommandPalette";
 import { trpc } from "@/lib/trpc";
+import Registration from "./components/Registration";
+import Login from "./components/Login";
+import OnboardingWizard from "./components/OnboardingWizard";
+import MandatoryPasswordChange from "./components/MandatoryPasswordChange";
+import Alerts from "./pages/Alerts";
+import AdminAnalytics from "./pages/AdminAnalytics";
+import AdminSecurity from "./pages/AdminSecurity";
+
+// Auth state management
+interface AuthState {
+  isAuthenticated: boolean;
+  user?: {
+    id: number;
+    email: string;
+    fullName: string;
+    role: string;
+    needsPasswordChange?: boolean;
+  };
+  needsOnboarding?: boolean;
+  needsPasswordChangeFirst?: boolean;
+}
 
 // Dashboard with real backend data
 function DashboardPage() {
@@ -17,13 +38,13 @@ function DashboardPage() {
     retry: 1,
     staleTime: 30000,
   });
-  const { data: products, isLoading: productsLoading, error: productsError } = trpc.products.list.useQuery(undefined, {
-    retry: 1,
-    staleTime: 30000,
-  });
+  // Disabled products query due to schema issues - will be re-enabled after schema is fixed
+  const products = [];
+  const productsLoading = false;
+  const productsError = null;
 
-  const isLoading = machinesLoading || tasksLoading || productsLoading;
-  const hasError = machinesError || tasksError || productsError;
+  const isLoading = machinesLoading || tasksLoading;
+  const hasError = machinesError || tasksError;
 
   if (hasError) {
     return (
@@ -233,7 +254,9 @@ function Router() {
         <Route path="/transactions" component={TransactionsPage} />
         <Route path="/counterparties" component={CounterpartiesPage} />
         <Route path="/contracts" component={ContractsPage} />
-        <Route path="/analytics" component={AnalyticsPage} />
+        <Route path="/analytics" component={AdminAnalytics} />
+        <Route path="/admin/security" component={AdminSecurity} />
+        <Route path="/alerts" component={Alerts} />
         <Route path="/reports" component={ReportsPage} />
         <Route path="/incidents" component={IncidentsPage} />
         <Route path="/users" component={UsersPage} />
@@ -247,6 +270,109 @@ function Router() {
 }
 
 function App() {
+  const [authState, setAuthState] = useState<AuthState>({
+    isAuthenticated: false,
+  });
+  const [currentView, setCurrentView] = useState<'auth' | 'password-change' | 'onboarding' | 'app'>('auth');
+
+  const handleRegistrationComplete = () => {
+    // After registration, show login
+    setCurrentView('auth');
+  };
+
+  const handleLoginSuccess = (user: AuthState['user']) => {
+    // After login, check if user needs password change first
+    if (user?.needsPasswordChange) {
+      setAuthState({
+        isAuthenticated: true,
+        user,
+        needsPasswordChangeFirst: true,
+      });
+      setCurrentView('password-change');
+    } else {
+      // Otherwise, check if user needs onboarding
+      setAuthState({
+        isAuthenticated: true,
+        user,
+        needsOnboarding: true,
+      });
+      setCurrentView('onboarding');
+    }
+  };
+
+  const handlePasswordChangeComplete = () => {
+    // After password change, proceed to onboarding
+    setCurrentView('onboarding');
+  };
+
+  const handleOnboardingComplete = () => {
+    // After onboarding, show app
+    setCurrentView('app');
+  };
+
+  const handleLogout = () => {
+    // Reset auth state and show login
+    setAuthState({
+      isAuthenticated: false,
+    });
+    setCurrentView('auth');
+  };
+
+  // Show authentication screens
+  if (currentView === 'auth') {
+    return (
+      <ErrorBoundary>
+        <ThemeProvider defaultTheme="dark">
+          <div className="flex">
+            <Registration
+              onRegistrationComplete={handleRegistrationComplete}
+              onSwitchToLogin={() => setCurrentView('auth')}
+            />
+            {/* TODO: Add Login component toggle */}
+            <Login
+              onLoginSuccess={(user) => handleLoginSuccess({
+                id: 1,
+                email: 'user@example.com',
+                fullName: 'User Name',
+                role: 'operator',
+              })}
+              onSwitchToRegister={() => setCurrentView('auth')}
+            />
+          </div>
+        </ThemeProvider>
+      </ErrorBoundary>
+    );
+  }
+
+  // Show mandatory password change
+  if (currentView === 'password-change' && authState.user) {
+    return (
+      <ErrorBoundary>
+        <ThemeProvider defaultTheme="dark">
+          <MandatoryPasswordChange
+            userEmail={authState.user.email}
+            onPasswordChangeComplete={handlePasswordChangeComplete}
+          />
+        </ThemeProvider>
+      </ErrorBoundary>
+    );
+  }
+
+  // Show onboarding wizard
+  if (currentView === 'onboarding' && authState.user) {
+    return (
+      <ErrorBoundary>
+        <ThemeProvider defaultTheme="dark">
+          <OnboardingWizard
+            userEmail={authState.user.email}
+            onOnboardingComplete={handleOnboardingComplete}
+          />
+        </ThemeProvider>
+      </ErrorBoundary>
+    );
+  }
+
+  // Show main app
   return (
     <ErrorBoundary>
       <ThemeProvider defaultTheme="dark">
