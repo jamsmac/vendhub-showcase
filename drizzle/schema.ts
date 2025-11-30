@@ -755,3 +755,89 @@ export type InsertPermissionGroup = typeof permissionGroups.$inferInsert;
 
 export type PermissionGroupMember = typeof permissionGroupMembers.$inferSelect;
 export type InsertPermissionGroupMember = typeof permissionGroupMembers.$inferInsert;
+
+
+// Performance Metrics Tables
+export const performanceMetrics = mysqlTable(
+	'performanceMetrics',
+	{
+		id: int().autoincrement().notNull().primaryKey(),
+		timestamp: timestamp({ mode: 'string' }).default(sql`CURRENT_TIMESTAMP`).notNull(),
+		memoryUsagePercent: decimal({ precision: 5, scale: 2 }).notNull(),
+		memoryUsedMB: int().notNull(),
+		memoryTotalMB: int().notNull(),
+		cpuUsagePercent: decimal({ precision: 5, scale: 2 }).notNull(),
+		cpuCores: int().notNull(),
+		cpuLoadAverage: decimal({ precision: 5, scale: 2 }).notNull(),
+		diskUsagePercent: decimal({ precision: 5, scale: 2 }).notNull(),
+		diskUsedGB: decimal({ precision: 10, scale: 2 }).notNull(),
+		diskTotalGB: decimal({ precision: 10, scale: 2 }).notNull(),
+		processCount: int().notNull(),
+		staleProcessCount: int().default(0).notNull(),
+		healthStatus: mysqlEnum(['healthy', 'warning', 'critical']).default('healthy').notNull(),
+		issues: text(), // JSON array of issues
+		uptime: int().notNull(), // in seconds
+		createdAt: timestamp({ mode: 'string' }).default(sql`CURRENT_TIMESTAMP`).notNull(),
+	},
+	(table) => [
+		index('performanceMetrics_timestamp_idx').on(table.timestamp),
+		index('performanceMetrics_healthStatus_idx').on(table.healthStatus),
+	]
+);
+
+export const performanceMetricsHourly = mysqlTable(
+	'performanceMetricsHourly',
+	{
+		id: int().autoincrement().notNull().primaryKey(),
+		hour: timestamp({ mode: 'string' }).notNull(),
+		memoryUsageAvgPercent: decimal({ precision: 5, scale: 2 }).notNull(),
+		memoryUsageMaxPercent: decimal({ precision: 5, scale: 2 }).notNull(),
+		memoryUsageMinPercent: decimal({ precision: 5, scale: 2 }).notNull(),
+		cpuUsageAvgPercent: decimal({ precision: 5, scale: 2 }).notNull(),
+		cpuUsageMaxPercent: decimal({ precision: 5, scale: 2 }).notNull(),
+		cpuUsageMinPercent: decimal({ precision: 5, scale: 2 }).notNull(),
+		diskUsageAvgPercent: decimal({ precision: 5, scale: 2 }).notNull(),
+		diskUsageMaxPercent: decimal({ precision: 5, scale: 2 }).notNull(),
+		staleProcessCountAvg: decimal({ precision: 5, scale: 2 }).notNull(),
+		criticalEventsCount: int().default(0).notNull(),
+		warningEventsCount: int().default(0).notNull(),
+		recordCount: int().notNull(), // number of metrics aggregated
+		createdAt: timestamp({ mode: 'string' }).default(sql`CURRENT_TIMESTAMP`).notNull(),
+	},
+	(table) => [
+		index('performanceMetricsHourly_hour_idx').on(table.hour),
+		index('performanceMetricsHourly_createdAt_idx').on(table.createdAt),
+	]
+);
+
+export const performanceMetricsDaily = mysqlTable(
+	'performanceMetricsDaily',
+	{
+		id: int().autoincrement().notNull().primaryKey(),
+		date: varchar({ length: 10 }).notNull(), // YYYY-MM-DD format
+		memoryUsageAvgPercent: decimal({ precision: 5, scale: 2 }).notNull(),
+		memoryUsageMaxPercent: decimal({ precision: 5, scale: 2 }).notNull(),
+		cpuUsageAvgPercent: decimal({ precision: 5, scale: 2 }).notNull(),
+		cpuUsageMaxPercent: decimal({ precision: 5, scale: 2 }).notNull(),
+		diskUsageAvgPercent: decimal({ precision: 5, scale: 2 }).notNull(),
+		diskUsageMaxPercent: decimal({ precision: 5, scale: 2 }).notNull(),
+		staleProcessCountAvg: decimal({ precision: 5, scale: 2 }).notNull(),
+		criticalEventsCount: int().default(0).notNull(),
+		warningEventsCount: int().default(0).notNull(),
+		recordCount: int().notNull(), // number of hourly metrics aggregated
+		createdAt: timestamp({ mode: 'string' }).default(sql`CURRENT_TIMESTAMP`).notNull(),
+	},
+	(table) => [
+		index('performanceMetricsDaily_date_idx').on(table.date),
+		index('performanceMetricsDaily_createdAt_idx').on(table.createdAt),
+	]
+);
+
+export type PerformanceMetrics = typeof performanceMetrics.$inferSelect;
+export type InsertPerformanceMetrics = typeof performanceMetrics.$inferInsert;
+
+export type PerformanceMetricsHourly = typeof performanceMetricsHourly.$inferSelect;
+export type InsertPerformanceMetricsHourly = typeof performanceMetricsHourly.$inferInsert;
+
+export type PerformanceMetricsDaily = typeof performanceMetricsDaily.$inferSelect;
+export type InsertPerformanceMetricsDaily = typeof performanceMetricsDaily.$inferInsert;

@@ -1790,3 +1790,115 @@ All tasks completed:
 - Comprehensive logging and auditing
 - Non-blocking operations (warnings only)
 - Production-ready monitoring
+
+
+## Historical Performance Analytics (NEW)
+
+### Database Schema
+- [x] performanceMetrics table: Stores raw metrics every minute
+  * Timestamp, memory %, CPU %, disk %, process count, stale processes
+  * Health status and issues JSON
+  * Uptime tracking
+  * Indexed by timestamp and health status
+
+- [x] performanceMetricsHourly table: Hourly aggregated metrics
+  * Average, max, min for memory, CPU, disk
+  * Stale process count average
+  * Critical and warning event counts
+  * Record count for aggregation tracking
+
+- [x] performanceMetricsDaily table: Daily aggregated metrics
+  * Average and max for memory, CPU, disk
+  * Stale process count average
+  * Critical and warning event counts
+  * Date-based indexing for quick lookups
+
+### Performance Metrics Service
+- [x] performanceMetricsService.ts: Backend service that:
+  * Collects metrics every minute (cron job)
+  * Aggregates hourly metrics every hour
+  * Aggregates daily metrics every day at midnight
+  * Cleans up old metrics (7 days raw, 90 days hourly)
+  * Calculates statistics (avg, min, max)
+  * Provides metrics range queries
+  * Initializes on server startup
+
+### tRPC Endpoints (7 endpoints)
+- [x] getMetricsRange: Get metrics for specific time range
+- [x] getHourlyMetrics: Get hourly aggregated metrics
+- [x] getDailyMetrics: Get daily aggregated metrics
+- [x] getStatistics: Get performance statistics for period
+- [x] getLast24Hours: Get last 24 hours of metrics
+- [x] getTrends: Get 7-day hourly trends
+- [x] getDaySummary: Get summary for specific date
+- [x] comparePeriods: Compare two time periods
+
+### Chart Components
+- [x] PerformanceLineChart: Line chart for real-time metrics
+- [x] PerformanceAreaChart: Stacked area chart for distribution
+- [x] HourlyPerformanceChart: Bar chart for hourly averages/peaks
+- [x] PerformanceStatistics: Statistics cards (avg/max/min)
+- [x] PerformanceComparison: Period comparison with trends
+
+### Admin Analytics Page
+- [x] AdminAnalytics.tsx: Comprehensive analytics dashboard with:
+  * Overview tab: Last 24 hours with line and area charts
+  * Trends tab: 7-day hourly trends with analysis
+  * Statistics tab: 24h, 7d, 30d statistics comparison
+  * Comparison tab: Period-to-period comparison
+  * Time range selector (24h, 7d, 30d)
+  * Refresh button for real-time updates
+  * Export button (placeholder)
+
+### Export Functionality
+- [x] performanceExport.ts: Export utilities supporting:
+  * CSV export for metrics (timestamp, memory, CPU, disk, health)
+  * CSV export for hourly metrics
+  * JSON export for metrics
+  * JSON export for hourly metrics
+  * Text report generation with statistics
+  * Clipboard copy functionality
+  * Summary generation for sharing
+  * File download helper
+
+### Features
+- Automatic metrics collection every minute
+- Hourly aggregation with avg/max/min
+- Daily aggregation for long-term storage
+- Automatic cleanup of old data (7/90 day retention)
+- Real-time dashboard with refresh capability
+- Multiple chart types (line, area, bar)
+- Period comparison with trend analysis
+- Export to CSV, JSON, and text formats
+- Responsive design for mobile and desktop
+- Admin-only access via protected routes
+
+### How It Works
+
+**Data Collection:**
+1. Every minute: Collect current system metrics
+2. Every hour: Aggregate last hour's metrics to hourly table
+3. Every day: Aggregate yesterday's hourly metrics to daily table
+4. Every day: Clean up metrics older than 7 days (raw) and 90 days (hourly)
+
+**Dashboard:**
+1. Overview tab shows last 24 hours with line and area charts
+2. Trends tab shows 7-day hourly trends with analysis
+3. Statistics tab shows avg/max/min for 24h, 7d, 30d
+4. Comparison tab compares two periods with trend indicators
+
+**Export:**
+1. CSV format for spreadsheet analysis
+2. JSON format for API integration
+3. Text report for documentation
+4. Clipboard copy for quick sharing
+
+### Benefits
+- Historical performance tracking without manual logging
+- Trend analysis for capacity planning
+- Peak usage identification for optimization
+- Compliance reporting with export capabilities
+- Long-term data retention with automatic cleanup
+- Real-time dashboard for monitoring
+- Period comparison for performance improvement tracking
+- Multiple export formats for flexibility
