@@ -1555,3 +1555,102 @@ All tasks completed:
 - Bulk permission updates with change tracking
 - Permission statistics and analytics
 - Admin-only access control
+
+
+## Automated Process Cleanup System (NEW)
+
+### Cleanup Scripts (4 files)
+- [x] cleanup-db-processes.mjs: Main cleanup utility that kills stale database migration processes
+  * Detects processes matching patterns: db:push, db:pull, drizzle-kit, drizzle-migrate, pnpm db, tsx.*db, tsx.*migrate, esbuild.*service
+  * Graceful shutdown with SIGTERM (5 second timeout) then SIGKILL if needed
+  * Optional build artifact cleanup (--clean-build flag)
+  * Optional port lock cleanup (--clean-ports flag)
+  * Logging to .cleanup-log.txt file
+  * Exit codes: 0 for success, 1 for failure
+
+- [x] pre-migration.mjs: Pre-migration hook that runs before database operations
+  * Automatically called before pnpm db:push
+  * Runs cleanup-db-processes.mjs with --clean-build flag
+  * Cleans up dist directory to ensure fresh build
+  * Provides user feedback with emoji indicators
+
+- [x] pre-start.mjs: Pre-start hook that runs before dev server starts
+  * Automatically called before pnpm dev
+  * Runs cleanup-db-processes.mjs with --clean-build and --clean-ports flags
+  * Kills any processes using ports 3000, 5173, 5174, 8000, 8080
+  * Ensures clean startup environment
+  * Non-blocking: warns on errors but doesn't prevent startup
+
+- [x] monitor-processes.mjs: Real-time process monitor (optional background service)
+  * Runs continuously and checks for stale processes every 30 seconds
+  * Tracks process age and kills processes older than 5 minutes
+  * Kills drizzle-kit/db:push processes running longer than 2 minutes
+  * Maintains process tracking file (.tracked-processes.json)
+  * Logs to .process-monitor.log file
+  * Can be run as background service: node scripts/monitor-processes.mjs &
+
+### Package.json Script Updates
+- [x] dev: Now runs pre-start.mjs before starting dev server
+  * Command: node scripts/pre-start.mjs && NODE_ENV=development tsx watch server/_core/index.ts
+  * Automatically cleans up stale processes and ports before starting
+
+- [x] db:push: Now runs pre-migration.mjs before database operations
+  * Command: node scripts/pre-migration.mjs && drizzle-kit generate && drizzle-kit migrate
+  * Automatically cleans up stale processes and build artifacts before migration
+
+- [x] db:cleanup: Manual cleanup of stale database processes
+  * Command: node scripts/cleanup-db-processes.mjs
+  * Can be run manually anytime: pnpm db:cleanup
+
+- [x] db:cleanup:full: Full cleanup including build artifacts and port locks
+  * Command: node scripts/cleanup-db-processes.mjs --clean-build --clean-ports
+  * Can be run manually: pnpm db:cleanup:full
+
+- [x] cleanup:processes: Alias for db:cleanup
+  * Command: node scripts/cleanup-db-processes.mjs
+
+- [x] cleanup:all: Alias for db:cleanup:full
+  * Command: node scripts/cleanup-db-processes.mjs --clean-build --clean-ports
+
+### Features
+- Automatic cleanup before dev server starts
+- Automatic cleanup before database migrations
+- Manual cleanup commands for on-demand use
+- Real-time monitoring option for background cleanup
+- Graceful process termination with timeout
+- Comprehensive logging to files
+- Port lock detection and cleanup
+- Build artifact cleanup
+- Process tracking and history
+
+### How It Works
+1. **Dev Server Start:** When you run `pnpm dev`, pre-start.mjs runs first and:
+   - Kills all stale db:push, drizzle-kit, and other database processes
+   - Cleans up build artifacts (dist, .turbo, etc.)
+   - Kills any processes using common dev ports (3000, 5173, etc.)
+   - Then starts the dev server
+
+2. **Database Migration:** When you run `pnpm db:push`, pre-migration.mjs runs first and:
+   - Kills all stale database processes
+   - Cleans up build artifacts
+   - Then runs drizzle-kit generate and migrate
+
+3. **Manual Cleanup:** You can manually run cleanup anytime:
+   - `pnpm db:cleanup` - Kill stale database processes only
+   - `pnpm db:cleanup:full` - Kill processes, clean build artifacts, and free ports
+
+4. **Background Monitoring (Optional):** Run in another terminal:
+   - `node scripts/monitor-processes.mjs` - Continuously monitors and kills stale processes
+
+### Logging
+- `.cleanup-log.txt` - Log of all cleanup operations
+- `.process-monitor.log` - Log of background monitor activity
+- `.tracked-processes.json` - JSON file tracking monitored processes
+
+### Benefits
+- Prevents server crashes from stale processes
+- Eliminates database lock issues from orphaned migrations
+- Frees up memory and system resources
+- Ensures clean environment for dev and migrations
+- Automatic cleanup without manual intervention
+- Optional background monitoring for production environments
