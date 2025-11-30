@@ -568,6 +568,97 @@ ${process.env.PUBLIC_URL || 'https://vendhub-showcase.manus.space'}
         });
       }),
   }),
+
+  dictionaryBulkOps: router({
+    bulkImport: protectedProcedure
+      .input(z.object({
+        dictionaryCode: z.string().min(1),
+        items: z.array(z.record(z.any())),
+        mode: z.enum(['create', 'update', 'upsert']),
+        skipErrors: z.boolean().default(false),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const { processBulkImport } = await import('./batch-operations');
+        return await processBulkImport(
+          input.dictionaryCode,
+          'bulk-import-' + Date.now(),
+          input.items,
+          input.mode,
+          ctx.user.id,
+          input.skipErrors
+        );
+      }),
+
+    undoImport: protectedProcedure
+      .input(z.object({ importHistoryId: z.number() }))
+      .mutation(async ({ ctx, input }) => {
+        const dbImportModule = await import('./db-import');
+        const history = await dbImportModule.getImportHistory(input.importHistoryId);
+        if (!history) {
+          throw new Error('Import history not found');
+        }
+        const undoEntry = await dbImportModule.getLatestUndoRedoEntry(input.importHistoryId);
+        if (!undoEntry) {
+          throw new Error('No undo history available');
+        }
+        // Create new undo/redo entry
+        await dbImportModule.createUndoRedoEntry({
+          importHistoryId: input.importHistoryId,
+          action: 'rollback',
+          previousState: undoEntry.newState,
+          newState: undoEntry.previousState,
+          performedBy: ctx.user.id,
+        });
+        return { success: true, message: 'Import undone' };
+      }),
+
+    redoImport: protectedProcedure
+      .input(z.object({ importHistoryId: z.number() }))
+      .mutation(async ({ ctx, input }) => {
+        const dbImportModule = await import('./db-import');
+        const history = await dbImportModule.getImportHistory(input.importHistoryId);
+        if (!history) {
+          throw new Error('Import history not found');
+        }
+        // Create new undo/redo entry for redo
+        await dbImportModule.createUndoRedoEntry({
+          importHistoryId: input.importHistoryId,
+          action: 'import',
+          performedBy: ctx.user.id,
+        });
+        return { success: true, message: 'Import redone' };
+      }),
+
+    rollbackImport: protectedProcedure
+      .input(z.object({ importId: z.number() }))
+      .mutation(async ({ ctx, input }) => {
+        const { rollbackImport } = await import('./batch-operations');
+        await rollbackImport(input.importId, ctx.user.id);
+        return { success: true, message: 'Import rolled back successfully' };
+      }),
+
+    getImportHistory: publicProcedure
+      .input(z.object({ dictionaryCode: z.string() }))
+      .query(async ({ input }) => {
+        const dbImportModule = await import('./db-import');
+        return await dbImportModule.getImportHistoryByDictionary(input.dictionaryCode);
+      }),
+
+    deleteImportHistory: protectedProcedure
+      .input(z.object({ importId: z.number() }))
+      .mutation(async ({ ctx, input }) => {
+        const dbImportModule = await import('./db-import');
+        const history = await dbImportModule.getImportHistory(input.importId);
+        if (!history) {
+          throw new Error('Import history not found');
+        }
+        // Delete batch transactions
+        await dbImportModule.deleteBatchTransactions(input.importId);
+        // Delete undo/redo stack
+        await dbImportModule.deleteUndoRedoStack(input.importId);
+        return { success: true, message: 'Import history deleted' };
+      }),
+  }),
 });
 
 export type AppRouter = typeof appRouter;
