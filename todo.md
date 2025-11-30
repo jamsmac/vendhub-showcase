@@ -2149,10 +2149,10 @@ All tasks completed:
 - [x] Update Login component to use username instead of email
 - [x] Add getUserByUsername function to db-auth.ts
 - [x] Update auth router login endpoint to support username
-- [ ] Add isTemporaryPassword and isFirstLogin fields to users table schema
-- [ ] Implement mandatory password change on first login
-- [ ] Create ChangePasswordOnFirstLogin component
-- [ ] Update App.tsx to show password change screen after first login
+- [x] Add isTemporaryPassword and isFirstLogin fields to users table schema
+- [x] Implement mandatory password change on first login
+- [x] Create MandatoryPasswordChange component
+- [x] Update App.tsx to show password change screen after first login
 - [ ] Implement access token and refresh token system
 - [ ] Implement 2FA for SuperAdmin and Admin roles
 - [ ] Implement brute-force protection and account lockout

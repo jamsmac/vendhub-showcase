@@ -206,6 +206,8 @@ export const users = mysqlTable("users", {
 	lastSignedIn: timestamp({ mode: 'string' }).default('CURRENT_TIMESTAMP').notNull(),
 	telegramId: varchar({ length: 64 }),
 	passwordHash: varchar({ length: 255 }),
+	isTemporaryPassword: boolean().default(false).notNull(),
+	isFirstLogin: boolean().default(true).notNull(),
 	twoFactorEnabled: boolean().default(false).notNull(),
 	emailNotifications: boolean().default(true).notNull(),
 	telegramNotifications: boolean().default(true).notNull(),

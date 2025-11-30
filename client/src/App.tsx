@@ -9,6 +9,7 @@ import { trpc } from "@/lib/trpc";
 import Registration from "./components/Registration";
 import Login from "./components/Login";
 import OnboardingWizard from "./components/OnboardingWizard";
+import MandatoryPasswordChange from "./components/MandatoryPasswordChange";
 import Alerts from "./pages/Alerts";
 import AdminAnalytics from "./pages/AdminAnalytics";
 
@@ -20,8 +21,10 @@ interface AuthState {
     email: string;
     fullName: string;
     role: string;
+    needsPasswordChange?: boolean;
   };
   needsOnboarding?: boolean;
+  needsPasswordChangeFirst?: boolean;
 }
 
 // Dashboard with real backend data
@@ -268,7 +271,7 @@ function App() {
   const [authState, setAuthState] = useState<AuthState>({
     isAuthenticated: false,
   });
-  const [currentView, setCurrentView] = useState<'auth' | 'onboarding' | 'app'>('auth');
+  const [currentView, setCurrentView] = useState<'auth' | 'password-change' | 'onboarding' | 'app'>('auth');
 
   const handleRegistrationComplete = () => {
     // After registration, show login
@@ -276,12 +279,27 @@ function App() {
   };
 
   const handleLoginSuccess = (user: AuthState['user']) => {
-    // After login, check if user needs onboarding
-    setAuthState({
-      isAuthenticated: true,
-      user,
-      needsOnboarding: true, // TODO: Check from server if user has completed onboarding
-    });
+    // After login, check if user needs password change first
+    if (user?.needsPasswordChange) {
+      setAuthState({
+        isAuthenticated: true,
+        user,
+        needsPasswordChangeFirst: true,
+      });
+      setCurrentView('password-change');
+    } else {
+      // Otherwise, check if user needs onboarding
+      setAuthState({
+        isAuthenticated: true,
+        user,
+        needsOnboarding: true,
+      });
+      setCurrentView('onboarding');
+    }
+  };
+
+  const handlePasswordChangeComplete = () => {
+    // After password change, proceed to onboarding
     setCurrentView('onboarding');
   };
 
@@ -319,6 +337,20 @@ function App() {
               onSwitchToRegister={() => setCurrentView('auth')}
             />
           </div>
+        </ThemeProvider>
+      </ErrorBoundary>
+    );
+  }
+
+  // Show mandatory password change
+  if (currentView === 'password-change' && authState.user) {
+    return (
+      <ErrorBoundary>
+        <ThemeProvider defaultTheme="dark">
+          <MandatoryPasswordChange
+            userEmail={authState.user.email}
+            onPasswordChangeComplete={handlePasswordChangeComplete}
+          />
         </ThemeProvider>
       </ErrorBoundary>
     );
