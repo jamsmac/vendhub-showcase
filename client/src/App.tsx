@@ -86,7 +86,9 @@ function DashboardPage() {
 
 // Import Machines page
 import MachinesPageComponent from "./pages/Machines";
+import MachineDetailPageComponent from "./pages/MachineDetail";
 const MachinesPage = MachinesPageComponent;
+const MachineDetailPage = MachineDetailPageComponent;
 
 // Import Tasks page
 import TasksPageComponent from "./pages/Tasks";
@@ -222,6 +224,7 @@ function Router() {
       <Switch>
         <Route path="/" component={DashboardPage} />
         <Route path="/machines" component={MachinesPage} />
+        <Route path="/machines/:id" component={MachineDetailPage} />
         <Route path="/tasks" component={TasksPage} />
         <Route path="/locations" component={LocationsPage} />
         <Route path="/inventory" component={InventoryPage} />

@@ -809,3 +809,69 @@
 - [x] Connected to backend products.list endpoint
 - [x] Added inventory statistics dashboard
 - [x] Added Russian UI translations
+
+
+## Phase 30: Machine Detail Page with Service History
+
+### Machine Detail Page Component
+- [ ] Create MachineDetail.tsx page component
+- [ ] Add route /machines/:id to App.tsx
+- [ ] Implement back button navigation
+- [ ] Add machine info header with status badge
+- [ ] Display technical specifications (model, serial number, installation date)
+- [ ] Show current location with map preview
+
+### Service History Timeline
+- [ ] Create ServiceHistory component with timeline layout
+- [ ] Display all maintenance operations chronologically
+- [ ] Show operation type icons (repair, refill, cleaning, inspection)
+- [ ] Add operation details (date, operator, description, cost)
+- [ ] Implement filter by operation type
+- [ ] Add "Add Service Record" button and modal
+
+### Sales Statistics
+- [ ] Create SalesChart component with revenue graph
+- [ ] Display daily/weekly/monthly sales trends
+- [ ] Show top-selling products in this machine
+- [ ] Add revenue comparison with other machines
+- [ ] Display transaction count statistics
+
+### Current Inventory
+- [ ] Create InventoryTable component
+- [ ] Display all products currently in machine
+- [ ] Show stock levels with progress bars
+- [ ] Add low stock warnings
+- [ ] Implement "Refill" action button
+- [ ] Show last refill date for each product
+
+### Backend Integration
+- [ ] Connect to machines.getById tRPC endpoint
+- [ ] Connect to serviceHistory.list endpoint
+- [ ] Connect to sales.getByMachine endpoint
+- [ ] Connect to inventory.getByMachine endpoint
+- [ ] Add mock data fallback for all sections
+
+
+## Phase 30 Completion Status
+
+All tasks completed:
+- [x] Create MachineDetail.tsx page component
+- [x] Add route /machines/:id to App.tsx
+- [x] Implement back button navigation
+- [x] Add machine info header with status badge
+- [x] Display technical specifications (model, serial number, installation date)
+- [x] Show current location with map preview
+- [x] Create ServiceHistory component with timeline layout
+- [x] Display all maintenance operations chronologically
+- [x] Show operation type icons (repair, refill, cleaning, inspection)
+- [x] Add operation details (date, operator, description, cost)
+- [x] Create SalesChart component with revenue graph
+- [x] Display daily/weekly/monthly sales trends
+- [x] Show top-selling products in this machine
+- [x] Create InventoryTable component
+- [x] Display all products currently in machine
+- [x] Show stock levels with progress bars
+- [x] Add low stock warnings
+- [x] Show last refill date for each product
+- [x] Add mock data fallback for all sections
+- [x] Translate all UI to Russian

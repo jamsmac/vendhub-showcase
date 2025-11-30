@@ -30,6 +30,9 @@ import {
   Wrench,
   TrendingUp,
   Clock,
+  Package,
+  Activity,
+  CheckCircle2,
 } from "lucide-react";
 import { formatCurrency } from "@/lib/currency";
 import { toast } from "sonner";
@@ -78,35 +81,97 @@ export default function MachineDetail() {
     {
       id: 1,
       date: new Date("2024-11-15"),
-      type: "Preventive Maintenance",
-      description: "Regular cleaning and restocking",
+      type: "Обслуживание",
+      description: "Плановая чистка и пополнение",
       cost: 5000,
-      performedBy: "John Smith",
+      performedBy: "Иван Иванов",
+      duration: "45 мин",
     },
     {
       id: 2,
       date: new Date("2024-10-20"),
-      type: "Repair",
-      description: "Fixed coin dispenser mechanism",
+      type: "Ремонт",
+      description: "Замена монетоприемника",
       cost: 15000,
-      performedBy: "Mike Johnson",
+      performedBy: "Михаил Смирнов",
+      duration: "2 часа",
     },
     {
       id: 3,
       date: new Date("2024-09-10"),
-      type: "Preventive Maintenance",
-      description: "Quarterly inspection and cleaning",
+      type: "Обслуживание",
+      description: "Квартальная инспекция и чистка",
       cost: 5000,
-      performedBy: "John Smith",
+      performedBy: "Иван Иванов",
+      duration: "1 час",
     },
     {
       id: 4,
       date: new Date("2024-08-05"),
-      type: "Repair",
-      description: "Replaced cooling unit",
+      type: "Ремонт",
+      description: "Замена системы охлаждения",
       cost: 45000,
-      performedBy: "Sarah Williams",
+      performedBy: "Сара Джонсон",
+      duration: "3 часа",
     },
+    {
+      id: 5,
+      date: new Date("2024-07-12"),
+      type: "Инспекция",
+      description: "Проверка всех систем",
+      cost: 0,
+      performedBy: "Михаил Смирнов",
+      duration: "30 мин",
+    },
+  ];
+
+  const mockInventory = [
+    {
+      id: 1,
+      name: "Кока-Кола 0.5л",
+      currentStock: 12,
+      capacity: 20,
+      lastRefill: "2024-11-28",
+      sales24h: 8,
+    },
+    {
+      id: 2,
+      name: "Snickers 50г",
+      currentStock: 5,
+      capacity: 15,
+      lastRefill: "2024-11-28",
+      sales24h: 10,
+    },
+    {
+      id: 3,
+      name: "Вода Бон Аква 0.5л",
+      currentStock: 18,
+      capacity: 25,
+      lastRefill: "2024-11-28",
+      sales24h: 7,
+    },
+    {
+      id: 4,
+      name: "Lays Сметана 90г",
+      currentStock: 2,
+      capacity: 12,
+      lastRefill: "2024-11-28",
+      sales24h: 10,
+    },
+    {
+      id: 5,
+      name: "Mars 50г",
+      currentStock: 8,
+      capacity: 15,
+      lastRefill: "2024-11-28",
+      sales24h: 7,
+    },
+  ];
+
+  const mockTopProducts = [
+    { name: "Snickers 50г", sales: 45, revenue: 4500 },
+    { name: "Lays Сметана 90г", sales: 38, revenue: 4560 },
+    { name: "Кока-Кола 0.5л", sales: 35, revenue: 5250 },
   ];
 
   const getStatusColor = (status: string) => {
@@ -125,14 +190,39 @@ export default function MachineDetail() {
   };
 
   const handleEditSave = () => {
-    toast.success("Machine information updated successfully");
+    toast.success("Информация об аппарате обновлена");
     setIsEditOpen(false);
   };
 
   const handleMaintenanceLog = () => {
-    toast.success("Maintenance record added successfully");
+    toast.success("Запись об обслуживании добавлена");
     setIsMaintenanceOpen(false);
     setMaintenanceData({ description: "", cost: "", nextServiceDue: "" });
+  };
+
+  const getServiceTypeIcon = (type: string) => {
+    switch (type) {
+      case "Ремонт":
+        return <Wrench className="w-5 h-5 text-red-600" />;
+      case "Пополнение":
+        return <Package className="w-5 h-5 text-blue-600" />;
+      case "Обслуживание":
+        return <Activity className="w-5 h-5 text-green-600" />;
+      case "Инспекция":
+        return <CheckCircle2 className="w-5 h-5 text-purple-600" />;
+      default:
+        return <Clock className="w-5 h-5 text-gray-600" />;
+    }
+  };
+
+  const getStockPercentage = (current: number, capacity: number) => {
+    return (current / capacity) * 100;
+  };
+
+  const getStockColor = (percentage: number) => {
+    if (percentage > 50) return "bg-green-500";
+    if (percentage > 20) return "bg-yellow-500";
+    return "bg-red-500";
   };
 
   return (
@@ -147,7 +237,7 @@ export default function MachineDetail() {
             className="gap-2"
           >
             <ArrowLeft className="w-4 h-4" />
-            Back to Machines
+            Назад к аппаратам
           </Button>
         </div>
 
@@ -160,23 +250,23 @@ export default function MachineDetail() {
                 {mockMachine.status.toUpperCase()}
               </Badge>
             </div>
-            <p className="text-gray-600">Serial: {mockMachine.serialNumber}</p>
+            <p className="text-gray-600">Серийный номер: {mockMachine.serialNumber}</p>
           </div>
 
           <Dialog open={isEditOpen} onOpenChange={setIsEditOpen}>
             <DialogTrigger asChild>
               <Button className="gap-2">
                 <Edit className="w-4 h-4" />
-                Edit Machine
+                Редактировать
               </Button>
             </DialogTrigger>
             <DialogContent>
               <DialogHeader>
-                <DialogTitle>Edit Machine Information</DialogTitle>
+                <DialogTitle>Редактировать информацию</DialogTitle>
               </DialogHeader>
               <div className="space-y-4">
                 <div>
-                  <label className="text-sm font-medium">Machine Name</label>
+                  <label className="text-sm font-medium">Название аппарата</label>
                   <Input
                     defaultValue={mockMachine.name}
                     onChange={(e) =>
@@ -185,7 +275,7 @@ export default function MachineDetail() {
                   />
                 </div>
                 <div>
-                  <label className="text-sm font-medium">Location</label>
+                  <label className="text-sm font-medium">Локация</label>
                   <Input
                     defaultValue={mockMachine.location}
                     onChange={(e) =>
@@ -194,21 +284,21 @@ export default function MachineDetail() {
                   />
                 </div>
                 <div>
-                  <label className="text-sm font-medium">Status</label>
+                  <label className="text-sm font-medium">Статус</label>
                   <Select defaultValue={mockMachine.status}>
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="active">Active</SelectItem>
-                      <SelectItem value="offline">Offline</SelectItem>
-                      <SelectItem value="maintenance">Maintenance</SelectItem>
-                      <SelectItem value="retired">Retired</SelectItem>
+                      <SelectItem value="active">Активный</SelectItem>
+                      <SelectItem value="offline">Офлайн</SelectItem>
+                      <SelectItem value="maintenance">Обслуживание</SelectItem>
+                      <SelectItem value="retired">Списан</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
                 <div>
-                  <label className="text-sm font-medium">Notes</label>
+                  <label className="text-sm font-medium">Примечания</label>
                   <Textarea
                     defaultValue={mockMachine.notes}
                     onChange={(e) =>
@@ -217,7 +307,7 @@ export default function MachineDetail() {
                   />
                 </div>
                 <Button onClick={handleEditSave} className="w-full">
-                  Save Changes
+                  Сохранить изменения
                 </Button>
               </div>
             </DialogContent>
@@ -229,54 +319,54 @@ export default function MachineDetail() {
           <Card>
             <CardHeader className="pb-3">
               <CardTitle className="text-sm font-medium text-gray-600">
-                Total Revenue
+                Общий доход
               </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">
                 {formatCurrency(mockMachine.totalRevenue)}
               </div>
-              <p className="text-xs text-gray-500 mt-1">Lifetime earnings</p>
+              <p className="text-xs text-gray-500 mt-1">За все время</p>
             </CardContent>
           </Card>
 
           <Card>
             <CardHeader className="pb-3">
               <CardTitle className="text-sm font-medium text-gray-600">
-                Total Sales
+                Всего продаж
               </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{mockMachine.totalSales}</div>
-              <p className="text-xs text-gray-500 mt-1">Transactions</p>
+              <p className="text-xs text-gray-500 mt-1">Транзакций</p>
             </CardContent>
           </Card>
 
           <Card>
             <CardHeader className="pb-3">
               <CardTitle className="text-sm font-medium text-gray-600">
-                Avg Revenue/Month
+                Средний доход/месяц
               </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">
                 {formatCurrency(mockMachine.totalRevenue / 12)}
               </div>
-              <p className="text-xs text-gray-500 mt-1">Average monthly</p>
+              <p className="text-xs text-gray-500 mt-1">В среднем за месяц</p>
             </CardContent>
           </Card>
 
           <Card>
             <CardHeader className="pb-3">
               <CardTitle className="text-sm font-medium text-gray-600">
-                Avg Transaction
+                Средний чек
               </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">
                 {formatCurrency(mockMachine.totalRevenue / mockMachine.totalSales)}
               </div>
-              <p className="text-xs text-gray-500 mt-1">Per sale</p>
+              <p className="text-xs text-gray-500 mt-1">За транзакцию</p>
             </CardContent>
           </Card>
         </div>
@@ -286,7 +376,7 @@ export default function MachineDetail() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <TrendingUp className="w-5 h-5" />
-              Revenue Trends
+              Динамика доходов
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -334,20 +424,20 @@ export default function MachineDetail() {
         {/* Machine Information */}
         <Card>
           <CardHeader>
-            <CardTitle>Machine Information</CardTitle>
+            <CardTitle>Информация об аппарате</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <label className="text-sm font-medium text-gray-600">
-                  Model
+                  Модель
                 </label>
                 <p className="text-lg font-semibold mt-1">{mockMachine.model}</p>
               </div>
 
               <div>
                 <label className="text-sm font-medium text-gray-600">
-                  Serial Number
+                  Серийный номер
                 </label>
                 <p className="text-lg font-semibold mt-1">
                   {mockMachine.serialNumber}
@@ -358,7 +448,7 @@ export default function MachineDetail() {
                 <MapPin className="w-5 h-5 text-gray-400 mt-1 flex-shrink-0" />
                 <div>
                   <label className="text-sm font-medium text-gray-600">
-                    Location
+                    Локация
                   </label>
                   <p className="text-lg font-semibold mt-1">
                     {mockMachine.location}
@@ -368,7 +458,7 @@ export default function MachineDetail() {
 
               <div>
                 <label className="text-sm font-medium text-gray-600">
-                  Installation Date
+                  Дата установки
                 </label>
                 <p className="text-lg font-semibold mt-1">
                   {mockMachine.installationDate.toLocaleDateString()}
@@ -379,7 +469,7 @@ export default function MachineDetail() {
             {mockMachine.notes && (
               <div className="border-t pt-4">
                 <label className="text-sm font-medium text-gray-600">
-                  Notes
+                  Примечания
                 </label>
                 <p className="text-base mt-2 text-gray-700">
                   {mockMachine.notes}
@@ -395,7 +485,7 @@ export default function MachineDetail() {
             <CardHeader>
               <CardTitle className="text-lg flex items-center gap-2">
                 <Wrench className="w-5 h-5" />
-                Last Maintenance
+                Последнее обслуживание
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -410,7 +500,7 @@ export default function MachineDetail() {
                   (Date.now() - mockMachine.lastMaintenance.getTime()) /
                     (1000 * 60 * 60 * 24)
                 )}{" "}
-                days ago
+                дней назад
               </p>
             </CardContent>
           </Card>
@@ -419,7 +509,7 @@ export default function MachineDetail() {
             <CardHeader>
               <CardTitle className="text-lg flex items-center gap-2">
                 <Clock className="w-5 h-5" />
-                Next Service Due
+                Следующее обслуживание
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -434,7 +524,7 @@ export default function MachineDetail() {
                   (mockMachine.nextServiceDue.getTime() - Date.now()) /
                     (1000 * 60 * 60 * 24)
                 )}{" "}
-                days remaining
+                дней осталось
               </p>
             </CardContent>
           </Card>
@@ -443,12 +533,12 @@ export default function MachineDetail() {
         {/* Maintenance History */}
         <Card>
           <CardHeader className="flex items-center justify-between">
-            <CardTitle>Maintenance History</CardTitle>
+            <CardTitle>История обслуживания</CardTitle>
             <Dialog open={isMaintenanceOpen} onOpenChange={setIsMaintenanceOpen}>
               <DialogTrigger asChild>
                 <Button size="sm" variant="outline" className="gap-2">
                   <Wrench className="w-4 h-4" />
-                  Log Maintenance
+                  Добавить запись
                 </Button>
               </DialogTrigger>
               <DialogContent>
@@ -485,7 +575,7 @@ export default function MachineDetail() {
                   </div>
                   <div>
                     <label className="text-sm font-medium">
-                      Next Service Due
+                      Следующее обслуживание
                     </label>
                     <Input
                       type="date"
@@ -509,30 +599,145 @@ export default function MachineDetail() {
             <div className="space-y-4">
               {mockMaintenanceHistory.length === 0 ? (
                 <p className="text-center text-gray-500 py-8">
-                  No maintenance records yet
+                  Пока нет записей об обслуживании
                 </p>
               ) : (
-                mockMaintenanceHistory.map((record) => (
-                  <div
-                    key={record.id}
-                    className="border-l-4 border-blue-400 pl-4 py-3"
-                  >
-                    <div className="flex items-start justify-between mb-2">
-                      <div>
-                        <h4 className="font-semibold">{record.type}</h4>
+                <div className="space-y-6">
+                  {mockMaintenanceHistory.map((record, index) => (
+                    <div key={record.id} className="flex gap-4">
+                      {/* Timeline */}
+                      <div className="flex flex-col items-center">
+                        <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center">
+                          {getServiceTypeIcon(record.type)}
+                        </div>
+                        {index < mockMaintenanceHistory.length - 1 && (
+                          <div className="w-0.5 h-full bg-gray-200 mt-2"></div>
+                        )}
+                      </div>
+
+                      {/* Content */}
+                      <div className="flex-1 pb-6">
+                        <div className="flex items-start justify-between mb-2">
+                          <div>
+                            <h4 className="font-semibold">{record.type}</h4>
+                            <p className="text-sm text-gray-600">
+                              {record.date.toLocaleDateString("ru-RU", {
+                                day: "numeric",
+                                month: "long",
+                                year: "numeric",
+                              })}
+                            </p>
+                          </div>
+                          {record.cost > 0 && (
+                            <Badge variant="outline" className="text-green-600">
+                              {formatCurrency(record.cost)}
+                            </Badge>
+                          )}
+                        </div>
+
+                        <p className="text-sm text-gray-700 mb-2">{record.description}</p>
+
+                        <div className="flex items-center gap-4 text-xs text-gray-500">
+                          <span>Оператор: {record.performedBy}</span>
+                          {record.duration && <span>Длительность: {record.duration}</span>}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Top Products */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Топ товаров за месяц</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              {mockTopProducts.map((product, index) => (
+                <div key={index} className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold">
+                      {index + 1}
+                    </div>
+                    <div>
+                      <p className="font-semibold">{product.name}</p>
+                      <p className="text-sm text-gray-600">{product.sales} продаж</p>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <p className="font-semibold text-green-600">
+                      {formatCurrency(product.revenue)}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Current Inventory */}
+        <Card>
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <CardTitle>Текущий инвентарь</CardTitle>
+              <Button size="sm" className="gap-2">
+                <Package className="w-4 h-4" />
+                Пополнить все
+              </Button>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              {mockInventory.map((product) => {
+                const percentage = getStockPercentage(
+                  product.currentStock,
+                  product.capacity
+                );
+                const isLowStock = percentage < 30;
+
+                return (
+                  <div key={product.id} className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2">
+                          <h4 className="font-semibold">{product.name}</h4>
+                          {isLowStock && (
+                            <Badge variant="outline" className="text-orange-600 border-orange-300">
+                              Низкий остаток
+                            </Badge>
+                          )}
+                        </div>
                         <p className="text-sm text-gray-600">
-                          {record.date.toLocaleDateString()} • By{" "}
-                          {record.performedBy}
+                          {product.currentStock} / {product.capacity} шт. • Продано за 24ч:{" "}
+                          {product.sales24h}
                         </p>
                       </div>
-                      <Badge variant="outline" className="text-green-600">
-                        {formatCurrency(record.cost)}
-                      </Badge>
+                      <Button variant="outline" size="sm">
+                        Пополнить
+                      </Button>
                     </div>
-                    <p className="text-sm text-gray-700">{record.description}</p>
+
+                    {/* Progress Bar */}
+                    <div className="w-full bg-gray-200 rounded-full h-2">
+                      <div
+                        className={`h-2 rounded-full transition-all ${getStockColor(
+                          percentage
+                        )}`}
+                        style={{ width: `${percentage}%` }}
+                      ></div>
+                    </div>
+
+                    <p className="text-xs text-gray-500">
+                      Последнее пополнение:{" "}
+                      {new Date(product.lastRefill).toLocaleDateString("ru-RU")}
+                    </p>
                   </div>
-                ))
-              )}
+                );
+              })}
             </div>
           </CardContent>
         </Card>
