@@ -1073,3 +1073,67 @@ All tasks completed:
 - [x] Test reset with both filters active
 - [x] Verify button disappears when filters are default
 - [x] Check mobile responsiveness
+
+
+## Phase 35: Maintenance Statistics Panel
+
+### Statistics Calculation Functions
+- [ ] Create function to calculate total cost of filtered operations
+- [ ] Create function to calculate total time of filtered operations
+- [ ] Create function to calculate average time per operation
+- [ ] Create function to count total number of filtered operations
+- [ ] Parse time strings (e.g., "45 мин", "2 часа") to minutes
+- [ ] Handle edge cases (no operations, missing data)
+
+### Statistics Panel UI
+- [ ] Create statistics panel component with 4 metric cards
+- [ ] Add card for total cost with currency formatting
+- [ ] Add card for total time with time formatting
+- [ ] Add card for average time per operation
+- [ ] Add card for operation count
+- [ ] Use icons (DollarSign, Clock, BarChart3, etc.)
+- [ ] Style cards with consistent spacing and colors
+- [ ] Make panel responsive for mobile
+
+### Integration with Filters
+- [ ] Position panel below filter buttons
+- [ ] Update statistics when date filters change
+- [ ] Update statistics when operation type filters change
+- [ ] Show "No data" state when no operations match filters
+- [ ] Smooth transitions when statistics update
+
+### Testing
+- [ ] Test with all filters active
+- [ ] Test with single filter active
+- [ ] Test with no filters (all time, all types)
+- [ ] Verify calculations are correct
+- [ ] Check mobile responsiveness
+
+
+## Phase 35 Completion Status
+
+All tasks completed:
+- [x] Create function to calculate total cost of filtered operations
+- [x] Create function to calculate total time of filtered operations
+- [x] Create function to calculate average time per operation
+- [x] Create function to count total number of filtered operations
+- [x] Parse time strings (e.g., "45 мин", "2 часа") to minutes
+- [x] Handle edge cases (no operations, missing data)
+- [x] Create statistics panel component with 4 metric cards
+- [x] Add card for total cost with currency formatting
+- [x] Add card for total time with time formatting
+- [x] Add card for average time per operation
+- [x] Add card for operation count
+- [x] Use icons (DollarSign, Clock, BarChart3, etc.)
+- [x] Style cards with consistent spacing and colors
+- [x] Make panel responsive for mobile
+- [x] Position panel below filter buttons
+- [x] Update statistics when date filters change
+- [x] Update statistics when operation type filters change
+- [x] Show "No data" state when no operations match filters
+- [x] Smooth transitions when statistics update
+- [x] Test with all filters active
+- [x] Test with single filter active
+- [x] Test with no filters (all time, all types)
+- [x] Verify calculations are correct
+- [x] Check mobile responsiveness

@@ -33,6 +33,9 @@ import {
   Package,
   Activity,
   CheckCircle2,
+  DollarSign,
+  BarChart3,
+  X,
 } from "lucide-react";
 import { formatCurrency } from "@/lib/currency";
 import { toast } from "sonner";
@@ -134,6 +137,67 @@ export default function MachineDetail() {
 
   // Check if filters are active (not default)
   const hasActiveFilters = dateRangePreset !== "Всё время" || maintenanceFilter !== "Все";
+
+  // Parse time string to minutes
+  const parseTimeToMinutes = (timeStr: string): number => {
+    const minMatch = timeStr.match(/(\d+)\s*мин/);
+    const hourMatch = timeStr.match(/(\d+)\s*час/);
+    
+    let minutes = 0;
+    if (hourMatch) {
+      minutes += parseInt(hourMatch[1]) * 60;
+    }
+    if (minMatch) {
+      minutes += parseInt(minMatch[1]);
+    }
+    return minutes;
+  };
+
+  // Format minutes to readable time string
+  const formatMinutesToTime = (minutes: number): string => {
+    if (minutes < 60) {
+      return `${minutes} мин`;
+    }
+    const hours = Math.floor(minutes / 60);
+    const mins = minutes % 60;
+    if (mins === 0) {
+      return `${hours} час${hours > 1 ? 'ов' : ''}`;
+    }
+    return `${hours} час ${mins} мин`;
+  };
+
+  // Calculate statistics for filtered maintenance records
+  const calculateStatistics = () => {
+    // Apply date range filter
+    const dateRange = getDateRangeFromPreset(dateRangePreset);
+    let dateFilteredHistory = mockMaintenanceHistory;
+    
+    if (dateRange.start && dateRange.end) {
+      dateFilteredHistory = mockMaintenanceHistory.filter(record => {
+        const recordDate = record.date;
+        return recordDate >= dateRange.start! && recordDate <= dateRange.end!;
+      });
+    }
+    
+    // Apply operation type filter
+    const filteredHistory = maintenanceFilter === "Все" 
+      ? dateFilteredHistory 
+      : dateFilteredHistory.filter(r => r.type === maintenanceFilter);
+    
+    // Calculate metrics
+    const totalCost = filteredHistory.reduce((sum, record) => sum + (record.cost || 0), 0);
+    const totalMinutes = filteredHistory.reduce((sum, record) => sum + parseTimeToMinutes(record.duration), 0);
+    const averageMinutes = filteredHistory.length > 0 ? Math.round(totalMinutes / filteredHistory.length) : 0;
+    const operationCount = filteredHistory.length;
+    
+    return {
+      totalCost,
+      totalTime: formatMinutesToTime(totalMinutes),
+      averageTime: formatMinutesToTime(averageMinutes),
+      operationCount,
+      hasData: operationCount > 0,
+    };
+  };
 
   // Mock machine data (replace with real API call)
   const mockMachine = {
@@ -808,6 +872,62 @@ export default function MachineDetail() {
                 ));
               })()}
             </div>
+            
+            {/* Statistics Panel */}
+            {(() => {
+              const stats = calculateStatistics();
+              return (
+                <div className="mt-4 pt-4 border-t">
+                  {stats.hasData ? (
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                      <div className="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20 rounded-lg p-3">
+                        <div className="flex items-center gap-2 mb-1">
+                          <DollarSign className="w-4 h-4 text-blue-600" />
+                          <span className="text-xs text-gray-600 dark:text-gray-400">Сумма</span>
+                        </div>
+                        <p className="text-lg font-bold text-blue-700 dark:text-blue-400">
+                          {formatCurrency(stats.totalCost)}
+                        </p>
+                      </div>
+                      
+                      <div className="bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/20 rounded-lg p-3">
+                        <div className="flex items-center gap-2 mb-1">
+                          <Clock className="w-4 h-4 text-green-600" />
+                          <span className="text-xs text-gray-600 dark:text-gray-400">Всего</span>
+                        </div>
+                        <p className="text-lg font-bold text-green-700 dark:text-green-400">
+                          {stats.totalTime}
+                        </p>
+                      </div>
+                      
+                      <div className="bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-900/20 dark:to-purple-800/20 rounded-lg p-3">
+                        <div className="flex items-center gap-2 mb-1">
+                          <BarChart3 className="w-4 h-4 text-purple-600" />
+                          <span className="text-xs text-gray-600 dark:text-gray-400">Среднее</span>
+                        </div>
+                        <p className="text-lg font-bold text-purple-700 dark:text-purple-400">
+                          {stats.averageTime}
+                        </p>
+                      </div>
+                      
+                      <div className="bg-gradient-to-br from-orange-50 to-orange-100 dark:from-orange-900/20 dark:to-orange-800/20 rounded-lg p-3">
+                        <div className="flex items-center gap-2 mb-1">
+                          <CheckCircle2 className="w-4 h-4 text-orange-600" />
+                          <span className="text-xs text-gray-600 dark:text-gray-400">Операций</span>
+                        </div>
+                        <p className="text-lg font-bold text-orange-700 dark:text-orange-400">
+                          {stats.operationCount}
+                        </p>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="text-center py-4 text-gray-500">
+                      <p className="text-sm">Нет данных для выбранных фильтров</p>
+                    </div>
+                  )}
+                </div>
+              );
+            })()}
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
