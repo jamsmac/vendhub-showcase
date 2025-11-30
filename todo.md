@@ -1792,113 +1792,143 @@ All tasks completed:
 - Production-ready monitoring
 
 
-## Historical Performance Analytics (NEW)
+## Historical Performance Analytics (COMPLETED)
+
+### Database Schema ✅
+- [x] performanceMetrics table: Stores raw metrics every minute
+- [x] performanceMetricsHourly table: Hourly aggregated metrics
+- [x] performanceMetricsDaily table: Daily aggregated metrics
+
+### Performance Metrics Service ✅
+- [x] performanceMetricsService.ts: Automatic collection and aggregation
+
+### tRPC Endpoints (7 endpoints) ✅
+- [x] getMetricsRange, getHourlyMetrics, getDailyMetrics, getStatistics, getLast24Hours, getTrends, getDaySummary, comparePeriods
+
+### Chart Components ✅
+- [x] PerformanceLineChart, PerformanceAreaChart, HourlyPerformanceChart, PerformanceStatistics, PerformanceComparison
+
+### Admin Analytics Page ✅
+- [x] AdminAnalytics.tsx with 4 tabs (Overview, Trends, Statistics, Comparison)
+
+### Export Functionality ✅
+- [x] performanceExport.ts with CSV, JSON, and text export utilities
+
+---
+
+## Real-Time Performance Alerts (NEW)
 
 ### Database Schema
-- [x] performanceMetrics table: Stores raw metrics every minute
-  * Timestamp, memory %, CPU %, disk %, process count, stale processes
-  * Health status and issues JSON
-  * Uptime tracking
-  * Indexed by timestamp and health status
+- [x] alertRules table: Stores alert configuration with metric, threshold, operator, escalation levels
+- [x] alertHistory table: Logs all triggered alerts with timestamp, metric value, rule ID, status
+- [x] alertEscalation table: Defines escalation policies (notify user, notify admin, auto-action)
+- [x] alertNotifications table: Tracks notification delivery
 
-- [x] performanceMetricsHourly table: Hourly aggregated metrics
-  * Average, max, min for memory, CPU, disk
-  * Stale process count average
-  * Critical and warning event counts
-  * Record count for aggregation tracking
+### Alert Rules Service
+- [x] alertRulesService.ts: Complete service with:
+  * Checking metrics against rules with configurable operators
+  * Triggering notifications when thresholds exceeded
+  * Managing escalation policies with multi-level actions
+  * Tracking alert state (active, acknowledged, resolved)
+  * Preventing alert spam with cooldown periods
+  * Batch alert checking for all enabled rules
 
-- [x] performanceMetricsDaily table: Daily aggregated metrics
-  * Average and max for memory, CPU, disk
-  * Stale process count average
-  * Critical and warning event counts
-  * Date-based indexing for quick lookups
+### tRPC Endpoints
+- [x] createRule: Create new alert rule
+- [x] updateRule: Update existing rule
+- [x] deleteRule: Delete rule
+- [x] listRules: Get all rules
+- [x] getRule: Get single rule by ID
+- [x] getHistory: Get triggered alerts with filtering
+- [x] getActive: Get currently active alerts
+- [x] acknowledgeAlert: Mark alert as acknowledged
+- [x] resolveAlert: Mark alert as resolved
+- [x] testRule: Test rule with current metrics
+- [x] checkAll: Admin-only batch checking
 
-### Performance Metrics Service
-- [x] performanceMetricsService.ts: Backend service that:
-  * Collects metrics every minute (cron job)
-  * Aggregates hourly metrics every hour
-  * Aggregates daily metrics every day at midnight
-  * Cleans up old metrics (7 days raw, 90 days hourly)
-  * Calculates statistics (avg, min, max)
-  * Provides metrics range queries
-  * Initializes on server startup
-
-### tRPC Endpoints (7 endpoints)
-- [x] getMetricsRange: Get metrics for specific time range
-- [x] getHourlyMetrics: Get hourly aggregated metrics
-- [x] getDailyMetrics: Get daily aggregated metrics
-- [x] getStatistics: Get performance statistics for period
-- [x] getLast24Hours: Get last 24 hours of metrics
-- [x] getTrends: Get 7-day hourly trends
-- [x] getDaySummary: Get summary for specific date
-- [x] comparePeriods: Compare two time periods
-
-### Chart Components
-- [x] PerformanceLineChart: Line chart for real-time metrics
-- [x] PerformanceAreaChart: Stacked area chart for distribution
-- [x] HourlyPerformanceChart: Bar chart for hourly averages/peaks
-- [x] PerformanceStatistics: Statistics cards (avg/max/min)
-- [x] PerformanceComparison: Period comparison with trends
-
-### Admin Analytics Page
-- [x] AdminAnalytics.tsx: Comprehensive analytics dashboard with:
-  * Overview tab: Last 24 hours with line and area charts
-  * Trends tab: 7-day hourly trends with analysis
-  * Statistics tab: 24h, 7d, 30d statistics comparison
-  * Comparison tab: Period-to-period comparison
-  * Time range selector (24h, 7d, 30d)
-  * Refresh button for real-time updates
-  * Export button (placeholder)
-
-### Export Functionality
-- [x] performanceExport.ts: Export utilities supporting:
-  * CSV export for metrics (timestamp, memory, CPU, disk, health)
-  * CSV export for hourly metrics
-  * JSON export for metrics
-  * JSON export for hourly metrics
-  * Text report generation with statistics
-  * Clipboard copy functionality
-  * Summary generation for sharing
-  * File download helper
+### Alert Configuration UI
+- [ ] AlertRulesEditor component: Form to create/edit rules
+- [ ] AlertRulesList component: Table of all rules
+- [ ] AlertHistoryViewer component: Table of triggered alerts
 
 ### Features
-- Automatic metrics collection every minute
-- Hourly aggregation with avg/max/min
-- Daily aggregation for long-term storage
-- Automatic cleanup of old data (7/90 day retention)
-- Real-time dashboard with refresh capability
-- Multiple chart types (line, area, bar)
-- Period comparison with trend analysis
-- Export to CSV, JSON, and text formats
-- Responsive design for mobile and desktop
-- Admin-only access via protected routes
+- Configurable thresholds for each metric (memory, CPU, disk)
+- Multiple operators (>, <, >=, <=, ==)
+- Escalation policies (notify user, notify admin, auto-action)
+- Cooldown periods to prevent alert spam
+- Alert acknowledgment and resolution tracking
+- Alert history with filtering and search
+- Test alert functionality
+- Enable/disable rules without deleting
 
-### How It Works
+---
 
-**Data Collection:**
-1. Every minute: Collect current system metrics
-2. Every hour: Aggregate last hour's metrics to hourly table
-3. Every day: Aggregate yesterday's hourly metrics to daily table
-4. Every day: Clean up metrics older than 7 days (raw) and 90 days (hourly)
+## Performance Recommendations Engine (NEW)
 
-**Dashboard:**
-1. Overview tab shows last 24 hours with line and area charts
-2. Trends tab shows 7-day hourly trends with analysis
-3. Statistics tab shows avg/max/min for 24h, 7d, 30d
-4. Comparison tab compares two periods with trend indicators
+### Analysis Service
+- [x] performanceRecommendationsService.ts: Complete service with:
+  * Analyzing historical data patterns from daily metrics
+  * Detecting peak usage times by hour
+  * Identifying trends (increasing, decreasing, stable)
+  * Calculating growth rates and days to threshold
+  * Generating actionable recommendations
+  * 24-hour caching to avoid repeated analysis
 
-**Export:**
-1. CSV format for spreadsheet analysis
-2. JSON format for API integration
-3. Text report for documentation
-4. Clipboard copy for quick sharing
+### Recommendation Types
+- [x] Peak Usage Detection: "Peak memory at 2 PM (82%), consider scaling up"
+- [x] Trend Analysis: "Memory increasing 2%/day, critical in 5 days"
+- [x] Cost Optimization: "CPU 35% avg, consider downsizing to save 20-30%"
+- [x] Capacity Planning: "Disk 70% avg, plan upgrade for future growth"
+- [x] Performance Improvement: "Implement caching to reduce peak CPU by 15%"
 
-### Benefits
-- Historical performance tracking without manual logging
-- Trend analysis for capacity planning
-- Peak usage identification for optimization
-- Compliance reporting with export capabilities
-- Long-term data retention with automatic cleanup
-- Real-time dashboard for monitoring
-- Period comparison for performance improvement tracking
-- Multiple export formats for flexibility
+### tRPC Endpoints
+- [x] getAll: Get all recommendations with stats
+- [x] getByType: Filter by recommendation type
+- [x] getCritical: Get critical recommendations only
+- [x] getStats: Get summary statistics
+- [x] refresh: Force re-analysis (admin only)
+
+### Recommendation Display
+- [ ] RecommendationCard component: Single recommendation display
+- [ ] RecommendationsPanel component: List of all recommendations
+
+### Features
+- Automatic analysis of historical data
+- Pattern detection (peaks, trends, anomalies)
+- Actionable recommendations with estimated impact
+- Dismissal tracking to avoid duplicate suggestions
+- Implementation tracking for follow-up
+- Severity levels (info, warning, critical)
+- Time-based recommendations (daily, weekly, monthly)
+
+---
+
+## Custom Date Range Picker (NEW)
+
+### DateRangePicker Component
+- [x] client/src/components/DateRangePicker.tsx: Enhanced component with:
+  * Preset buttons (All Time, 24h, 7d, 30d, 90d)
+  * Dual month calendar view
+  * Start and end date selection
+  * Clear/Reset button
+  * Validation (end date >= start date)
+  * Responsive design for mobile
+  * Dark theme styling
+  * Backward compatible with existing API
+
+### Features
+- [x] Click start date, then end date to select range
+- [x] Keyboard navigation support
+- [x] Visual feedback for selected dates (blue/green)
+- [x] Disabled future dates
+- [x] Preset quick-select buttons
+- [x] Custom range selection with calendar
+- [x] Export selected range as ISO strings
+- [x] Multiple callback support (onDateRangeChange, onRangeChange, onPresetChange)
+
+### Integration
+- [x] Updated AdminAnalytics.tsx to use DateRangePicker
+- [x] Replaced fixed time range buttons with picker
+- [x] Added custom date range state management
+- [x] Updated chart titles to show selected range
+- [x] Integrated with existing chart queries

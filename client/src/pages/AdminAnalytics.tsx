@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { ProtectedRoute } from '@/components/ProtectedRoute';
+import { DateRangePicker } from '@/components/DateRangePicker';
 import {
 	PerformanceLineChart,
 	PerformanceAreaChart,
@@ -13,13 +14,21 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { trpc } from '@/lib/trpc';
-import { BarChart3, Calendar, Download, RefreshCw } from 'lucide-react';
+	import { BarChart3, Download, RefreshCw } from 'lucide-react';
 import { toast } from 'sonner';
 
 export default function AdminAnalytics() {
 	const [selectedTab, setSelectedTab] = useState('overview');
-	const [dateRange, setDateRange] = useState<'24h' | '7d' | '30d'>('24h');
+	const [dateRange, setDateRange] = useState<'24h' | '7d' | '30d' | 'custom'>('7d');
+	const [customStartDate, setCustomStartDate] = useState<Date | null>(null);
+	const [customEndDate, setCustomEndDate] = useState<Date | null>(null);
 	const [refreshing, setRefreshing] = useState(false);
+
+	const handleDateRangeChange = (startDate: Date, endDate: Date) => {
+		setCustomStartDate(startDate);
+		setCustomEndDate(endDate);
+		setDateRange('custom');
+	};
 
 	// Get last 24 hours metrics
 	const { data: last24h, refetch: refetch24h } = trpc.performanceAnalytics.getLast24Hours.useQuery();
@@ -99,33 +108,24 @@ export default function AdminAnalytics() {
 
 					{/* Overview Tab */}
 					<TabsContent value="overview" className="space-y-4">
-						<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-							<Card>
-								<CardHeader className="pb-2">
-									<CardTitle className="text-sm">Time Range</CardTitle>
-								</CardHeader>
-								<CardContent>
-									<div className="flex gap-2">
-										{(['24h', '7d', '30d'] as const).map((range) => (
-											<Button
-												key={range}
-												variant={dateRange === range ? 'default' : 'outline'}
-												size="sm"
-												onClick={() => setDateRange(range)}
-											>
-												{range === '24h' ? 'Last 24h' : range === '7d' ? 'Last 7d' : 'Last 30d'}
-											</Button>
-										))}
-									</div>
-								</CardContent>
-							</Card>
-						</div>
+						<Card>
+							<CardHeader className="pb-3">
+								<CardTitle className="text-sm">Select Date Range</CardTitle>
+							</CardHeader>
+							<CardContent>
+								<DateRangePicker
+									onDateRangeChange={handleDateRangeChange}
+									onPresetChange={(preset) => setDateRange(preset as any)}
+									selectedPreset={dateRange}
+								/>
+							</CardContent>
+						</Card>
 
 						{last24h && (
 							<>
 								<PerformanceLineChart
 									data={last24h.metrics}
-									title="Last 24 Hours"
+									title={`Performance Metrics (${dateRange === 'custom' ? 'Custom Range' : dateRange === '24h' ? 'Last 24h' : dateRange === '7d' ? 'Last 7d' : 'Last 30d'})`}
 									description="Real-time performance metrics"
 								/>
 								<PerformanceAreaChart
