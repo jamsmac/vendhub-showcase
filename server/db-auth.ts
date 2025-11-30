@@ -219,3 +219,16 @@ export async function getUserByUsername(username: string) {
     where: eq(users.name, username),
   });
 }
+
+
+/**
+ * Update user temporary password flag
+ */
+export async function updateUserTemporaryPassword(userId: number, isTemporary: boolean) {
+  const db = await getDb();
+  if (!db) throw new Error('Database not connected');
+  return db.update(users).set({
+    isTemporaryPassword: isTemporary,
+    updatedAt: new Date().toISOString(),
+  }).where(eq(users.id, userId));
+}

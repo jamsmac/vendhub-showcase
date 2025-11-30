@@ -3,6 +3,7 @@ import { z } from "zod";
 import * as dbAuth from "../db-auth";
 import { PasswordService } from "../services/passwordService";
 import { TokenService } from "../services/tokenService";
+import { LoginAttemptService } from "../services/loginAttemptService";
 import { getSessionCookieOptions } from "../_core/cookies";
 import { COOKIE_NAME } from "../../shared/const";
 
@@ -67,10 +68,44 @@ export const authRouter = router({
       })
     )
     .mutation(async ({ input, ctx }) => {
+      const ipAddress = ctx.req?.ip || "unknown";
+      const userAgent = ctx.req?.headers["user-agent"] || "unknown";
+
       // Find user by username
       const user = await dbAuth.getUserByUsername(input.username);
       if (!user) {
+        // Record failed attempt even if user doesn't exist
+        await LoginAttemptService.recordAttempt(
+          input.username,
+          ipAddress,
+          userAgent,
+          "failed",
+          "user_not_found"
+        );
         throw new Error("Invalid username or password");
+      }
+
+      // Check if account is locked
+      const lockCheck = await LoginAttemptService.shouldBlockLogin(
+        user.email || input.username,
+        ipAddress
+      );
+      if (lockCheck.blocked) {
+        // Record locked attempt
+        await LoginAttemptService.recordAttempt(
+          user.email || input.username,
+          ipAddress,
+          userAgent,
+          "locked",
+          "account_locked",
+          user.id
+        );
+        const lockoutTime = lockCheck.lockoutUntil
+          ? lockCheck.lockoutUntil.toLocaleTimeString()
+          : "15 minutes";
+        throw new Error(
+          `Account locked due to too many failed login attempts. Please try again after ${lockoutTime}`
+        );
       }
 
       // Verify password
@@ -79,7 +114,36 @@ export const authRouter = router({
         user.passwordHash || ""
       );
       if (!isPasswordValid) {
-        throw new Error("Invalid email or password");
+        // Record failed attempt
+        const failedCount = await LoginAttemptService.getFailedAttemptCount(
+          user.email || input.username
+        );
+
+        if (failedCount + 1 >= 5) {
+          // Lock account
+          await LoginAttemptService.recordAttempt(
+            user.email || input.username,
+            ipAddress,
+            userAgent,
+            "locked",
+            "invalid_password",
+            user.id
+          );
+          throw new Error(
+            "Account locked due to too many failed login attempts. Please try again in 15 minutes."
+          );
+        } else {
+          // Record failed attempt
+          await LoginAttemptService.recordAttempt(
+            user.email || input.username,
+            ipAddress,
+            userAgent,
+            "failed",
+            "invalid_password",
+            user.id
+          );
+        }
+        throw new Error("Invalid username or password");
       }
 
       // Generate tokens
@@ -96,12 +160,27 @@ export const authRouter = router({
         userId: user.id,
         token: tokens.accessToken,
         expiresAt,
-        ipAddress: ctx.req?.ip,
-        userAgent: ctx.req?.headers["user-agent"],
+        ipAddress,
+        userAgent,
       });
 
       // Update last signed in
       await dbAuth.updateLastSignedIn(user.id);
+
+      // Clear failed attempts after successful login
+      await LoginAttemptService.clearFailedAttempts(
+        user.email || input.username
+      );
+
+      // Record successful attempt
+      await LoginAttemptService.recordAttempt(
+        user.email || input.username,
+        ipAddress,
+        userAgent,
+        "success",
+        undefined,
+        user.id
+      );
 
       // Set session cookie
       const cookieOptions = getSessionCookieOptions(ctx.req);
@@ -170,6 +249,9 @@ export const authRouter = router({
         input.newPassword
       );
       await dbAuth.updateUserPassword(ctx.user.id, newPasswordHash);
+
+      // Mark temporary password as used
+      await dbAuth.updateUserTemporaryPassword(ctx.user.id, false);
 
       return {
         success: true,

@@ -2161,3 +2161,44 @@ All tasks completed:
 - [ ] Implement account blocking and admin controls
 - [ ] Implement Telegram bot commands for authenticated users
 - [ ] Test all authentication flows end-to-end
+
+
+## Security Features - Brute-Force Protection
+- [x] Create loginAttempts database table (already in schema)
+- [x] Add database functions for login attempt tracking
+- [x] Create LoginAttemptService with all methods
+- [x] Implement login attempt checking in auth router
+- [x] Add account lockout logic (5 failed = 15 min lockout)
+- [ ] Add tRPC endpoints for admin to view/reset lockouts
+- [ ] Display lockout message on login page
+- [ ] Add unlock functionality in admin panel
+
+## Security Features - 2FA Implementation (TOTP)
+- [x] Install speakeasy and qrcode npm packages
+- [x] Create TwoFactorService with TOTP generation and verification
+- [x] Generate QR codes for authenticator apps
+- [x] Generate and verify backup codes
+- [x] Enable/disable 2FA for users
+- [ ] Create 2FA database tables for storing secrets
+- [ ] Add enable/disable 2FA endpoints
+- [ ] Create QR code generation endpoint
+- [ ] Create backup codes generation endpoint
+- [ ] Add 2FA verification step in login flow
+- [ ] Create TwoFactorSetup component
+- [ ] Create TwoFactorVerification component
+- [ ] Add 2FA management in user settings
+
+## Security Features - Password Recovery
+- [x] Create passwordRecovery database table (already in schema)
+- [x] Create PasswordRecoveryService with all methods
+- [x] Generate secure reset tokens
+- [x] Send password reset emails
+- [x] Verify reset tokens with expiration
+- [x] Reset password with token
+- [x] Rate limiting (max 3 requests per hour)
+- [ ] Add request password reset endpoint
+- [ ] Add verify reset token endpoint
+- [ ] Add reset password endpoint
+- [ ] Create PasswordRecovery component
+- [ ] Create ResetPassword component
+- [ ] Add password recovery link to login page
