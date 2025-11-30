@@ -209,10 +209,15 @@ export const users = mysqlTable("users", {
 	twoFactorEnabled: boolean().default(false).notNull(),
 	emailNotifications: boolean().default(true).notNull(),
 	telegramNotifications: boolean().default(true).notNull(),
-},
-(table) => [
-	index("users_openId_unique").on(table.openId),
-]);
+	status: mysqlEnum(['active','suspended','inactive']).default('active').notNull(),
+	suspendedAt: timestamp({ mode: 'string' }),
+	suspendedReason: text(),
+	suspendedBy: int(),
+	},
+	(table) => [
+		index("users_openId_unique").on(table.openId),
+		index("users_status_index").on(table.status),
+	]);
 
 export const taskPhotos = mysqlTable("taskPhotos", {
 	id: int().autoincrement().notNull(),
