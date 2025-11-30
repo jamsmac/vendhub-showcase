@@ -53,6 +53,7 @@ export default function MachineDetail() {
 
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [isMaintenanceOpen, setIsMaintenanceOpen] = useState(false);
+  const [maintenanceFilter, setMaintenanceFilter] = useState<string>("Все");
   const [editData, setEditData] = useState<any>(null);
   const [maintenanceData, setMaintenanceData] = useState({
     description: "",
@@ -532,15 +533,16 @@ export default function MachineDetail() {
 
         {/* Maintenance History */}
         <Card>
-          <CardHeader className="flex items-center justify-between">
-            <CardTitle>История обслуживания</CardTitle>
-            <Dialog open={isMaintenanceOpen} onOpenChange={setIsMaintenanceOpen}>
-              <DialogTrigger asChild>
-                <Button size="sm" variant="outline" className="gap-2">
-                  <Wrench className="w-4 h-4" />
-                  Добавить запись
-                </Button>
-              </DialogTrigger>
+          <CardHeader>
+            <div className="flex items-center justify-between mb-4">
+              <CardTitle>История обслуживания</CardTitle>
+              <Dialog open={isMaintenanceOpen} onOpenChange={setIsMaintenanceOpen}>
+                <DialogTrigger asChild>
+                  <Button size="sm" variant="outline" className="gap-2">
+                    <Wrench className="w-4 h-4" />
+                    Добавить запись
+                  </Button>
+                </DialogTrigger>
               <DialogContent>
                 <DialogHeader>
                   <DialogTitle>Log Maintenance Record</DialogTitle>
@@ -594,23 +596,76 @@ export default function MachineDetail() {
                 </div>
               </DialogContent>
             </Dialog>
+            </div>
+            
+            {/* Filter Buttons */}
+            <div className="flex flex-wrap gap-2">
+              {[
+                { label: "Все", value: "Все", count: mockMaintenanceHistory.length },
+                { 
+                  label: "Ремонт", 
+                  value: "Ремонт", 
+                  count: mockMaintenanceHistory.filter(r => r.type === "Ремонт").length 
+                },
+                { 
+                  label: "Пополнение", 
+                  value: "Пополнение", 
+                  count: mockMaintenanceHistory.filter(r => r.type === "Пополнение").length 
+                },
+                { 
+                  label: "Обслуживание", 
+                  value: "Обслуживание", 
+                  count: mockMaintenanceHistory.filter(r => r.type === "Обслуживание").length 
+                },
+                { 
+                  label: "Инспекция", 
+                  value: "Инспекция", 
+                  count: mockMaintenanceHistory.filter(r => r.type === "Инспекция").length 
+                },
+              ].map((filter) => (
+                <Button
+                  key={filter.value}
+                  variant={maintenanceFilter === filter.value ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => setMaintenanceFilter(filter.value)}
+                  className="gap-2"
+                >
+                  {filter.label}
+                  <Badge 
+                    variant="secondary" 
+                    className={maintenanceFilter === filter.value ? "bg-white/20 text-white" : ""}
+                  >
+                    {filter.count}
+                  </Badge>
+                </Button>
+              ))}
+            </div>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {mockMaintenanceHistory.length === 0 ? (
-                <p className="text-center text-gray-500 py-8">
-                  Пока нет записей об обслуживании
-                </p>
-              ) : (
-                <div className="space-y-6">
-                  {mockMaintenanceHistory.map((record, index) => (
+              {(() => {
+                const filteredHistory = maintenanceFilter === "Все" 
+                  ? mockMaintenanceHistory 
+                  : mockMaintenanceHistory.filter(r => r.type === maintenanceFilter);
+                
+                if (filteredHistory.length === 0) {
+                  return (
+                    <p className="text-center text-gray-500 py-8">
+                      Нет записей для выбранного фильтра
+                    </p>
+                  );
+                }
+                
+                return (
+                  <div className="space-y-6">
+                    {filteredHistory.map((record, index) => (
                     <div key={record.id} className="flex gap-4">
                       {/* Timeline */}
                       <div className="flex flex-col items-center">
                         <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center">
                           {getServiceTypeIcon(record.type)}
                         </div>
-                        {index < mockMaintenanceHistory.length - 1 && (
+                        {index < filteredHistory.length - 1 && (
                           <div className="w-0.5 h-full bg-gray-200 mt-2"></div>
                         )}
                       </div>
@@ -645,7 +700,8 @@ export default function MachineDetail() {
                     </div>
                   ))}
                 </div>
-              )}
+                );
+              })()}
             </div>
           </CardContent>
         </Card>

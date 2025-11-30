@@ -875,3 +875,49 @@ All tasks completed:
 - [x] Show last refill date for each product
 - [x] Add mock data fallback for all sections
 - [x] Translate all UI to Russian
+
+
+## Phase 31: Maintenance History Filtering
+
+### Filter UI Components
+- [ ] Add filter button group above maintenance history timeline
+- [ ] Create "Все" (All) filter button showing total count
+- [ ] Create "Ремонт" (Repair) filter button with repair count
+- [ ] Create "Пополнение" (Refill) filter button with refill count
+- [ ] Create "Обслуживание" (Service) filter button with service count
+- [ ] Create "Инспекция" (Inspection) filter button with inspection count
+- [ ] Add active state styling for selected filter
+- [ ] Add hover effects for filter buttons
+
+### Filter Logic
+- [ ] Add useState for selected filter type
+- [ ] Implement filter logic to count records by type
+- [ ] Filter maintenance history array based on selected type
+- [ ] Update timeline display to show only filtered records
+- [ ] Ensure "Все" shows all records
+
+### UX Enhancements
+- [ ] Add smooth transition when switching filters
+- [ ] Show "Нет записей" message when filter returns empty results
+- [ ] Maintain timeline icons and styling for filtered results
+
+
+## Phase 31 Completion Status
+
+All tasks completed:
+- [x] Add filter button group above maintenance history timeline
+- [x] Create "Все" (All) filter button showing total count
+- [x] Create "Ремонт" (Repair) filter button with repair count
+- [x] Create "Пополнение" (Refill) filter button with refill count
+- [x] Create "Обслуживание" (Service) filter button with service count
+- [x] Create "Инспекция" (Inspection) filter button with inspection count
+- [x] Add active state styling for selected filter
+- [x] Add hover effects for filter buttons
+- [x] Add useState for selected filter type
+- [x] Implement filter logic to count records by type
+- [x] Filter maintenance history array based on selected type
+- [x] Update timeline display to show only filtered records
+- [x] Ensure "Все" shows all records
+- [x] Add smooth transition when switching filters
+- [x] Show "Нет записей" message when filter returns empty results
+- [x] Maintain timeline icons and styling for filtered results
