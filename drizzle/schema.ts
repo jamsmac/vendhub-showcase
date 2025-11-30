@@ -363,6 +363,37 @@ export type InsertInventoryAdjustment = typeof inventoryAdjustments.$inferInsert
 export type Notification = typeof notifications.$inferSelect;
 export type InsertNotification = typeof notifications.$inferInsert;
 
+// Dictionary Items - Reference book entries with multilingual support
+export const dictionaryItems = mysqlTable("dictionaryItems", {
+	id: int().autoincrement().notNull().primaryKey(),
+	dictionaryCode: varchar({ length: 100 }).notNull(),
+	code: varchar({ length: 100 }).notNull(),
+	name: varchar({ length: 255 }).notNull(),
+	name_en: varchar({ length: 255 }),
+	name_ru: varchar({ length: 255 }),
+	name_uz: varchar({ length: 255 }),
+	description: text(),
+	description_en: text(),
+	description_ru: text(),
+	description_uz: text(),
+	icon: varchar({ length: 255 }),
+	color: varchar({ length: 7 }),
+	symbol: varchar({ length: 10 }),
+	sort_order: int().default(0).notNull(),
+	is_active: boolean().default(true).notNull(),
+	createdBy: int(),
+	updatedBy: int(),
+	createdAt: timestamp({ mode: 'string' }).default(sql`CURRENT_TIMESTAMP`).notNull(),
+	updatedAt: timestamp({ mode: 'string' }).default(sql`CURRENT_TIMESTAMP`).onUpdateNow().notNull(),
+}, (table) => [
+	index("dictionaryItems_dictionaryCode_code_unique").on(table.dictionaryCode, table.code).unique(),
+	index("dictionaryItems_dictionaryCode").on(table.dictionaryCode),
+	index("dictionaryItems_is_active").on(table.is_active),
+]);
+
+export type DictionaryItem = typeof dictionaryItems.$inferSelect;
+export type InsertDictionaryItem = typeof dictionaryItems.$inferInsert;
+
 // Import History & Batch Operations
 export const importHistory = mysqlTable("importHistory", {
 	id: int().autoincrement().notNull().primaryKey(),

@@ -658,7 +658,116 @@ ${process.env.PUBLIC_URL || 'https://vendhub-showcase.manus.space'}
         await dbImportModule.deleteUndoRedoStack(input.importId);
         return { success: true, message: 'Import history deleted' };
       }),
-  }),
+
+  dictionaryItems: router({
+    getItems: publicProcedure
+      .input(z.object({ dictionaryCode: z.string(), activeOnly: z.boolean().default(true) }))
+      .query(async ({ input }) => {
+        const dbDict = await import('./db-dictionary');
+        return await dbDict.getDictionaryItems(input.dictionaryCode, input.activeOnly);
+      }),
+
+    getItem: publicProcedure
+      .input(z.object({ dictionaryCode: z.string(), code: z.string() }))
+      .query(async ({ input }) => {
+        const dbDict = await import('./db-dictionary');
+        return await dbDict.getDictionaryItem(input.dictionaryCode, input.code);
+      }),
+
+    search: publicProcedure
+      .input(z.object({ dictionaryCode: z.string(), searchTerm: z.string(), activeOnly: z.boolean().default(true) }))
+      .query(async ({ input }) => {
+        const dbDict = await import('./db-dictionary');
+        return await dbDict.searchDictionaryItems(input.dictionaryCode, input.searchTerm, input.activeOnly);
+      }),
+
+    create: protectedProcedure
+      .input(z.object({
+        dictionaryCode: z.string().min(1),
+        code: z.string().min(1).max(100),
+        name: z.string().min(1).max(255),
+        name_en: z.string().optional(),
+        name_ru: z.string().optional(),
+        name_uz: z.string().optional(),
+        description: z.string().optional(),
+        description_en: z.string().optional(),
+        description_ru: z.string().optional(),
+        description_uz: z.string().optional(),
+        icon: z.string().optional(),
+        color: z.string().regex(/^#[0-9A-F]{6}$/i).optional(),
+        symbol: z.string().optional(),
+        sort_order: z.number().default(0),
+        is_active: z.boolean().default(true),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const dbDict = await import('./db-dictionary');
+        const result = await dbDict.createDictionaryItem({
+          ...input,
+          createdBy: ctx.user.id,
+          updatedBy: ctx.user.id,
+        });
+        return { success: true, message: 'Dictionary item created' };
+      }),
+
+    update: protectedProcedure
+      .input(z.object({
+        id: z.number(),
+        code: z.string().optional(),
+        name: z.string().optional(),
+        name_en: z.string().optional(),
+        name_ru: z.string().optional(),
+        name_uz: z.string().optional(),
+        description: z.string().optional(),
+        description_en: z.string().optional(),
+        description_ru: z.string().optional(),
+        description_uz: z.string().optional(),
+        icon: z.string().optional(),
+        color: z.string().regex(/^#[0-9A-F]{6}$/i).optional(),
+        symbol: z.string().optional(),
+        sort_order: z.number().optional(),
+        is_active: z.boolean().optional(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const dbDict = await import('./db-dictionary');
+        const { id, ...updateData } = input;
+        await dbDict.updateDictionaryItem(id, {
+          ...updateData,
+          updatedBy: ctx.user.id,
+        });
+        return { success: true, message: 'Dictionary item updated' };
+      }),
+
+    delete: protectedProcedure
+      .input(z.object({ id: z.number() }))
+      .mutation(async ({ input }) => {
+        const dbDict = await import('./db-dictionary');
+        await dbDict.deleteDictionaryItem(input.id);
+        return { success: true, message: 'Dictionary item deleted' };
+      }),
+
+    toggleStatus: protectedProcedure
+      .input(z.object({ id: z.number(), isActive: z.boolean() }))
+      .mutation(async ({ input }) => {
+        const dbDict = await import('./db-dictionary');
+        await dbDict.toggleDictionaryItemStatus(input.id, input.isActive);
+        return { success: true, message: 'Dictionary item status updated' };
+      }),
+
+    reorder: protectedProcedure
+      .input(z.object({ items: z.array(z.object({ id: z.number(), sort_order: z.number() })) }))
+      .mutation(async ({ input }) => {
+        const dbDict = await import('./db-dictionary');
+        await dbDict.reorderDictionaryItems(input.items);
+        return { success: true, message: 'Dictionary items reordered' };
+      }),
+
+    getCount: publicProcedure
+      .input(z.object({ dictionaryCode: z.string(), activeOnly: z.boolean().default(true) }))
+      .query(async ({ input }) => {
+        const dbDict = await import('./db-dictionary');
+        return await dbDict.getDictionaryItemsCount(input.dictionaryCode, input.activeOnly);
+      }),
+  }),  }),
 });
 
 export type AppRouter = typeof appRouter;
