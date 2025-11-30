@@ -8,7 +8,7 @@
  * - Multilingual support (RU, EN, UZ)
  */
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useParams, useRouter } from 'wouter';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -42,6 +42,7 @@ import { Plus, Search, Edit2, Trash2, MoreHorizontal, ArrowLeft, Download, Uploa
 import { toast } from 'sonner';
 import { trpc } from '@/lib/trpc';
 import { DictionaryImportModal } from '@/components/DictionaryImportModal';
+import { DragDropTable } from '@/components/DragDropTable';
 import { DictionaryExportModal } from '@/components/DictionaryExportModal';
 import { ImportHistory } from '@/components/ImportHistory';
 
@@ -72,25 +73,69 @@ export function DictionaryItems() {
   const [isImportModalOpen, setIsImportModalOpen] = useState(false);
   const [isExportModalOpen, setIsExportModalOpen] = useState(false);
 
+  const [allItems, setAllItems] = useState<DictionaryItem[]>([]);
+  const [nextCursor, setNextCursor] = useState<string | null>(null);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const observerTarget = useRef<HTMLDivElement>(null);
+
   const { data: itemsData, isLoading: isLoadingItems, refetch } = trpc.dictionaryItems.getItems.useQuery(
-    { dictionaryCode: code || '', activeOnly: false },
+    { dictionaryCode: code || '', activeOnly: false, limit: 50, cursor: undefined },
     { enabled: !!code }
   );
 
+  const loadMore = useCallback(async () => {
+    if (!nextCursor || isLoadingMore) return;
+    setIsLoadingMore(true);
+    try {
+      const moreData = await trpc.dictionaryItems.getItems.query({
+        dictionaryCode: code || '',
+        activeOnly: false,
+        limit: 50,
+        cursor: nextCursor
+      });
+      setAllItems(prev => [...prev, ...moreData.items]);
+      setNextCursor(moreData.nextCursor);
+    } catch (error) {
+      console.error('Error loading more items:', error);
+    } finally {
+      setIsLoadingMore(false);
+    }
+  }, [nextCursor, isLoadingMore, code]);
+
   useEffect(() => {
     if (itemsData) {
-      setItems(itemsData);
+      setAllItems(itemsData.items);
+      setNextCursor(itemsData.nextCursor);
+      setItems(itemsData.items);
     }
     setIsLoading(isLoadingItems);
   }, [itemsData, isLoadingItems]);
 
+  // Intersection Observer for infinite scroll
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      entries => {
+        if (entries[0].isIntersecting && nextCursor && !isLoadingMore) {
+          loadMore();
+        }
+      },
+      { threshold: 0.1 }
+    );
+
+    if (observerTarget.current) {
+      observer.observe(observerTarget.current);
+    }
+
+    return () => observer.disconnect();
+  }, [nextCursor, isLoadingMore, loadMore]);
+
   // Use search endpoint when search term is present
   const { data: searchResults } = trpc.dictionaryItems.search.useQuery(
-    { dictionaryCode: code || '', searchTerm, activeOnly: false },
+    { dictionaryCode: code || '', searchTerm, activeOnly: false, limit: 50 },
     { enabled: !!code && searchTerm.length > 0 }
   );
 
-  const filteredItems = searchTerm.length > 0 ? (searchResults || []) : items;
+  const filteredItems = searchTerm.length > 0 ? (searchResults?.items || []) : allItems;
 
   const handleAddItem = () => {
     setEditingItem(null);
@@ -170,11 +215,33 @@ export function DictionaryItems() {
     },
   });
 
+  const reorderMutation = trpc.dictionaryItems.reorder.useMutation({
+    onSuccess: () => {
+      toast.success('Порядок элементов обновлен');
+    },
+    onError: (error) => {
+      toast.error(error.message || 'Ошибка при переупорядочении');
+    },
+  });
+
   const handleDeleteItem = async (id: number) => {
     try {
       await deleteMutation.mutateAsync({ id });
     } catch (error) {
       console.error('Error deleting item:', error);
+    }
+  };
+
+  const handleReorder = async (reorderedItems: DictionaryItem[]) => {
+    try {
+      const itemsToUpdate = reorderedItems.map(item => ({
+        id: item.id,
+        sort_order: item.sort_order
+      }));
+      await reorderMutation.mutateAsync({ items: itemsToUpdate });
+      setAllItems(reorderedItems);
+    } catch (error) {
+      console.error('Error reordering items:', error);
     }
   };
 

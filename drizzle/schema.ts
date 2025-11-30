@@ -119,8 +119,8 @@ export const products = mysqlTable("products", {
 	unit: varchar({ length: 50 }).notNull(),
 	costPrice: int('cost_price').notNull(),
 	sellingPrice: int('selling_price').notNull(),
-	createdAt: timestamp('created_at', { mode: 'string' }).default(sql`CURRENT_TIMESTAMP`).notNull(),
-	updatedAt: timestamp('updatedAt', { mode: 'string' }).default(sql`CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP`).notNull(),
+	createdAt: timestamp({ mode: 'string', fsp: 3 }).defaultNow().notNull(),
+	updatedAt: timestamp({ mode: 'string', fsp: 3 }).defaultNow().onUpdateNow().notNull(),
 },
 (table) => [
 	index("products_sku_unique").on(table.sku),
@@ -262,12 +262,12 @@ export const incidents = mysqlTable("incidents", {
 	status: mysqlEnum(['open','in_progress','resolved','closed']).default('open').notNull(),
 	severity: mysqlEnum(['low','medium','high','critical']).default('medium').notNull(),
 	description: text(),
-	detectedAt: timestamp({ mode: 'string' }),
+	detectedAt: timestamp({ mode: 'string', fsp: 3 }).defaultNow().notNull(),
 	assignedTo: int(),
-	resolvedAt: timestamp({ mode: 'string' }),
+	resolvedAt: timestamp({ mode: 'string', fsp: 3 }),
 	resolutionNotes: text(),
-	createdAt: timestamp({ mode: 'string' }).default(sql`CURRENT_TIMESTAMP`).notNull(),
-	updatedAt: timestamp({ mode: 'string' }).default(sql`CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP`).notNull(),
+	createdAt: timestamp({ mode: 'string', fsp: 3 }).defaultNow().notNull(),
+	updatedAt: timestamp({ mode: 'string', fsp: 3 }).defaultNow().onUpdateNow().notNull(),
 });
 
 // AI-Agent System Tables

@@ -661,10 +661,43 @@ ${process.env.PUBLIC_URL || 'https://vendhub-showcase.manus.space'}
 
   dictionaryItems: router({
     getItems: publicProcedure
-      .input(z.object({ dictionaryCode: z.string(), activeOnly: z.boolean().default(true) }))
+      .input(z.object({ 
+        dictionaryCode: z.string(), 
+        activeOnly: z.boolean().default(true),
+        limit: z.number().max(100).default(50),
+        cursor: z.string().optional()
+      }))
       .query(async ({ input }) => {
         const dbDict = await import('./db-dictionary');
-        return await dbDict.getDictionaryItems(input.dictionaryCode, input.activeOnly);
+        const db = (await import('./db')).getDb();
+        const { dictionaryItems } = await import('../drizzle/schema');
+        const { eq, and, gt, lte } = await import('drizzle-orm');
+        
+        const limit = input.limit + 1; // Get one extra to determine if there are more
+        let query = db.select().from(dictionaryItems)
+          .where(eq(dictionaryItems.dictionaryCode, input.dictionaryCode));
+        
+        if (input.activeOnly) {
+          query = query.where(eq(dictionaryItems.is_active, true));
+        }
+        
+        if (input.cursor) {
+          query = query.where(gt(dictionaryItems.id, parseInt(input.cursor)));
+        }
+        
+        const items = await query
+          .orderBy(dictionaryItems.sort_order, dictionaryItems.id)
+          .limit(limit);
+        
+        const hasMore = items.length > input.limit;
+        const data = hasMore ? items.slice(0, -1) : items;
+        const nextCursor = hasMore ? data[data.length - 1]?.id.toString() : null;
+        
+        return {
+          items: data,
+          nextCursor,
+          hasMore
+        };
       }),
 
     getItem: publicProcedure
@@ -675,10 +708,54 @@ ${process.env.PUBLIC_URL || 'https://vendhub-showcase.manus.space'}
       }),
 
     search: publicProcedure
-      .input(z.object({ dictionaryCode: z.string(), searchTerm: z.string(), activeOnly: z.boolean().default(true) }))
+      .input(z.object({ 
+        dictionaryCode: z.string(), 
+        searchTerm: z.string(), 
+        activeOnly: z.boolean().default(true),
+        limit: z.number().max(100).default(50),
+        cursor: z.string().optional()
+      }))
       .query(async ({ input }) => {
-        const dbDict = await import('./db-dictionary');
-        return await dbDict.searchDictionaryItems(input.dictionaryCode, input.searchTerm, input.activeOnly);
+        const db = (await import('./db')).getDb();
+        const { dictionaryItems } = await import('../drizzle/schema');
+        const { eq, and, like, gt, or } = await import('drizzle-orm');
+        
+        const searchPattern = `%${input.searchTerm}%`;
+        const limit = input.limit + 1;
+        
+        let query = db.select().from(dictionaryItems)
+          .where(and(
+            eq(dictionaryItems.dictionaryCode, input.dictionaryCode),
+            or(
+              like(dictionaryItems.code, searchPattern),
+              like(dictionaryItems.name, searchPattern),
+              like(dictionaryItems.name_en || '', searchPattern),
+              like(dictionaryItems.name_ru || '', searchPattern),
+              like(dictionaryItems.name_uz || '', searchPattern)
+            )
+          ));
+        
+        if (input.activeOnly) {
+          query = query.where(eq(dictionaryItems.is_active, true));
+        }
+        
+        if (input.cursor) {
+          query = query.where(gt(dictionaryItems.id, parseInt(input.cursor)));
+        }
+        
+        const items = await query
+          .orderBy(dictionaryItems.sort_order, dictionaryItems.id)
+          .limit(limit);
+        
+        const hasMore = items.length > input.limit;
+        const data = hasMore ? items.slice(0, -1) : items;
+        const nextCursor = hasMore ? data[data.length - 1]?.id.toString() : null;
+        
+        return {
+          items: data,
+          nextCursor,
+          hasMore
+        };
       }),
 
     create: protectedProcedure
