@@ -4,8 +4,7 @@ import * as dbAuth from "../db-auth";
 import { PasswordService } from "../services/passwordService";
 import { TokenService } from "../services/tokenService";
 import { getSessionCookieOptions } from "../_core/cookies";
-
-const COOKIE_NAME = "session";
+import { COOKIE_NAME } from "../../shared/const";
 
 export const authRouter = router({
   me: publicProcedure.query((opts) => opts.ctx.user),

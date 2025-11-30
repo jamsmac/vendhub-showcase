@@ -42,7 +42,7 @@ Return ONLY valid JSON with the suggested fields, no markdown or extra text.
 `;
 
     const response = await client.messages.create({
-      model: "claude-3-sonnet-20240229",
+      model: "claude-3-haiku-20240307",
       max_tokens: 1024,
       system: request.systemPrompt,
       messages: [
@@ -132,7 +132,7 @@ Provide a concise analysis of patterns and recommendations.
 `;
 
     const response = await client.messages.create({
-      model: "claude-3-sonnet-20240229",
+      model: "claude-3-haiku-20240307",
       max_tokens: 512,
       messages: [
         {
@@ -190,7 +190,7 @@ Return your response as JSON with:
 `;
 
     const response = await client.messages.create({
-      model: "claude-3-sonnet-20240229",
+      model: "claude-3-haiku-20240307",
       max_tokens: 1024,
       messages: [
         {
