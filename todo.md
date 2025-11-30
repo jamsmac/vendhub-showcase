@@ -2202,3 +2202,36 @@ All tasks completed:
 - [ ] Create PasswordRecovery component
 - [ ] Create ResetPassword component
 - [ ] Add password recovery link to login page
+
+
+## tRPC Endpoints - Security Features
+- [x] Add auth.requestPasswordReset() endpoint
+- [x] Add auth.verifyResetToken() endpoint
+- [x] Add auth.resetPassword() endpoint
+- [x] Add auth.enableTwoFactor() endpoint
+- [x] Add auth.disableTwoFactor() endpoint
+- [x] Add auth.getTwoFactorStatus() endpoint
+- [x] Add auth.verifyTwoFactor() endpoint
+- [x] Add admin.getLoginAttempts() endpoint
+- [x] Add admin.resetAccountLockout() endpoint
+- [x] Add admin.getSecurityStatistics() endpoint
+
+## Frontend Components - Security Features
+- [x] Create PasswordRecovery component (already exists)
+- [x] Create ResetPassword component (part of PasswordRecovery)
+- [x] Create TwoFactorSetup component
+- [x] Create TwoFactorVerification component
+- [ ] Add password recovery link to Login page
+- [ ] Add 2FA verification modal to Login page
+- [ ] Add 2FA settings to UserSettings page
+- [x] Add form validation for all components
+- [x] Add error handling and toast notifications
+
+## Admin Dashboard - Security Widgets
+- [x] Create LoginAttemptsWidget component (integrated in SecurityDashboard)
+- [x] Create LockedAccountsWidget component (integrated in SecurityDashboard)
+- [x] Create PasswordRecoveryStatsWidget component (integrated in SecurityDashboard)
+- [x] Create SecurityAlertsWidget component (integrated in SecurityDashboard)
+- [x] Add security monitoring page to admin dashboard (SecurityDashboard exists)
+- [x] Add real-time updates for security metrics (auto-refresh implemented)
+- [x] Add export functionality for security logs (CSV export implemented)

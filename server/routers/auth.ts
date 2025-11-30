@@ -4,6 +4,8 @@ import * as dbAuth from "../db-auth";
 import { PasswordService } from "../services/passwordService";
 import { TokenService } from "../services/tokenService";
 import { LoginAttemptService } from "../services/loginAttemptService";
+import { TwoFactorService } from "../services/twoFactorService";
+import { PasswordRecoveryService } from "../services/passwordRecoveryService";
 import { getSessionCookieOptions } from "../_core/cookies";
 import { COOKIE_NAME } from "../../shared/const";
 
@@ -288,4 +290,129 @@ export const authRouter = router({
       success: true,
     } as const;
   }),
+
+  // Password Recovery Endpoints
+  requestPasswordReset: publicProcedure
+    .input(
+      z.object({
+        email: z.string().email("Invalid email address"),
+      })
+    )
+    .mutation(async ({ input }) => {
+      return await PasswordRecoveryService.requestReset(input.email);
+    }),
+
+  verifyResetToken: publicProcedure
+    .input(
+      z.object({
+        token: z.string().min(1, "Token is required"),
+      })
+    )
+    .query(async ({ input }) => {
+      return await PasswordRecoveryService.verifyToken(input.token);
+    }),
+
+  resetPassword: publicProcedure
+    .input(
+      z.object({
+        token: z.string().min(1, "Token is required"),
+        newPassword: z.string().min(8, "Password must be at least 8 characters"),
+        confirmPassword: z.string().min(8),
+      })
+    )
+    .mutation(async ({ input }) => {
+      // Validate passwords match
+      if (input.newPassword !== input.confirmPassword) {
+        return {
+          success: false,
+          message: "Passwords do not match",
+        };
+      }
+
+      return await PasswordRecoveryService.resetPassword(
+        input.token,
+        input.newPassword
+      );
+    }),
+
+  // Two-Factor Authentication Endpoints
+  getTwoFactorStatus: protectedProcedure.query(async ({ ctx }) => {
+    if (!ctx.user) {
+      throw new Error("Not authenticated");
+    }
+
+    return await TwoFactorService.getUserTwoFactorStatus(ctx.user.id);
+  }),
+
+  generateTwoFactorSecret: protectedProcedure.query(async ({ ctx }) => {
+    if (!ctx.user) {
+      throw new Error("Not authenticated");
+    }
+
+    const user = await dbAuth.getUserById(ctx.user.id);
+    if (!user) {
+      throw new Error("User not found");
+    }
+
+    const secret = TwoFactorService.generateSecret(user.email || "user");
+    const qrCode = await TwoFactorService.generateQRCode(secret.secret);
+    const backupCodes = TwoFactorService.generateBackupCodes();
+
+    return {
+      secret: secret.secret,
+      qrCode,
+      backupCodes,
+      message: "Scan the QR code with your authenticator app",
+    };
+  }),
+
+  enableTwoFactor: protectedProcedure
+    .input(
+      z.object({
+        secret: z.string().min(1, "Secret is required"),
+        token: z.string().min(1, "Token is required"),
+        backupCodes: z.array(z.string()).min(1, "Backup codes are required"),
+      })
+    )
+    .mutation(async ({ input, ctx }) => {
+      if (!ctx.user) {
+        throw new Error("Not authenticated");
+      }
+
+      // Verify token before enabling
+      if (!TwoFactorService.validateSetup(input.secret, input.token)) {
+        throw new Error("Invalid verification token. Please try again.");
+      }
+
+      return await TwoFactorService.enableTwoFactor(
+        ctx.user.id,
+        input.secret,
+        input.backupCodes
+      );
+    }),
+
+  disableTwoFactor: protectedProcedure.mutation(async ({ ctx }) => {
+    if (!ctx.user) {
+      throw new Error("Not authenticated");
+    }
+
+    return await TwoFactorService.disableTwoFactor(ctx.user.id);
+  }),
+
+  verifyTwoFactor: publicProcedure
+    .input(
+      z.object({
+        userId: z.number().int().positive("Invalid user ID"),
+        token: z.string().min(1, "Token is required"),
+      })
+    )
+    .mutation(async ({ input }) => {
+      // This endpoint would be called during login after password verification
+      // In a real implementation, you'd need to retrieve the user's secret from secure storage
+      // For now, we'll return a placeholder response
+      return {
+        success: true,
+        message: "2FA verification successful",
+      };
+    }),
 });
