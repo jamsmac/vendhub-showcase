@@ -68,12 +68,12 @@ export const digestConfig = mysqlTable("digestConfig", {
 });
 
 export const inventory = mysqlTable("inventory", {
-	id: int().autoincrement().notNull(),
-	productId: int().notNull(),
-	level: mysqlEnum(['warehouse','operator','machine']).notNull(),
-	locationId: int(),
-	quantity: int().default(0).notNull(),
-	updatedAt: timestamp({ mode: 'string' }).defaultNow().onUpdateNow().notNull(),
+	id: int("id").autoincrement().notNull(),
+	productId: int("product_id").notNull(),
+	level: mysqlEnum("level", ['warehouse','operator','machine']).notNull(),
+	locationId: int("location_id"),
+	quantity: int("quantity").default(0).notNull(),
+	updatedAt: timestamp("updated_at", { mode: 'string' }).defaultNow().onUpdateNow().notNull(),
 });
 
 export const inventoryAdjustments = mysqlTable("inventoryAdjustments", {
