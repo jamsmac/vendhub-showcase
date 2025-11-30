@@ -3,7 +3,7 @@
  * Provides drag-and-drop reordering functionality for table rows
  */
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import {
   Table,
   TableBody,
@@ -12,7 +12,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { GripVertical } from 'lucide-react';
+import { GripVertical, Check } from 'lucide-react';
 
 interface DragDropTableProps<T extends { id: number }> {
   items: T[];
@@ -26,6 +26,9 @@ interface DragDropTableProps<T extends { id: number }> {
   onDelete?: (id: number) => void;
   actions?: (item: T) => React.ReactNode;
   draggable?: boolean;
+  selectable?: boolean;
+  selectedIds?: number[];
+  onSelectionChange?: (ids: number[]) => void;
 }
 
 export function DragDropTable<T extends { id: number }>({
@@ -36,9 +39,35 @@ export function DragDropTable<T extends { id: number }>({
   onDelete,
   actions,
   draggable = true,
+  selectable = false,
+  selectedIds = [],
+  onSelectionChange,
 }: DragDropTableProps<T>) {
   const [draggedItem, setDraggedItem] = useState<number | null>(null);
   const [dragOverItem, setDragOverItem] = useState<number | null>(null);
+  const [history, setHistory] = useState<T[][]>([]);
+  const [historyIndex, setHistoryIndex] = useState(-1);
+
+  const handleSelectAll = useCallback(() => {
+    if (onSelectionChange) {
+      if (selectedIds.length === items.length) {
+        onSelectionChange([]);
+      } else {
+        onSelectionChange(items.map((item) => item.id));
+      }
+    }
+  }, [selectedIds, items, onSelectionChange]);
+
+  const handleSelectItem = useCallback(
+    (id: number) => {
+      if (!onSelectionChange) return;
+      const newSelection = selectedIds.includes(id)
+        ? selectedIds.filter((sid) => sid !== id)
+        : [...selectedIds, id];
+      onSelectionChange(newSelection);
+    },
+    [selectedIds, onSelectionChange]
+  );
 
   const handleDragStart = useCallback((id: number) => {
     setDraggedItem(id);
@@ -52,6 +81,47 @@ export function DragDropTable<T extends { id: number }>({
   const handleDragLeave = useCallback(() => {
     setDragOverItem(null);
   }, []);
+
+  const pushToHistory = useCallback((items: T[]) => {
+    setHistory(prev => {
+      const newHistory = prev.slice(0, historyIndex + 1);
+      newHistory.push([...items]);
+      return newHistory;
+    });
+    setHistoryIndex(prev => prev + 1);
+  }, [historyIndex]);
+
+  const undo = useCallback(() => {
+    if (historyIndex > 0) {
+      const prevIndex = historyIndex - 1;
+      setHistoryIndex(prevIndex);
+      onReorder([...history[prevIndex]]);
+    }
+  }, [historyIndex, history, onReorder]);
+
+  const redo = useCallback(() => {
+    if (historyIndex < history.length - 1) {
+      const nextIndex = historyIndex + 1;
+      setHistoryIndex(nextIndex);
+      onReorder([...history[nextIndex]]);
+    }
+  }, [historyIndex, history, onReorder]);
+
+  // Keyboard shortcuts for undo/redo
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'z' && !e.shiftKey) {
+        e.preventDefault();
+        undo();
+      } else if ((e.ctrlKey || e.metaKey) && (e.key === 'y' || (e.key === 'z' && e.shiftKey))) {
+        e.preventDefault();
+        redo();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [undo, redo]);
 
   const handleDrop = useCallback(
     (e: React.DragEvent, targetId: number) => {
@@ -82,6 +152,7 @@ export function DragDropTable<T extends { id: number }>({
         sort_order: index,
       }));
 
+      pushToHistory(reorderedItems);
       onReorder(reorderedItems);
       setDraggedItem(null);
     },
@@ -93,6 +164,16 @@ export function DragDropTable<T extends { id: number }>({
       <Table>
         <TableHeader>
           <TableRow className="border-white/10 hover:bg-transparent">
+            {selectable && (
+              <TableHead className="w-10">
+                <input
+                  type="checkbox"
+                  checked={selectedIds.length === items.length && items.length > 0}
+                  onChange={handleSelectAll}
+                  className="rounded border-white/20 cursor-pointer"
+                />
+              </TableHead>
+            )}
             {draggable && <TableHead className="w-10" />}
             {columns.map((column) => (
               <TableHead key={String(column.key)} className="text-slate-300">
@@ -114,9 +195,19 @@ export function DragDropTable<T extends { id: number }>({
               className={`border-white/10 transition-colors ${
                 draggedItem === item.id ? 'opacity-50 bg-blue-500/10' : ''
               } ${
-                dragOverItem === item.id ? 'bg-blue-500/20' : 'hover:bg-white/5'
+                dragOverItem === item.id ? 'bg-blue-500/20' : selectedIds.includes(item.id) ? 'bg-blue-500/10' : 'hover:bg-white/5'
               } ${draggable ? 'cursor-grab active:cursor-grabbing' : ''}`}
             >
+              {selectable && (
+                <TableCell className="p-2">
+                  <input
+                    type="checkbox"
+                    checked={selectedIds.includes(item.id)}
+                    onChange={() => handleSelectItem(item.id)}
+                    className="rounded border-white/20 cursor-pointer"
+                  />
+                </TableCell>
+              )}
               {draggable && (
                 <TableCell className="text-slate-500 p-2">
                   <GripVertical className="w-4 h-4" />

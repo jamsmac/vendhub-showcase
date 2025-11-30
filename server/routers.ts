@@ -644,7 +644,60 @@ ${process.env.PUBLIC_URL || 'https://vendhub-showcase.manus.space'}
         return await dbImportModule.getImportHistoryByDictionary(input.dictionaryCode);
       }),
 
-    deleteImportHistory: protectedProcedure
+    bulkDelete: protectedProcedure
+      .input(z.object({ ids: z.array(z.number()) }))
+      .mutation(async ({ input, ctx }) => {
+        const dbDict = await import('./db-dictionary');
+        const deleted = await dbDict.bulkDeleteDictionaryItems(input.ids);
+        return { deleted };
+      }),
+
+      bulkToggleStatus: protectedProcedure
+      .input(z.object({ ids: z.array(z.number()), status: z.boolean() }))
+      .mutation(async ({ input, ctx }) => {
+        const dbDict = await import('./db-dictionary');
+        const updated = await dbDict.bulkToggleDictionaryItems(input.ids, input.status);
+        return { updated };
+      }),
+
+      bulkExport: publicProcedure
+      .input(z.object({ 
+        ids: z.array(z.number()),
+        format: z.enum(['json', 'csv']).default('json'),
+        language: z.enum(['en', 'ru', 'uz']).default('en')
+      }))
+      .query(async ({ input }) => {
+        const dbDict = await import('./db-dictionary');
+        const items = await dbDict.getDictionaryItemsByIds(input.ids);
+        
+        if (input.format === 'csv') {
+          const headers = ['id', 'code', 'name', 'description', 'icon', 'color', 'sort_order', 'is_active'];
+          const rows = items.map(item => [
+            item.id,
+            item.code,
+            input.language === 'en' ? item.name_en || item.name : 
+            input.language === 'ru' ? item.name_ru || item.name : 
+            item.name_uz || item.name,
+            input.language === 'en' ? item.description_en || item.description :
+            input.language === 'ru' ? item.description_ru || item.description :
+            item.description_uz || item.description,
+            item.icon || '',
+            item.color || '',
+            item.sort_order,
+            item.is_active ? 'true' : 'false'
+          ]);
+          
+          const csv = [headers, ...rows].map(row => 
+            row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(',')
+          ).join('\n');
+          
+          return { data: csv, format: 'csv' };
+        }
+        
+        return { data: items, format: 'json' };
+      }),
+
+      deleteImportHistory: protectedProcedure
       .input(z.object({ importId: z.number() }))
       .mutation(async ({ ctx, input }) => {
         const dbImportModule = await import('./db-import');

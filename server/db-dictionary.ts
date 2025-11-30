@@ -238,3 +238,36 @@ export async function dictionaryItemCodeExists(
 }
 
 
+export async function bulkDeleteDictionaryItems(ids: number[]): Promise<number> {
+  const db = getDb();
+  const { dictionaryItems } = await import('../drizzle/schema');
+  const { inArray } = await import('drizzle-orm');
+  
+  const result = await db.delete(dictionaryItems).where(inArray(dictionaryItems.id, ids));
+  return ids.length;
+}
+
+export async function bulkToggleDictionaryItems(ids: number[], status: boolean): Promise<number> {
+  const db = getDb();
+  const { dictionaryItems } = await import('../drizzle/schema');
+  const { inArray } = await import('drizzle-orm');
+  
+  await db.update(dictionaryItems)
+    .set({ is_active: status })
+    .where(inArray(dictionaryItems.id, ids));
+  
+  return ids.length;
+}
+
+export async function getDictionaryItemsByIds(ids: number[]): Promise<DictionaryItem[]> {
+  const db = getDb();
+  const { dictionaryItems } = await import('../drizzle/schema');
+  const { inArray } = await import('drizzle-orm');
+  
+  if (ids.length === 0) return [];
+  
+  return await db.select().from(dictionaryItems)
+    .where(inArray(dictionaryItems.id, ids))
+    .orderBy(dictionaryItems.sort_order, dictionaryItems.id);
+}
+

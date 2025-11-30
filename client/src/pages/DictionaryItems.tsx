@@ -43,6 +43,7 @@ import { toast } from 'sonner';
 import { trpc } from '@/lib/trpc';
 import { DictionaryImportModal } from '@/components/DictionaryImportModal';
 import { DragDropTable } from '@/components/DragDropTable';
+import { BulkActionsToolbar } from '@/components/BulkActionsToolbar';
 import { DictionaryExportModal } from '@/components/DictionaryExportModal';
 import { ImportHistory } from '@/components/ImportHistory';
 
@@ -224,6 +225,33 @@ export function DictionaryItems() {
     },
   });
 
+  const bulkDeleteMutation = trpc.dictionaryItems.bulkDelete.useMutation({
+    onSuccess: () => {
+      toast.success('Элементы удалены');
+      setSelectedIds([]);
+      refetch();
+    },
+    onError: (error) => {
+      toast.error(error.message || 'Ошибка при удалении');
+    },
+  });
+
+  const bulkToggleMutation = trpc.dictionaryItems.bulkToggleStatus.useMutation({
+    onSuccess: () => {
+      toast.success('Статус обновлен');
+      setSelectedIds([]);
+      refetch();
+    },
+    onError: (error) => {
+      toast.error(error.message || 'Ошибка при обновлении статуса');
+    },
+  });
+
+  const bulkExportMutation = trpc.dictionaryItems.bulkExport.useQuery(
+    { ids: selectedIds, format: 'json', language: 'en' },
+    { enabled: false }
+  );
+
   const handleDeleteItem = async (id: number) => {
     try {
       await deleteMutation.mutateAsync({ id });
@@ -242,6 +270,63 @@ export function DictionaryItems() {
       setAllItems(reorderedItems);
     } catch (error) {
       console.error('Error reordering items:', error);
+    }
+  };
+
+  const handleBulkDelete = async () => {
+    if (selectedIds.length === 0) return;
+    if (!confirm(`Вы уверены, что хотите удалить ${selectedIds.length} элементов?`)) return;
+    
+    setIsBulkLoading(true);
+    try {
+      await bulkDeleteMutation.mutateAsync({ ids: selectedIds });
+    } catch (error) {
+      console.error('Error deleting items:', error);
+    } finally {
+      setIsBulkLoading(false);
+    }
+  };
+
+  const handleBulkToggleStatus = async () => {
+    if (selectedIds.length === 0) return;
+    
+    // Determine new status based on selected items
+    const selectedItems = filteredItems.filter(item => selectedIds.includes(item.id));
+    const newStatus = selectedItems.some(item => !item.is_active);
+    
+    setIsBulkLoading(true);
+    try {
+      await bulkToggleMutation.mutateAsync({ ids: selectedIds, status: newStatus });
+    } catch (error) {
+      console.error('Error toggling status:', error);
+    } finally {
+      setIsBulkLoading(false);
+    }
+  };
+
+  const handleBulkExport = async () => {
+    if (selectedIds.length === 0) return;
+    
+    try {
+      const result = await trpc.dictionaryItems.bulkExport.query({
+        ids: selectedIds,
+        format: 'json',
+        language: 'en'
+      });
+      
+      const dataStr = JSON.stringify(result.data, null, 2);
+      const dataBlob = new Blob([dataStr], { type: 'application/json' });
+      const url = URL.createObjectURL(dataBlob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `dictionary-export-${Date.now()}.json`;
+      link.click();
+      URL.revokeObjectURL(url);
+      
+      toast.success('Данные экспортированы');
+    } catch (error) {
+      console.error('Error exporting items:', error);
+      toast.error('Ошибка при экспорте');
     }
   };
 

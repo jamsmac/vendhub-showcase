@@ -122,9 +122,9 @@ export const products = mysqlTable("products", {
 	createdAt: timestamp({ mode: 'string', fsp: 3 }).defaultNow().notNull(),
 	updatedAt: timestamp({ mode: 'string', fsp: 3 }).defaultNow().onUpdateNow().notNull(),
 },
-(table) => [
+(table) => ([
 	index("products_sku_unique").on(table.sku),
-]);
+]));
 
 export const roleChanges = mysqlTable("roleChanges", {
 	id: int().autoincrement().notNull(),
