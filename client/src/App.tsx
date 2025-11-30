@@ -9,11 +9,37 @@ import { trpc } from "@/lib/trpc";
 
 // Dashboard with real backend data
 function DashboardPage() {
-  const { data: machines, isLoading: machinesLoading } = trpc.machines.list.useQuery();
-  const { data: tasks, isLoading: tasksLoading } = trpc.tasks.list.useQuery();
-  const { data: products, isLoading: productsLoading } = trpc.products.list.useQuery();
+  const { data: machines, isLoading: machinesLoading, error: machinesError } = trpc.machines.list.useQuery(undefined, {
+    retry: 1,
+    staleTime: 30000,
+  });
+  const { data: tasks, isLoading: tasksLoading, error: tasksError } = trpc.tasks.list.useQuery(undefined, {
+    retry: 1,
+    staleTime: 30000,
+  });
+  const { data: products, isLoading: productsLoading, error: productsError } = trpc.products.list.useQuery(undefined, {
+    retry: 1,
+    staleTime: 30000,
+  });
 
   const isLoading = machinesLoading || tasksLoading || productsLoading;
+  const hasError = machinesError || tasksError || productsError;
+
+  if (hasError) {
+    return (
+      <div className="space-y-6">
+        <div>
+          <h1 className="text-3xl font-bold">Главная панель</h1>
+        </div>
+        <div className="p-6 border border-red-500 rounded-lg">
+          <div className="text-red-500 font-bold">Ошибка загрузки данных</div>
+          <div className="text-sm text-muted-foreground mt-2">
+            {machinesError?.message || tasksError?.message || productsError?.message}
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   if (isLoading) {
     return (

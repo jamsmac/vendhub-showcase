@@ -1,0 +1,30 @@
+{
+  "query": "SHOW CREATE TABLE machines;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3FfdjCLoumdFxBM.root --database CnvwHcg9Gg9M7uweMepDrE --execute SHOW CREATE TABLE machines;",
+  "rows": [
+    {
+      "Table": "machines",
+      "Create Table": "CREATE TABLE `machines` ("
+    }
+  ],
+  "messages": [
+    "  `id` int(11) NOT NULL AUTO_INCREMENT,",
+    "  `name` varchar(255) NOT NULL,",
+    "  `serial_number` varchar(100) DEFAULT NULL,",
+    "  `model` varchar(100) DEFAULT NULL,",
+    "  `location` text NOT NULL,",
+    "  `latitude` varchar(50) DEFAULT NULL,",
+    "  `longitude` varchar(50) DEFAULT NULL,",
+    "  `status` enum('online','offline','maintenance') NOT NULL DEFAULT 'offline',",
+    "  `last_maintenance` timestamp NULL DEFAULT NULL,",
+    "  `next_service_due` timestamp NULL DEFAULT NULL,",
+    "  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,",
+    "  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,",
+    "  PRIMARY KEY (`id`) /*T![clustered_index] CLUSTERED */,",
+    "  UNIQUE KEY `machines_serialNumber_unique` (`serial_number`)",
+    ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin AUTO_INCREMENT=30001"
+  ],
+  "stdout": "Table\tCreate Table\nmachines\tCREATE TABLE `machines` (\n  `id` int(11) NOT NULL AUTO_INCREMENT,\n  `name` varchar(255) NOT NULL,\n  `serial_number` varchar(100) DEFAULT NULL,\n  `model` varchar(100) DEFAULT NULL,\n  `location` text NOT NULL,\n  `latitude` varchar(50) DEFAULT NULL,\n  `longitude` varchar(50) DEFAULT NULL,\n  `status` enum('online','offline','maintenance') NOT NULL DEFAULT 'offline',\n  `last_maintenance` timestamp NULL DEFAULT NULL,\n  `next_service_due` timestamp NULL DEFAULT NULL,\n  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,\n  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,\n  PRIMARY KEY (`id`) /*T![clustered_index] CLUSTERED */,\n  UNIQUE KEY `machines_serialNumber_unique` (`serial_number`)\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin AUTO_INCREMENT=30001\n",
+  "stderr": "",
+  "execution_time_ms": 48
+}

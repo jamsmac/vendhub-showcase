@@ -1,0 +1,27 @@
+{
+  "query": "SHOW CREATE TABLE products;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3FfdjCLoumdFxBM.root --database CnvwHcg9Gg9M7uweMepDrE --execute SHOW CREATE TABLE products;",
+  "rows": [
+    {
+      "Table": "products",
+      "Create Table": "CREATE TABLE `products` ("
+    }
+  ],
+  "messages": [
+    "  `id` int(11) NOT NULL AUTO_INCREMENT,",
+    "  `name` varchar(255) NOT NULL,",
+    "  `sku` varchar(100) DEFAULT NULL,",
+    "  `category` varchar(100) DEFAULT NULL,",
+    "  `unit` varchar(50) NOT NULL,",
+    "  `cost_price` int(11) NOT NULL,",
+    "  `selling_price` int(11) NOT NULL,",
+    "  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,",
+    "  `updatedAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,",
+    "  PRIMARY KEY (`id`) /*T![clustered_index] CLUSTERED */,",
+    "  UNIQUE KEY `products_sku_unique` (`sku`)",
+    ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin AUTO_INCREMENT=30001"
+  ],
+  "stdout": "Table\tCreate Table\nproducts\tCREATE TABLE `products` (\n  `id` int(11) NOT NULL AUTO_INCREMENT,\n  `name` varchar(255) NOT NULL,\n  `sku` varchar(100) DEFAULT NULL,\n  `category` varchar(100) DEFAULT NULL,\n  `unit` varchar(50) NOT NULL,\n  `cost_price` int(11) NOT NULL,\n  `selling_price` int(11) NOT NULL,\n  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,\n  `updatedAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,\n  PRIMARY KEY (`id`) /*T![clustered_index] CLUSTERED */,\n  UNIQUE KEY `products_sku_unique` (`sku`)\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin AUTO_INCREMENT=30001\n",
+  "stderr": "",
+  "execution_time_ms": 57
+}

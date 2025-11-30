@@ -712,3 +712,23 @@
 - [ ] Test Products page with real data
 - [ ] Create comprehensive seed script with realistic data
 - [ ] Save checkpoint with working backend integration
+
+
+## Phase 28: Backend Integration Status (Nov 30, 2025)
+- [x] Fixed drizzle schema for machines table (removed non-existent columns)
+- [x] Fixed drizzle schema for products table (fixed updatedAt column name)
+- [x] Fixed drizzle schema for tasks table (snake_case mapping)
+- [x] Verified API endpoints work via curl (machines, tasks, products)
+- [x] Added test data to database (3 machines, 3 tasks, 3 products)
+- [x] Added error handling to Dashboard component
+- [ ] **BLOCKED**: React Query not fetching data (requests stuck in pending state)
+- [ ] **BLOCKED**: Dashboard not displaying backend data
+- [ ] Need to debug tRPC client configuration
+- [ ] Need to check browser console for errors
+- [ ] Consider alternative: use fetch() instead of tRPC for initial testing
+
+## Known Issues:
+1. Dashboard shows loading state indefinitely (React Query requests don't complete)
+2. tRPC endpoints work via curl but not from browser
+3. Possible CORS or network configuration issue
+4. Need to investigate React Query + tRPC integration
