@@ -1,76 +1,212 @@
-import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import NotFound from "@/pages/NotFound";
 import '@/i18n/config';
 import { Route, Switch } from "wouter";
-import { useTranslation } from 'react-i18next';
 import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
-import MainLayout from "./components/MainLayout";
-import Dashboard from "./pages/Dashboard";
-import Machines from "./pages/Machines";
-import MachineDetail from "./pages/MachineDetail";
-import Tasks from "./pages/Tasks";
-import Users from "./pages/Users";
-import Inventory from "./pages/Inventory";
-import Login from "./pages/Login";
-import Auth from "./pages/Auth";
-import TelegramOnboarding from "./pages/TelegramOnboarding";
-import MasterData from "./pages/MasterData";
-import ComponentLifecycle from "./pages/ComponentLifecycle";
-import Reports from "./pages/Reports";
-import AccessRequests from "./pages/AccessRequests";
-import DigestSettings from "./pages/DigestSettings";
-import NotificationPreferences from "./pages/NotificationPreferences";
-import AdminTransfers from "./pages/AdminTransfers";
-import TransferHistory from "./pages/TransferHistory";
-import { AdminAiAgents } from "./pages/AdminAiAgents";
+import VendHubLayout from "./components/VendHubLayout";
+import CommandPalette from "./components/CommandPalette";
+
+// Placeholder pages
+function DashboardPage() {
+  return (
+    <div>
+      <h2 className="text-2xl font-bold mb-4">Главная панель</h2>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="p-6 rounded-lg border bg-card">
+          <div className="text-3xl font-bold">24</div>
+          <div className="text-sm text-muted-foreground">Всего аппаратов</div>
+        </div>
+        <div className="p-6 rounded-lg border bg-card">
+          <div className="text-3xl font-bold">5</div>
+          <div className="text-sm text-muted-foreground">Активных задач</div>
+        </div>
+        <div className="p-6 rounded-lg border bg-card">
+          <div className="text-3xl font-bold">12</div>
+          <div className="text-sm text-muted-foreground">Товаров с низким остатком</div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function MachinesPage() {
+  return (
+    <div>
+      <h2 className="text-2xl font-bold mb-4">Аппараты</h2>
+      <p className="text-muted-foreground">Список торговых автоматов</p>
+    </div>
+  );
+}
+
+function TasksPage() {
+  return (
+    <div>
+      <h2 className="text-2xl font-bold mb-4">Задачи</h2>
+      <p className="text-muted-foreground">Управление задачами обслуживания</p>
+    </div>
+  );
+}
+
+function LocationsPage() {
+  return (
+    <div>
+      <h2 className="text-2xl font-bold mb-4">Локации</h2>
+      <p className="text-muted-foreground">Места размещения аппаратов</p>
+    </div>
+  );
+}
+
+function InventoryPage() {
+  return (
+    <div>
+      <h2 className="text-2xl font-bold mb-4">Остатки</h2>
+      <p className="text-muted-foreground">Управление складскими остатками</p>
+    </div>
+  );
+}
+
+function ProductsPage() {
+  return (
+    <div>
+      <h2 className="text-2xl font-bold mb-4">Товары</h2>
+      <p className="text-muted-foreground">Каталог товаров и ингредиентов</p>
+    </div>
+  );
+}
+
+function RecipesPage() {
+  return (
+    <div>
+      <h2 className="text-2xl font-bold mb-4">Рецепты</h2>
+      <p className="text-muted-foreground">Рецепты напитков</p>
+    </div>
+  );
+}
+
+function TransactionsPage() {
+  return (
+    <div>
+      <h2 className="text-2xl font-bold mb-4">Транзакции</h2>
+      <p className="text-muted-foreground">Финансовые операции</p>
+    </div>
+  );
+}
+
+function CounterpartiesPage() {
+  return (
+    <div>
+      <h2 className="text-2xl font-bold mb-4">Контрагенты</h2>
+      <p className="text-muted-foreground">Поставщики и партнёры</p>
+    </div>
+  );
+}
+
+function ContractsPage() {
+  return (
+    <div>
+      <h2 className="text-2xl font-bold mb-4">Договоры</h2>
+      <p className="text-muted-foreground">Договоры с контрагентами</p>
+    </div>
+  );
+}
+
+function AnalyticsPage() {
+  return (
+    <div>
+      <h2 className="text-2xl font-bold mb-4">Аналитика</h2>
+      <p className="text-muted-foreground">Дашборд аналитики</p>
+    </div>
+  );
+}
+
+function ReportsPage() {
+  return (
+    <div>
+      <h2 className="text-2xl font-bold mb-4">Отчёты</h2>
+      <p className="text-muted-foreground">Различные отчёты</p>
+    </div>
+  );
+}
+
+function IncidentsPage() {
+  return (
+    <div>
+      <h2 className="text-2xl font-bold mb-4">Инциденты</h2>
+      <p className="text-muted-foreground">Учёт инцидентов</p>
+    </div>
+  );
+}
+
+function UsersPage() {
+  return (
+    <div>
+      <h2 className="text-2xl font-bold mb-4">Пользователи</h2>
+      <p className="text-muted-foreground">Управление пользователями</p>
+    </div>
+  );
+}
+
+function AccessRequestsPage() {
+  return (
+    <div>
+      <h2 className="text-2xl font-bold mb-4">Заявки на доступ</h2>
+      <p className="text-muted-foreground">Обработка заявок на доступ</p>
+    </div>
+  );
+}
+
+function SettingsPage() {
+  return (
+    <div>
+      <h2 className="text-2xl font-bold mb-4">Настройки</h2>
+      <p className="text-muted-foreground">Настройки системы</p>
+    </div>
+  );
+}
+
+function HelpPage() {
+  return (
+    <div>
+      <h2 className="text-2xl font-bold mb-4">Помощь</h2>
+      <p className="text-muted-foreground">Справка и документация</p>
+    </div>
+  );
+}
 
 function Router() {
-  // make sure to consider if you need authentication for certain routes
   return (
-    <Switch>
-      <Route path={"/login"} component={Login} />
-      <Route path={"/auth"} component={Auth} />
-      <Route path={"/onboarding"} component={TelegramOnboarding} />
-      <Route path={"/404"} component={NotFound} />
-      {/* Protected routes with MainLayout */}
-      <Route path="/:rest*">
-        {() => (
-          <MainLayout userRole="admin">
-            <Switch>
-              <Route path={"/"} component={Dashboard} />
-              <Route path={"/machines"} component={Machines} />
-              <Route path={"/machines/:id"} component={MachineDetail} />
-              <Route path={"/inventory"} component={Inventory} />
-              <Route path={"/tasks"} component={Tasks} />
-              <Route path={"/users"} component={Users} />
-              <Route path={"/access-requests"} component={AccessRequests} />
-              <Route path={"/digest-settings"} component={DigestSettings} />
-              <Route path={"/notification-preferences"} component={NotificationPreferences} />
-              <Route path={"/admin/transfers"} component={AdminTransfers} />
-              <Route path={"/inventory/transfer-history"} component={TransferHistory} />
-              <Route path={"/admin/ai-agents"} component={AdminAiAgents} />
-              <Route path={"/master-data"} component={MasterData} />
-              <Route path={"/components/:id"} component={ComponentLifecycle} />
-              <Route path={"/reports"} component={Reports} />
-              <Route component={NotFound} />
-            </Switch>
-          </MainLayout>
-        )}
-      </Route>
-    </Switch>
+    <>
+      <CommandPalette />
+      <VendHubLayout>
+      <Switch>
+        <Route path="/" component={DashboardPage} />
+        <Route path="/machines" component={MachinesPage} />
+        <Route path="/tasks" component={TasksPage} />
+        <Route path="/locations" component={LocationsPage} />
+        <Route path="/inventory" component={InventoryPage} />
+        <Route path="/products" component={ProductsPage} />
+        <Route path="/recipes" component={RecipesPage} />
+        <Route path="/transactions" component={TransactionsPage} />
+        <Route path="/counterparties" component={CounterpartiesPage} />
+        <Route path="/contracts" component={ContractsPage} />
+        <Route path="/analytics" component={AnalyticsPage} />
+        <Route path="/reports" component={ReportsPage} />
+        <Route path="/incidents" component={IncidentsPage} />
+        <Route path="/users" component={UsersPage} />
+        <Route path="/access-requests" component={AccessRequestsPage} />
+        <Route path="/settings" component={SettingsPage} />
+        <Route path="/help" component={HelpPage} />
+      </Switch>
+    </VendHubLayout>
+    </>
   );
 }
 
 function App() {
   return (
     <ErrorBoundary>
-      <ThemeProvider
-        defaultTheme="light"
-      >
+      <ThemeProvider defaultTheme="light">
         <TooltipProvider>
-          <Toaster />
           <Router />
         </TooltipProvider>
       </ThemeProvider>
