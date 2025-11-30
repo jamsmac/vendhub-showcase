@@ -38,6 +38,37 @@ export const appRouter = router({
     list: publicProcedure.query(async () => {
       return await db.getAllProducts();
     }),
+    getById: publicProcedure
+      .input(z.object({ id: z.number() }))
+      .query(async ({ input }) => {
+        return await db.getProductById(input.id);
+      }),
+    create: protectedProcedure
+      .input(z.object({
+        name: z.string().min(1),
+        category: z.string(),
+        unit: z.string().optional(),
+        price: z.number().min(0),
+        sku: z.string().optional(),
+        description: z.string().optional(),
+      }))
+      .mutation(async ({ input }) => {
+        return await db.createProduct(input);
+      }),
+    update: protectedProcedure
+      .input(z.object({
+        id: z.number(),
+        name: z.string().optional(),
+        category: z.string().optional(),
+        unit: z.string().optional(),
+        price: z.number().optional(),
+        sku: z.string().optional(),
+        description: z.string().optional(),
+      }))
+      .mutation(async ({ input }) => {
+        const { id, ...data } = input;
+        return await db.updateProduct(id, data);
+      }),
   }),
 
   inventory: router({
@@ -103,10 +134,45 @@ export const appRouter = router({
     list: publicProcedure.query(async () => {
       return await db.getAllTasks();
     }),
+    getById: publicProcedure
+      .input(z.object({ id: z.number() }))
+      .query(async ({ input }) => {
+        return await db.getTaskById(input.id);
+      }),
     byStatus: publicProcedure
       .input(z.object({ status: z.enum(["pending", "in_progress", "completed", "rejected"]) }))
       .query(async ({ input }) => {
         return await db.getTasksByStatus(input.status);
+      }),
+    create: protectedProcedure
+      .input(z.object({
+        title: z.string().min(1),
+        description: z.string().optional(),
+        machineId: z.number().optional(),
+        type: z.string(),
+        priority: z.string(),
+        status: z.string(),
+        assignedTo: z.number().optional(),
+        dueDate: z.date().optional(),
+      }))
+      .mutation(async ({ input }) => {
+        return await db.createTask(input);
+      }),
+    update: protectedProcedure
+      .input(z.object({
+        id: z.number(),
+        title: z.string().optional(),
+        description: z.string().optional(),
+        machineId: z.number().optional(),
+        type: z.string().optional(),
+        priority: z.string().optional(),
+        status: z.string().optional(),
+        assignedTo: z.number().optional(),
+        dueDate: z.date().optional(),
+      }))
+      .mutation(async ({ input }) => {
+        const { id, ...data } = input;
+        return await db.updateTask(id, data);
       }),
   }),
 
@@ -152,6 +218,47 @@ export const appRouter = router({
     list: publicProcedure.query(async () => {
       return await db.getAllSuppliers();
     }),
+    getById: publicProcedure
+      .input(z.object({ id: z.number() }))
+      .query(async ({ input }) => {
+        return await db.getSupplierById(input.id);
+      }),
+    create: protectedProcedure
+      .input(z.object({
+        name: z.string().min(1),
+        type: z.string(),
+        contactPerson: z.string().optional(),
+        email: z.string().email().optional(),
+        phone: z.string().optional(),
+        address: z.string().optional(),
+        city: z.string().optional(),
+        country: z.string().optional(),
+        taxId: z.string().optional(),
+        bankAccount: z.string().optional(),
+        notes: z.string().optional(),
+      }))
+      .mutation(async ({ input }) => {
+        return await db.createSupplier(input);
+      }),
+    update: protectedProcedure
+      .input(z.object({
+        id: z.number(),
+        name: z.string().optional(),
+        type: z.string().optional(),
+        contactPerson: z.string().optional(),
+        email: z.string().optional(),
+        phone: z.string().optional(),
+        address: z.string().optional(),
+        city: z.string().optional(),
+        country: z.string().optional(),
+        taxId: z.string().optional(),
+        bankAccount: z.string().optional(),
+        notes: z.string().optional(),
+      }))
+      .mutation(async ({ input }) => {
+        const { id, ...data } = input;
+        return await db.updateSupplier(id, data);
+      }),
   }),
 
   telegram: telegramRouter,

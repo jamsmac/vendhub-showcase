@@ -38,8 +38,10 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Plus, Search, Edit2, Trash2, MoreHorizontal, ArrowLeft, Download } from 'lucide-react';
+import { Plus, Search, Edit2, Trash2, MoreHorizontal, ArrowLeft, Download, Upload } from 'lucide-react';
 import { toast } from 'sonner';
+import { DictionaryImportModal } from '@/components/DictionaryImportModal';
+import { DictionaryExportModal } from '@/components/DictionaryExportModal';
 
 interface DictionaryItem {
   id: number;
@@ -65,6 +67,8 @@ export function DictionaryItems() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<DictionaryItem | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isImportModalOpen, setIsImportModalOpen] = useState(false);
+  const [isExportModalOpen, setIsExportModalOpen] = useState(false);
 
   useEffect(() => {
     // TODO: Load items from tRPC API
@@ -207,7 +211,20 @@ export function DictionaryItems() {
           </DialogContent>
         </Dialog>
 
-        <Button variant="outline" className="border-white/10 text-white hover:bg-white/5">
+        <Button 
+          variant="outline" 
+          className="border-white/10 text-white hover:bg-white/5"
+          onClick={() => setIsImportModalOpen(true)}
+        >
+          <Upload className="w-4 h-4 mr-2" />
+          Импорт
+        </Button>
+
+        <Button 
+          variant="outline" 
+          className="border-white/10 text-white hover:bg-white/5"
+          onClick={() => setIsExportModalOpen(true)}
+        >
           <Download className="w-4 h-4 mr-2" />
           Экспорт
         </Button>
@@ -348,6 +365,25 @@ export function DictionaryItems() {
           )}
         </CardContent>
       </Card>
+      {/* Import Modal */}
+      <DictionaryImportModal
+        dictionaryCode={code || ''}
+        isOpen={isImportModalOpen}
+        onClose={() => setIsImportModalOpen(false)}
+        onSuccess={() => {
+          setIsImportModalOpen(false);
+          toast.success('Данные успешно импортированы');
+          // Reload items
+        }}
+      />
+
+      {/* Export Modal */}
+      <DictionaryExportModal
+        dictionaryCode={code || ''}
+        items={items}
+        isOpen={isExportModalOpen}
+        onClose={() => setIsExportModalOpen(false)}
+      />
     </div>
   );
 }

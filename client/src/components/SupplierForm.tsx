@@ -20,6 +20,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { useDictionaryOptions } from "@/hooks/useDictionaries";
 import { trpc } from "@/lib/trpc";
+import { AiAgentSuggestions } from "./AiAgentSuggestions";
 
 interface SupplierFormProps {
   supplierId?: number;
@@ -43,13 +44,26 @@ export function SupplierForm({ supplierId, onSuccess, onCancel }: SupplierFormPr
   });
 
   const [showDetails, setShowDetails] = useState(false);
+  const [showAiSuggestions, setShowAiSuggestions] = useState(false);
+  const [aiAgentId, setAiAgentId] = useState<number | null>(null);
 
   // Get dictionary options for supplier types
   const supplierTypeOptions = useDictionaryOptions('counterparty_types');
 
-  // Mock mutations - replace with actual tRPC calls
-  const createMutation = { mutateAsync: async (data: any) => {}, isPending: false };
-  const updateMutation = { mutateAsync: async (data: any) => {}, isPending: false };
+  // Get or create AI agent for suppliers
+  const { data: supplierAgent } = trpc.aiAgents.getByType.useQuery(
+    { referenceBookType: "suppliers" }
+  );
+
+  React.useEffect(() => {
+    if (supplierAgent) {
+      setAiAgentId((supplierAgent as any).id);
+    }
+  }, [supplierAgent]);
+
+  // Use real tRPC endpoints
+  const createMutation = trpc.suppliers.create.useMutation();
+  const updateMutation = trpc.suppliers.update.useMutation();
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -64,6 +78,15 @@ export function SupplierForm({ supplierId, onSuccess, onCancel }: SupplierFormPr
       ...prev,
       [name]: value,
     }));
+  };
+
+  const handleAiSuggestionsApplied = (suggestions: Record<string, any>) => {
+    setFormData((prev) => ({
+      ...prev,
+      ...suggestions,
+    }));
+    setShowAiSuggestions(false);
+    toast.success("AI suggestions applied to form");
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -85,13 +108,13 @@ export function SupplierForm({ supplierId, onSuccess, onCancel }: SupplierFormPr
 
     try {
       if (supplierId) {
-        // await updateMutation.mutateAsync({
-        //   id: supplierId,
-        //   ...formData,
-        // });
+        await updateMutation.mutateAsync({
+          id: supplierId,
+          ...formData,
+        });
         toast.success("Supplier updated successfully");
       } else {
-        // await createMutation.mutateAsync(formData);
+        await createMutation.mutateAsync(formData);
         toast.success("Supplier created successfully");
       }
 

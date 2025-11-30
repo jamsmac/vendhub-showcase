@@ -52,10 +52,9 @@ export function ProductForm({ productId, onSuccess, onCancel }: ProductFormProps
     }
   }, [productAgent]);
 
-  // Note: Products create/update endpoints need to be added to routers.ts
-  // For now, using mock mutations
-  const createMutation = { mutateAsync: async (data: any) => {}, isPending: false };
-  const updateMutation = { mutateAsync: async (data: any) => {}, isPending: false };
+  // Use real tRPC endpoints
+  const createMutation = trpc.products.create.useMutation();
+  const updateMutation = trpc.products.update.useMutation();
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -78,18 +77,23 @@ export function ProductForm({ productId, onSuccess, onCancel }: ProductFormProps
     e.preventDefault();
 
     try {
+      const productData = {
+        name: formData.name,
+        category: formData.category,
+        unit: formData.unit || undefined,
+        price: parseFloat(formData.price) || 0,
+        sku: formData.sku || undefined,
+        description: formData.description || undefined,
+      };
+
       if (productId) {
-        // await updateMutation.mutateAsync({
-        //   id: productId,
-        //   ...formData,
-        //   price: parseFloat(formData.price) || 0,
-        // });
+        await updateMutation.mutateAsync({
+          id: productId,
+          ...productData,
+        });
         toast.success("Product updated successfully");
       } else {
-        // await createMutation.mutateAsync({
-        //   ...formData,
-        //   price: parseFloat(formData.price) || 0,
-        // });
+        await createMutation.mutateAsync(productData);
         toast.success("Product created successfully");
       }
 

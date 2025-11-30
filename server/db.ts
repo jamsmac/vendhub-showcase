@@ -131,6 +131,66 @@ export async function getAllProducts() {
   return await db.select().from(products).orderBy(desc(products.createdAt));
 }
 
+export async function createProduct(data: {
+  name: string;
+  category: string;
+  unit?: string;
+  price: number;
+  sku?: string;
+  description?: string;
+}) {
+  const db = await getDb();
+  if (!db) throw new Error('Database not available');
+  
+  const result = await db.insert(products).values({
+    name: data.name,
+    category: data.category,
+    unit: data.unit || null,
+    price: data.price,
+    sku: data.sku || null,
+    description: data.description || null,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  });
+  
+  return result;
+}
+
+export async function updateProduct(id: number, data: {
+  name?: string;
+  category?: string;
+  unit?: string;
+  price?: number;
+  sku?: string;
+  description?: string;
+}) {
+  const db = await getDb();
+  if (!db) throw new Error('Database not available');
+  
+  const updateData: Record<string, any> = {
+    updatedAt: new Date(),
+  };
+  
+  if (data.name !== undefined) updateData.name = data.name;
+  if (data.category !== undefined) updateData.category = data.category;
+  if (data.unit !== undefined) updateData.unit = data.unit;
+  if (data.price !== undefined) updateData.price = data.price;
+  if (data.sku !== undefined) updateData.sku = data.sku;
+  if (data.description !== undefined) updateData.description = data.description;
+  
+  const result = await db.update(products).set(updateData).where(eq(products.id, id));
+  
+  return result;
+}
+
+export async function getProductById(id: number) {
+  const db = await getDb();
+  if (!db) return null;
+  
+  const result = await db.select().from(products).where(eq(products.id, id)).limit(1);
+  return result[0] || null;
+}
+
 // Inventory
 export async function getInventoryByLevel(
   level?: "warehouse" | "operator" | "machine",
@@ -188,6 +248,74 @@ export async function getTasksByStatus(status: "pending" | "in_progress" | "comp
   const db = await getDb();
   if (!db) return [];
   return await db.select().from(tasks).where(eq(tasks.status, status)).orderBy(desc(tasks.createdAt));
+}
+
+export async function createTask(data: {
+  title: string;
+  description?: string;
+  machineId?: number;
+  type: string;
+  priority: string;
+  status: string;
+  assignedTo?: number;
+  dueDate?: Date;
+}) {
+  const db = await getDb();
+  if (!db) throw new Error('Database not available');
+  
+  const result = await db.insert(tasks).values({
+    title: data.title,
+    description: data.description || null,
+    machineId: data.machineId || null,
+    type: data.type,
+    priority: data.priority,
+    status: data.status,
+    assignedTo: data.assignedTo || null,
+    dueDate: data.dueDate || null,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  });
+  
+  return result;
+}
+
+export async function updateTask(id: number, data: {
+  title?: string;
+  description?: string;
+  machineId?: number;
+  type?: string;
+  priority?: string;
+  status?: string;
+  assignedTo?: number;
+  dueDate?: Date;
+}) {
+  const db = await getDb();
+  if (!db) throw new Error('Database not available');
+  
+  const updateData: Record<string, any> = {
+    updatedAt: new Date(),
+  };
+  
+  if (data.title !== undefined) updateData.title = data.title;
+  if (data.description !== undefined) updateData.description = data.description;
+  if (data.machineId !== undefined) updateData.machineId = data.machineId;
+  if (data.type !== undefined) updateData.type = data.type;
+  if (data.priority !== undefined) updateData.priority = data.priority;
+  if (data.status !== undefined) updateData.status = data.status;
+  if (data.assignedTo !== undefined) updateData.assignedTo = data.assignedTo;
+  if (data.dueDate !== undefined) updateData.dueDate = data.dueDate;
+  
+  const result = await db.update(tasks).set(updateData).where(eq(tasks.id, id));
+  
+  return result;
+}
+
+export async function getTaskById(id: number) {
+  const db = await getDb();
+  if (!db) return null;
+  
+  const result = await db.select().from(tasks).where(eq(tasks.id, id)).limit(1);
+  return result[0] || null;
 }
 
 // Components
@@ -276,6 +404,86 @@ export async function getAllSuppliers() {
   const db = await getDb();
   if (!db) return [];
   return await db.select().from(suppliers).orderBy(desc(suppliers.createdAt));
+}
+
+export async function createSupplier(data: {
+  name: string;
+  type: string;
+  contactPerson?: string;
+  email?: string;
+  phone?: string;
+  address?: string;
+  city?: string;
+  country?: string;
+  taxId?: string;
+  bankAccount?: string;
+  notes?: string;
+}) {
+  const db = await getDb();
+  if (!db) throw new Error('Database not available');
+  
+  const result = await db.insert(suppliers).values({
+    name: data.name,
+    type: data.type,
+    contactPerson: data.contactPerson || null,
+    email: data.email || null,
+    phone: data.phone || null,
+    address: data.address || null,
+    city: data.city || null,
+    country: data.country || null,
+    taxId: data.taxId || null,
+    bankAccount: data.bankAccount || null,
+    notes: data.notes || null,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  });
+  
+  return result;
+}
+
+export async function updateSupplier(id: number, data: {
+  name?: string;
+  type?: string;
+  contactPerson?: string;
+  email?: string;
+  phone?: string;
+  address?: string;
+  city?: string;
+  country?: string;
+  taxId?: string;
+  bankAccount?: string;
+  notes?: string;
+}) {
+  const db = await getDb();
+  if (!db) throw new Error('Database not available');
+  
+  const updateData: Record<string, any> = {
+    updatedAt: new Date(),
+  };
+  
+  if (data.name !== undefined) updateData.name = data.name;
+  if (data.type !== undefined) updateData.type = data.type;
+  if (data.contactPerson !== undefined) updateData.contactPerson = data.contactPerson;
+  if (data.email !== undefined) updateData.email = data.email;
+  if (data.phone !== undefined) updateData.phone = data.phone;
+  if (data.address !== undefined) updateData.address = data.address;
+  if (data.city !== undefined) updateData.city = data.city;
+  if (data.country !== undefined) updateData.country = data.country;
+  if (data.taxId !== undefined) updateData.taxId = data.taxId;
+  if (data.bankAccount !== undefined) updateData.bankAccount = data.bankAccount;
+  if (data.notes !== undefined) updateData.notes = data.notes;
+  
+  const result = await db.update(suppliers).set(updateData).where(eq(suppliers.id, id));
+  
+  return result;
+}
+
+export async function getSupplierById(id: number) {
+  const db = await getDb();
+  if (!db) return null;
+  
+  const result = await db.select().from(suppliers).where(eq(suppliers.id, id)).limit(1);
+  return result[0] || null;
 }
 
 // Stock Transfers

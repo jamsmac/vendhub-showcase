@@ -248,20 +248,49 @@ export function Tasks() {
   const inProgressTasks = filteredTasks.filter((t: Task) => t.status === "in-progress");
   const completedTasks = filteredTasks.filter((t: Task) => t.status === "completed");
 
-  const handleCreateTask = () => {
+  // Use tRPC mutations
+  const createTaskMutation = trpc.tasks.create.useMutation();
+  const updateTaskMutation = trpc.tasks.update.useMutation();
+
+  const handleCreateTask = async () => {
     if (!newTask.title) {
       toast.error("Please enter task title");
       return;
     }
-    toast.success("Задача создана успешно!");
-    setIsCreateDialogOpen(false);
-    setNewTask({
-      title: "",
-      description: "",
-      type: "refill",
-      priority: "medium",
-      assignee: "",
-    });
+    try {
+      await createTaskMutation.mutateAsync({
+        title: newTask.title,
+        description: newTask.description || undefined,
+        type: newTask.type,
+        priority: newTask.priority,
+        status: "pending",
+      });
+      toast.success("Задача создана успешно!");
+      setIsCreateDialogOpen(false);
+      setNewTask({
+        title: "",
+        description: "",
+        type: "refill",
+        priority: "medium",
+        assignee: "",
+      });
+    } catch (error) {
+      toast.error("Failed to create task");
+      console.error(error);
+    }
+  };
+
+  const handleUpdateTaskStatus = async (taskId: number, newStatus: string) => {
+    try {
+      await updateTaskMutation.mutateAsync({
+        id: taskId,
+        status: newStatus,
+      });
+      toast.success("Task status updated");
+    } catch (error) {
+      toast.error("Failed to update task");
+      console.error(error);
+    }
   };
 
   return (
