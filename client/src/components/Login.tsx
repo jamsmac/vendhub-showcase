@@ -4,20 +4,22 @@ import { Input } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';
 import { toast } from 'sonner';
 import { Mail, Lock, Briefcase, Eye, EyeOff } from 'lucide-react';
+import { trpc } from '@/lib/trpc';
 
 interface LoginProps {
-  onLoginSuccess?: () => void;
+  onLoginSuccess?: (user: any) => void;
   onSwitchToRegister?: () => void;
 }
 
 export default function Login({ onLoginSuccess, onSwitchToRegister }: LoginProps) {
-  const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
     email: '',
     password: '',
     rememberMe: false,
   });
+
+  const loginMutation = trpc.auth.login.useMutation();
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = e.target;
@@ -44,23 +46,25 @@ export default function Login({ onLoginSuccess, onSwitchToRegister }: LoginProps
     
     if (!validateForm()) return;
 
-    setIsLoading(true);
     try {
-      // TODO: Connect to tRPC endpoint for login
-      // const result = await trpc.auth.login.mutate({
-      //   email: formData.email,
-      //   password: formData.password,
-      // });
+      const result = await loginMutation.mutateAsync({
+        email: formData.email,
+        password: formData.password,
+      });
 
-      toast.success('Вход выполнен успешно!');
-      onLoginSuccess?.();
-    } catch (error) {
-      toast.error('Неверный email или пароль');
+      if (result.success) {
+        toast.success('Вход выполнен успешно!');
+        localStorage.setItem('authToken', result.token);
+        onLoginSuccess?.(result.user);
+      }
+    } catch (error: any) {
+      const message = error?.message || 'Неверный email или пароль';
+      toast.error(message);
       console.error(error);
-    } finally {
-      setIsLoading(false);
     }
   };
+
+  const isLoading = loginMutation.isPending;
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 p-4">

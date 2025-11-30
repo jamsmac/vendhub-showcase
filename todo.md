@@ -1198,3 +1198,85 @@ All tasks completed:
 - [x] Test with no filters (all time, all types)
 - [x] Verify calculations are correct
 - [x] Check mobile responsiveness
+
+
+## Authentication & Authorization Implementation (NEW)
+
+### Database & Schema
+- [x] Add sessions table for session management
+- [x] Add passwordRecovery table for password reset tokens
+- [x] Fix schema imports and unique index syntax
+
+### Password & Token Services
+- [x] Enhance PasswordService with bcrypt hashing
+- [x] Add password strength validation
+- [x] Add temporary password generation
+- [x] Create TokenService for JWT generation
+- [x] Implement token verification and expiration
+
+### Database Functions
+- [x] Create db-auth.ts with user CRUD operations
+- [x] Implement session management functions
+- [x] Implement password recovery token functions
+- [x] Add last signed-in timestamp tracking
+
+### Auth Endpoints (tRPC)
+- [x] Create auth router with register endpoint
+- [x] Implement login endpoint with token generation
+- [x] Add changePassword endpoint
+- [x] Add updateProfile endpoint
+- [x] Add logout endpoint
+- [x] Integrate with database and services
+
+### Login/Register UI
+- [x] Update Login component with tRPC integration
+- [x] Create Register component with password strength indicator
+- [x] Create AuthPage with toggle between login/register
+- [x] Add smooth transitions and validation feedback
+
+### Password Recovery
+- [x] Create passwordRecovery router with request/reset endpoints
+- [x] Implement token verification
+- [x] Add email resend functionality
+- [x] Create PasswordRecovery UI component with multi-step flow
+
+### RBAC (Role-Based Access Control)
+- [x] Create RBAC middleware with permission definitions
+- [x] Implement role hierarchy (user < operator < manager < admin)
+- [x] Add permission checking utilities
+- [x] Create tRPC RBAC middleware (requirePermission, requireRole, etc.)
+
+### Page-Level Access Control
+- [x] Create ProtectedRoute component
+- [x] Implement RoleBasedRender component
+- [x] Implement PermissionBasedRender component
+- [x] Create AccessDeniedPage
+- [x] Create useAuth hook for easy auth state access
+- [x] Create usePermission and useCanPerform hooks
+
+### Row-Level Security (RLS)
+- [x] Create RLS utilities for data filtering
+- [x] Implement resource-based filtering by role
+- [x] Add ownership-based access control
+- [x] Create RLS middleware for tRPC
+
+### Email Integration (TODO)
+- [ ] Set up email service (SendGrid, Mailgun, etc.)
+- [ ] Create email templates for password reset
+- [ ] Create email templates for account verification
+- [ ] Implement email sending in password recovery flow
+- [ ] Implement email sending in registration flow
+
+### Two-Factor Authentication (TODO)
+- [ ] Implement 2FA setup endpoint
+- [ ] Create 2FA verification during login
+- [ ] Add TOTP/SMS options
+- [ ] Create 2FA management UI
+
+### Testing (TODO)
+- [ ] Write vitest tests for auth endpoints
+- [ ] Test password hashing and verification
+- [ ] Test token generation and validation
+- [ ] Test RBAC middleware
+- [ ] Test RLS filtering
+- [ ] Integration tests for login/register flow

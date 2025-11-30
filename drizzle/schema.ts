@@ -1,4 +1,4 @@
-import { mysqlTable, mysqlSchema, AnyMySqlColumn, int, mysqlEnum, varchar, text, timestamp, index, boolean, decimal } from "drizzle-orm/mysql-core";
+import { mysqlTable, mysqlSchema, AnyMySqlColumn, int, mysqlEnum, varchar, text, timestamp, index, uniqueIndex, boolean, decimal } from "drizzle-orm/mysql-core";
 import { sql } from "drizzle-orm";
 
 export const accessRequestAuditLogs = mysqlTable("accessRequestAuditLogs", {
@@ -385,11 +385,11 @@ export const dictionaryItems = mysqlTable("dictionaryItems", {
 	updatedBy: int(),
 	createdAt: timestamp({ mode: 'string' }).default(sql`CURRENT_TIMESTAMP`).notNull(),
 	updatedAt: timestamp({ mode: 'string' }).default(sql`CURRENT_TIMESTAMP`).onUpdateNow().notNull(),
-}, (table) => [
-	index("dictionaryItems_dictionaryCode_code_unique").on(table.dictionaryCode, table.code).unique(),
-	index("dictionaryItems_dictionaryCode").on(table.dictionaryCode),
-	index("dictionaryItems_is_active").on(table.is_active),
-]);
+	}, (table) => [
+		uniqueIndex("dictionaryItems_dictionaryCode_code_unique").on(table.dictionaryCode, table.code),
+		index("dictionaryItems_dictionaryCode").on(table.dictionaryCode),
+		index("dictionaryItems_is_active").on(table.is_active),
+	]);
 
 export type DictionaryItem = typeof dictionaryItems.$inferSelect;
 export type InsertDictionaryItem = typeof dictionaryItems.$inferInsert;
@@ -442,3 +442,37 @@ export type InsertBatchTransaction = typeof batchTransactions.$inferInsert;
 
 export type UndoRedoStack = typeof undoRedoStack.$inferSelect;
 export type InsertUndoRedoStack = typeof undoRedoStack.$inferInsert;
+
+
+export const sessions = mysqlTable("sessions", {
+	id: int().autoincrement().notNull(),
+	userId: int().notNull(),
+	token: varchar({ length: 500 }).notNull(),
+	expiresAt: timestamp({ mode: 'string' }).notNull(),
+	createdAt: timestamp({ mode: 'string' }).default('CURRENT_TIMESTAMP').notNull(),
+	ipAddress: varchar({ length: 45 }),
+	userAgent: text(),
+},
+(table) => [
+	index("sessions_userId_index").on(table.userId),
+	index("sessions_token_unique").on(table.token),
+]);
+
+export const passwordRecovery = mysqlTable("passwordRecovery", {
+	id: int().autoincrement().notNull(),
+	userId: int().notNull(),
+	token: varchar({ length: 500 }).notNull(),
+	expiresAt: timestamp({ mode: 'string' }).notNull(),
+	usedAt: timestamp({ mode: 'string' }),
+	createdAt: timestamp({ mode: 'string' }).default('CURRENT_TIMESTAMP').notNull(),
+},
+(table) => [
+	index("passwordRecovery_userId_index").on(table.userId),
+	index("passwordRecovery_token_unique").on(table.token),
+]);
+
+export type Session = typeof sessions.$inferSelect;
+export type InsertSession = typeof sessions.$inferInsert;
+
+export type PasswordRecovery = typeof passwordRecovery.$inferSelect;
+export type InsertPasswordRecovery = typeof passwordRecovery.$inferInsert;

@@ -7,21 +7,13 @@ import * as db from "./db";
 import { telegramRouter } from "./telegram-router";
 import { notificationsRouter } from "./routers/notifications";
 import { aiAgentsRouter } from "./routers/aiAgents";
+import { authRouter } from "./routers/auth";
 import { sendEmail, getAccessRequestApprovedEmail, getAccessRequestRejectedEmail } from "./email";
 
 export const appRouter = router({
     // if you need to use socket.io, read and register route in server/_core/index.ts, all api should start with '/api/' so that the gateway can route correctly
   system: systemRouter,
-  auth: router({
-    me: publicProcedure.query(opts => opts.ctx.user),
-    logout: publicProcedure.mutation(({ ctx }) => {
-      const cookieOptions = getSessionCookieOptions(ctx.req);
-      ctx.res.clearCookie(COOKIE_NAME, { ...cookieOptions, maxAge: -1 });
-      return {
-        success: true,
-      } as const;
-    }),
-  }),
+  auth: authRouter,
 
   machines: router({
     list: publicProcedure.query(async () => {
