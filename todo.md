@@ -1339,3 +1339,80 @@ All tasks completed:
 - CSV export for users and audit logs
 - Two-step confirmation for critical actions
 - Audit trail for all administrative actions
+
+
+## Comprehensive Activity Logging System (NEW)
+
+### Database Schema
+- [x] Create activityLogs table with full tracking (action, resource, method, status, IP, user agent, duration, etc.)
+- [x] Create loginAttempts table for tracking login attempts with failure reasons and lockout
+- [x] Create suspiciousActivities table for flagging and reviewing suspicious behavior
+- [x] Create apiRateLimits table for rate limiting and tracking
+- [x] Create dataAccessLogs table for sensitive data access tracking
+- [x] Add comprehensive indexes for efficient querying
+
+### Activity Logging Service (activityLogger.ts)
+- [x] Implement extractIpAddress function with proxy support (X-Forwarded-For, CF-Connecting-IP, etc.)
+- [x] Implement extractUserAgent and extractReferer functions
+- [x] Create logActivity function with request body sanitization
+- [x] Create logLoginAttempt function with automatic lockout after 5 failed attempts
+- [x] Create flagSuspiciousActivity function for security alerts
+- [x] Create logDataAccess function for sensitive data tracking
+- [x] Create checkRateLimit function with automatic flagging
+- [x] Implement getActivityLogs with filtering and pagination
+- [x] Implement getSuspiciousActivities with filtering
+
+### tRPC Middleware
+- [x] Create activityLoggingMiddleware for automatic API call logging
+- [x] Implement request/response tracking with timing
+- [x] Add rate limiting headers to responses
+- [x] Create resourceAccessMiddleware for tracking resource access
+- [x] Create sensitiveDataAccessMiddleware for sensitive operations
+
+### Login/Logout Tracking (activityTracking.ts)
+- [x] Create logLoginAttempt endpoint for recording login attempts
+- [x] Create logLogout endpoint for tracking logouts
+- [x] Create getActivityLogs endpoint (admin only)
+- [x] Create getSuspiciousActivities endpoint (admin only)
+- [x] Create getMyActivityLogs endpoint for user's own logs
+- [x] Create getMyLoginHistory endpoint for login history
+- [x] Create getActiveSessions endpoint for viewing active sessions
+- [x] Create exportActivityLogs endpoint for CSV export
+- [x] Create getActivityStatistics endpoint for analytics
+
+### Data Access Logging (dataAccessLogger.ts)
+- [x] Create logSensitiveDataAccess function
+- [x] Define SENSITIVE_DATA_TYPES constants
+- [x] Create createDataAccessLogger middleware factory
+- [x] Implement specialized loggers for each data type (users, financial, audit, roles, config, API keys, locations, inventory)
+
+### Frontend Components
+- [x] Create ActivityLogViewer component with filtering and search
+- [x] Add action, status, and IP address filters
+- [x] Implement pagination and CSV export
+- [x] Create SecurityDashboard component with metrics and suspicious activity detection
+- [x] Add tabs for suspicious activities, top IPs, and top endpoints
+- [x] Implement activity statistics visualization
+
+### Admin Security Page (AdminSecurity.tsx)
+- [x] Create comprehensive security monitoring page
+- [x] Add Security Dashboard tab with key metrics
+- [x] Add Activity Log tab with advanced filtering
+- [x] Add Sessions tab with session management info
+- [x] Add Guide tab with security best practices
+- [x] Protect page with admin-only access
+
+### Features Implemented
+- Comprehensive activity logging for all user actions
+- Login attempt tracking with automatic account lockout
+- API call logging with performance metrics
+- Sensitive data access tracking
+- Suspicious activity detection and flagging
+- Rate limiting with automatic alerts
+- IP address extraction with proxy support
+- Request body sanitization for security
+- Activity statistics and analytics
+- CSV export for compliance and auditing
+- Security dashboard with real-time metrics
+- Session management and monitoring
+- Best practices guide for administrators

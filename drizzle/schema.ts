@@ -481,3 +481,166 @@ export type InsertSession = typeof sessions.$inferInsert;
 
 export type PasswordRecovery = typeof passwordRecovery.$inferSelect;
 export type InsertPasswordRecovery = typeof passwordRecovery.$inferInsert;
+
+
+/**
+ * Activity Logs - Track all user actions for security and compliance
+ */
+export const activityLogs = mysqlTable(
+	"activityLogs",
+	{
+		id: int().autoincrement().notNull(),
+		userId: int(),
+		action: varchar({ length: 50 }).notNull(), // 'login', 'logout', 'api_call', 'data_access', 'role_change', etc.
+		resource: varchar({ length: 100 }), // What was accessed (e.g., 'users', 'machines', 'inventory')
+		resourceId: int(), // ID of the resource being accessed
+		method: varchar({ length: 20 }), // HTTP method: GET, POST, PUT, DELETE
+		endpoint: varchar({ length: 255 }), // API endpoint or page path
+		status: varchar({ length: 20 }), // 'success', 'failure', 'unauthorized', 'forbidden'
+		statusCode: int(), // HTTP status code
+		ipAddress: varchar({ length: 45 }), // IPv4 or IPv6 address
+		userAgent: text(), // Browser/client information
+		referer: varchar({ length: 255 }), // HTTP referer
+		requestBody: text(), // Sanitized request body (exclude passwords)
+		responseSize: int(), // Size of response in bytes
+		duration: int(), // Request duration in milliseconds
+		errorMessage: text(), // Error message if action failed
+		metadata: text(), // Additional metadata as JSON
+		createdAt: timestamp({ mode: 'string' }).default('CURRENT_TIMESTAMP').notNull(),
+	},
+	(table) => [
+		index("activityLogs_userId_index").on(table.userId),
+		index("activityLogs_action_index").on(table.action),
+		index("activityLogs_createdAt_index").on(table.createdAt),
+		index("activityLogs_ipAddress_index").on(table.ipAddress),
+		index("activityLogs_endpoint_index").on(table.endpoint),
+		index("activityLogs_resource_index").on(table.resource),
+	]
+);
+
+/**
+ * Login Attempts - Track all login attempts for security monitoring
+ */
+export const loginAttempts = mysqlTable(
+	"loginAttempts",
+	{
+		id: int().autoincrement().notNull(),
+		userId: int(),
+		email: varchar({ length: 320 }),
+		ipAddress: varchar({ length: 45 }).notNull(),
+		userAgent: text(),
+		status: mysqlEnum(['success', 'failed', 'locked']).notNull(),
+		failureReason: varchar({ length: 255 }), // 'invalid_password', 'user_not_found', 'account_suspended', etc.
+		attemptNumber: int().default(1), // Number of failed attempts from this IP
+		lockoutUntil: timestamp({ mode: 'string' }), // When the account/IP is locked until
+		createdAt: timestamp({ mode: 'string' }).default('CURRENT_TIMESTAMP').notNull(),
+	},
+	(table) => [
+		index("loginAttempts_userId_index").on(table.userId),
+		index("loginAttempts_ipAddress_index").on(table.ipAddress),
+		index("loginAttempts_createdAt_index").on(table.createdAt),
+		index("loginAttempts_email_index").on(table.email),
+	]
+);
+
+/**
+ * Suspicious Activities - Flagged activities for security review
+ */
+export const suspiciousActivities = mysqlTable(
+	"suspiciousActivities",
+	{
+		id: int().autoincrement().notNull(),
+		activityLogId: int(),
+		userId: int(),
+		activityType: mysqlEnum([
+			'multiple_failed_logins',
+			'unusual_location',
+			'unusual_time',
+			'bulk_data_access',
+			'permission_escalation_attempt',
+			'api_rate_limit_exceeded',
+			'unauthorized_access_attempt',
+			'data_export',
+			'mass_user_modification',
+		]).notNull(),
+		severity: mysqlEnum(['low', 'medium', 'high', 'critical']).notNull(),
+		description: text().notNull(),
+		ipAddress: varchar({ length: 45 }),
+		reviewed: boolean().default(false).notNull(),
+		reviewedBy: int(),
+		reviewedAt: timestamp({ mode: 'string' }),
+		reviewNotes: text(),
+		action: mysqlEnum(['none', 'warning', 'suspend', 'investigate']).default('none').notNull(),
+		createdAt: timestamp({ mode: 'string' }).default('CURRENT_TIMESTAMP').notNull(),
+	},
+	(table) => [
+		index("suspiciousActivities_userId_index").on(table.userId),
+		index("suspiciousActivities_severity_index").on(table.severity),
+		index("suspiciousActivities_reviewed_index").on(table.reviewed),
+		index("suspiciousActivities_createdAt_index").on(table.createdAt),
+	]
+);
+
+/**
+ * API Rate Limits - Track API usage for rate limiting
+ */
+export const apiRateLimits = mysqlTable(
+	"apiRateLimits",
+	{
+		id: int().autoincrement().notNull(),
+		userId: int(),
+		ipAddress: varchar({ length: 45 }).notNull(),
+		endpoint: varchar({ length: 255 }).notNull(),
+		requestCount: int().default(1).notNull(),
+		windowStart: timestamp({ mode: 'string' }).notNull(),
+		windowEnd: timestamp({ mode: 'string' }).notNull(),
+		limitExceeded: boolean().default(false).notNull(),
+		createdAt: timestamp({ mode: 'string' }).default('CURRENT_TIMESTAMP').notNull(),
+	},
+	(table) => [
+		index("apiRateLimits_userId_index").on(table.userId),
+		index("apiRateLimits_ipAddress_index").on(table.ipAddress),
+		index("apiRateLimits_endpoint_index").on(table.endpoint),
+		index("apiRateLimits_windowStart_index").on(table.windowStart),
+	]
+);
+
+/**
+ * Data Access Logs - Track access to sensitive data
+ */
+export const dataAccessLogs = mysqlTable(
+	"dataAccessLogs",
+	{
+		id: int().autoincrement().notNull(),
+		userId: int().notNull(),
+		dataType: varchar({ length: 100 }).notNull(), // 'user_data', 'financial_data', 'machine_data', etc.
+		dataId: int(),
+		action: mysqlEnum(['view', 'create', 'update', 'delete', 'export']).notNull(),
+		ipAddress: varchar({ length: 45 }).notNull(),
+		reason: varchar({ length: 255 }), // Why the user accessed this data
+		approved: boolean().default(true).notNull(),
+		approvedBy: int(),
+		createdAt: timestamp({ mode: 'string' }).default('CURRENT_TIMESTAMP').notNull(),
+	},
+	(table) => [
+		index("dataAccessLogs_userId_index").on(table.userId),
+		index("dataAccessLogs_dataType_index").on(table.dataType),
+		index("dataAccessLogs_createdAt_index").on(table.createdAt),
+		index("dataAccessLogs_action_index").on(table.action),
+	]
+);
+
+export type ActivityLog = typeof activityLogs.$inferSelect;
+export type InsertActivityLog = typeof activityLogs.$inferInsert;
+
+export type LoginAttempt = typeof loginAttempts.$inferSelect;
+export type InsertLoginAttempt = typeof loginAttempts.$inferInsert;
+
+export type SuspiciousActivity = typeof suspiciousActivities.$inferSelect;
+export type InsertSuspiciousActivity = typeof suspiciousActivities.$inferInsert;
+
+export type ApiRateLimit = typeof apiRateLimits.$inferSelect;
+export type InsertApiRateLimit = typeof apiRateLimits.$inferInsert;
+
+export type DataAccessLog = typeof dataAccessLogs.$inferSelect;
+export type InsertDataAccessLog = typeof dataAccessLogs.$inferInsert;
