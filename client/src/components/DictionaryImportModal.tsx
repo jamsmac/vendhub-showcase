@@ -33,6 +33,8 @@ import {
 import { toast } from 'sonner';
 import { parseCSVFile, validateCSVData, downloadCSV, getCSVTemplate } from '@/lib/csvUtils';
 import { trpc } from '@/lib/trpc';
+import { undoRedoManager } from '@/lib/undoRedoManager';
+import { RotateCcw, RotateCw } from 'lucide-react';
 
 interface DictionaryImportModalProps {
   dictionaryCode: string;
@@ -58,9 +60,29 @@ export function DictionaryImportModal({
   const [isDragging, setIsDragging] = useState(false);
   const [importMode, setImportMode] = useState<'create' | 'update' | 'upsert'>('upsert');
   const [skipErrors, setSkipErrors] = useState(false);
+  const [importHistoryId, setImportHistoryId] = useState<number | null>(null);
+  const [canUndo, setCanUndo] = useState(false);
+  const [canRedo, setCanRedo] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const bulkImportMutation = trpc.dictionaryBulkOps.bulkImport.useMutation();
+  const undoMutation = trpc.dictionaryBulkOps.undoImport.useMutation();
+  const redoMutation = trpc.dictionaryBulkOps.redoImport.useMutation();
+
+  // Subscribe to undo/redo state changes
+  React.useEffect(() => {
+    if (!importHistoryId) return;
+
+    const unsubscribe = undoRedoManager.subscribe((id) => {
+      if (id === importHistoryId) {
+        const { canUndo, canRedo } = undoRedoManager.getCapabilities(id);
+        setCanUndo(canUndo);
+        setCanRedo(canRedo);
+      }
+    });
+
+    return unsubscribe;
+  }, [importHistoryId]);
 
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault();
@@ -132,6 +154,18 @@ export function DictionaryImportModal({
       });
 
       if (result.success) {
+        setImportHistoryId(result.importHistoryId);
+        undoRedoManager.initializeStack(result.importHistoryId, {
+          id: result.importHistoryId,
+          dictionaryCode,
+          fileName: file?.name || 'unknown',
+          totalRecords: parseResult.data.length,
+          successfulRecords: result.successfulRecords || 0,
+          failedRecords: result.failedRecords || 0,
+          status: 'completed',
+          importMode,
+          timestamp: new Date(),
+        });
         toast.success(result.message);
         onSuccess?.();
         handleClose();
@@ -143,6 +177,34 @@ export function DictionaryImportModal({
       console.error(error);
     } finally {
       setStep('preview');
+    }
+  };
+
+  const handleUndo = async () => {
+    if (!importHistoryId || !canUndo) return;
+
+    try {
+      await undoMutation.mutateAsync({ importHistoryId });
+      undoRedoManager.undo(importHistoryId);
+      toast.success('Import undone');
+      onSuccess?.();
+    } catch (error) {
+      toast.error('Failed to undo import');
+      console.error(error);
+    }
+  };
+
+  const handleRedo = async () => {
+    if (!importHistoryId || !canRedo) return;
+
+    try {
+      await redoMutation.mutateAsync({ importHistoryId });
+      undoRedoManager.redo(importHistoryId);
+      toast.success('Import redone');
+      onSuccess?.();
+    } catch (error) {
+      toast.error('Failed to redo import');
+      console.error(error);
     }
   };
 

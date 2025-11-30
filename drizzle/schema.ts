@@ -362,3 +362,52 @@ export type InsertInventoryAdjustment = typeof inventoryAdjustments.$inferInsert
 
 export type Notification = typeof notifications.$inferSelect;
 export type InsertNotification = typeof notifications.$inferInsert;
+
+// Import History & Batch Operations
+export const importHistory = mysqlTable("importHistory", {
+	id: int().autoincrement().notNull().primaryKey(),
+	dictionaryCode: varchar({ length: 100 }).notNull(),
+	fileName: varchar({ length: 255 }).notNull(),
+	totalRecords: int().default(0).notNull(),
+	successfulRecords: int().default(0).notNull(),
+	failedRecords: int().default(0).notNull(),
+	status: mysqlEnum(['pending', 'in_progress', 'completed', 'failed', 'rolled_back']).default('pending').notNull(),
+	importMode: mysqlEnum(['create', 'update', 'upsert']).default('create').notNull(),
+	performedBy: int().notNull(),
+	errorLog: text(),
+	rolledBackAt: timestamp({ mode: 'string' }),
+	rolledBackBy: int(),
+	createdAt: timestamp({ mode: 'string' }).default('CURRENT_TIMESTAMP').notNull(),
+	updatedAt: timestamp({ mode: 'string' }).defaultNow().onUpdateNow().notNull(),
+});
+
+export const batchTransactions = mysqlTable("batchTransactions", {
+	id: int().autoincrement().notNull().primaryKey(),
+	importHistoryId: int().notNull(),
+	recordIndex: int().notNull(),
+	originalData: text().notNull(),
+	modifiedData: text().notNull(),
+	operation: mysqlEnum(['insert', 'update', 'delete']).notNull(),
+	status: mysqlEnum(['pending', 'success', 'failed']).default('pending').notNull(),
+	errorMessage: text(),
+	createdAt: timestamp({ mode: 'string' }).default('CURRENT_TIMESTAMP').notNull(),
+});
+
+export const undoRedoStack = mysqlTable("undoRedoStack", {
+	id: int().autoincrement().notNull().primaryKey(),
+	importHistoryId: int().notNull(),
+	action: mysqlEnum(['import', 'rollback']).notNull(),
+	previousState: text(),
+	newState: text(),
+	timestamp: timestamp({ mode: 'string' }).default('CURRENT_TIMESTAMP').notNull(),
+	performedBy: int().notNull(),
+});
+
+export type ImportHistory = typeof importHistory.$inferSelect;
+export type InsertImportHistory = typeof importHistory.$inferInsert;
+
+export type BatchTransaction = typeof batchTransactions.$inferSelect;
+export type InsertBatchTransaction = typeof batchTransactions.$inferInsert;
+
+export type UndoRedoStack = typeof undoRedoStack.$inferSelect;
+export type InsertUndoRedoStack = typeof undoRedoStack.$inferInsert;

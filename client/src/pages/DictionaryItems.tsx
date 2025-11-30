@@ -42,6 +42,7 @@ import { Plus, Search, Edit2, Trash2, MoreHorizontal, ArrowLeft, Download, Uploa
 import { toast } from 'sonner';
 import { DictionaryImportModal } from '@/components/DictionaryImportModal';
 import { DictionaryExportModal } from '@/components/DictionaryExportModal';
+import { ImportHistory } from '@/components/ImportHistory';
 
 interface DictionaryItem {
   id: number;
@@ -365,6 +366,11 @@ export function DictionaryItems() {
           )}
         </CardContent>
       </Card>
+      {/* Import History Section */}
+      <div className="mt-8">
+        <ImportHistory dictionaryCode={code || ''} />
+      </div>
+
       {/* Import Modal */}
       <DictionaryImportModal
         dictionaryCode={code || ''}
