@@ -2221,9 +2221,9 @@ All tasks completed:
 - [x] Create ResetPassword component (part of PasswordRecovery)
 - [x] Create TwoFactorSetup component
 - [x] Create TwoFactorVerification component
-- [ ] Add password recovery link to Login page
-- [ ] Add 2FA verification modal to Login page
-- [ ] Add 2FA settings to UserSettings page
+- [x] Add password recovery link to Login page
+- [x] Add 2FA verification modal to Login page
+- [x] Add 2FA settings to UserSettings page
 - [x] Add form validation for all components
 - [x] Add error handling and toast notifications
 
