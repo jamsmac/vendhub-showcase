@@ -1845,13 +1845,10 @@ All tasks completed:
 - [x] resolveAlert: Mark alert as resolved
 - [x] testRule: Test rule with current metrics
 - [x] checkAll: Admin-only batch checking
-
-### Alert Configuration UI
-- [ ] AlertRulesEditor component: Form to create/edit rules
-- [ ] AlertRulesList component: Table of all rules
-- [ ] AlertHistoryViewer component: Table of triggered alerts
-
-### Features
+### Alert Configuration UI (COMPLETED)
+- [x] AlertRulesEditor component: Form to create/edit rules
+- [x] AlertRulesList component: List view with all rules
+- [x] AlertHistoryViewer component: Timeline view of triggered alertsFeatures
 - Configurable thresholds for each metric (memory, CPU, disk)
 - Multiple operators (>, <, >=, <=, ==)
 - Escalation policies (notify user, notify admin, auto-action)
@@ -1932,3 +1929,64 @@ All tasks completed:
 - [x] Added custom date range state management
 - [x] Updated chart titles to show selected range
 - [x] Integrated with existing chart queries
+
+
+## Alert Rules UI Components (COMPLETED)
+
+### AlertRulesEditor Component ✅
+- [x] Create AlertRulesEditor.tsx with form for creating/editing rules
+- [x] Form fields: name, description, metric selector, threshold input
+- [x] Operator selector (>, <, >=, <=, ==)
+- [x] Escalation level selector (low, medium, high, critical)
+- [x] Cooldown minutes input with validation
+- [x] Notification toggles (notifyUser, notifyAdmin)
+- [x] Auto-action selector (optional)
+- [x] Enable/disable toggle
+- [x] Submit and cancel buttons
+- [x] Form validation with error messages
+- [x] Loading state during submission
+
+### AlertRulesList Component ✅
+- [x] Create AlertRulesList.tsx with card-based view
+- [x] Display: name, metric, threshold, operator, status, escalation level
+- [x] Edit button for each rule
+- [x] Delete button with confirmation dialog
+- [x] Enable/disable status badge
+- [x] Test button to trigger test alert
+- [x] Search/filter by name or metric
+- [x] Sorting by name, metric, threshold
+- [x] Empty state when no rules exist
+- [x] Success/error toast notifications
+- [x] Responsive design with color-coded badges
+
+### AlertHistoryViewer Component ✅
+- [x] Create AlertHistoryViewer.tsx with timeline view
+- [x] Display: timestamp, metric, value, threshold, status
+- [x] Status badges (active, acknowledged, resolved)
+- [x] Acknowledge button for active alerts
+- [x] Resolve button for acknowledged alerts
+- [x] Filter by status and date range
+- [x] Search by metric
+- [x] Severity color coding
+- [x] Export button (CSV)
+- [x] Statistics cards (active, acknowledged, resolved counts)
+- [x] Date range picker integration
+
+### AlertsDashboard Page ✅
+- [x] Create Alerts.tsx page component
+- [x] Header with title and refresh button
+- [x] Tabs: Rules, History, Statistics
+- [x] Rules tab: AlertRulesList with create button
+- [x] History tab: AlertHistoryViewer with filters
+- [x] Statistics tab: Alert counts and tips
+- [x] Active alerts summary card with badge
+- [x] Quick actions (create rule, refresh, export)
+- [x] Responsive layout for mobile/tablet
+- [x] Protected route (admin only)
+
+### Integration ✅
+- [x] Add Alerts route to App.tsx
+- [x] Add Alerts link to sidebar navigation
+- [x] Import Alerts page in App.tsx
+- [x] Add AlertCircle icon to navigation
+- [x] Update navigation with "Оповещения" (Notifications) label

@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link, useLocation } from "wouter";
 import { 
   Home, Factory, Package, DollarSign, BarChart3, Users, 
-  Settings, HelpCircle, Bell, Menu, X, ChevronDown, ChevronRight
+  Settings, HelpCircle, Bell, Menu, X, ChevronDown, ChevronRight, AlertCircle
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -58,6 +58,7 @@ const navigationGroups: NavGroup[] = [
     icon: BarChart3,
     items: [
       { id: "analytics", title: "Дашборд", path: "/analytics" },
+      { id: "alerts", title: "Оповещения", path: "/alerts" },
       { id: "reports", title: "Отчёты", path: "/reports" },
       { id: "incidents", title: "Инциденты", path: "/incidents" },
     ],

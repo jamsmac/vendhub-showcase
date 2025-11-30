@@ -9,6 +9,8 @@ import { trpc } from "@/lib/trpc";
 import Registration from "./components/Registration";
 import Login from "./components/Login";
 import OnboardingWizard from "./components/OnboardingWizard";
+import Alerts from "./pages/Alerts";
+import AdminAnalytics from "./pages/AdminAnalytics";
 
 // Auth state management
 interface AuthState {
@@ -248,7 +250,8 @@ function Router() {
         <Route path="/transactions" component={TransactionsPage} />
         <Route path="/counterparties" component={CounterpartiesPage} />
         <Route path="/contracts" component={ContractsPage} />
-        <Route path="/analytics" component={AnalyticsPage} />
+        <Route path="/analytics" component={AdminAnalytics} />
+        <Route path="/alerts" component={Alerts} />
         <Route path="/reports" component={ReportsPage} />
         <Route path="/incidents" component={IncidentsPage} />
         <Route path="/users" component={UsersPage} />
