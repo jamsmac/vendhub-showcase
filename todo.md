@@ -732,3 +732,80 @@
 2. tRPC endpoints work via curl but not from browser
 3. Possible CORS or network configuration issue
 4. Need to investigate React Query + tRPC integration
+
+
+## Phase 29: Core Pages Implementation (Nov 30, 2025)
+
+### Machines Page
+- [ ] Create Machines page component with table layout
+- [ ] Add status filter buttons (All, Online, Offline, Maintenance)
+- [ ] Implement search by serial number or location
+- [ ] Add status badges with color coding (green/yellow/red)
+- [ ] Create interactive map view with Google Maps
+- [ ] Add map markers for each machine with status indicators
+- [ ] Implement toggle between table and map views
+- [ ] Add machine details modal/drawer
+- [ ] Connect to backend machines.list endpoint
+
+### Tasks Page
+- [ ] Create Tasks page component with kanban layout
+- [ ] Implement three columns: Pending, In Progress, Completed
+- [ ] Add drag-and-drop functionality with @dnd-kit/core
+- [ ] Create task cards with priority indicators
+- [ ] Add task assignment dropdown (select operator)
+- [ ] Implement task status update on drop
+- [ ] Add "Create New Task" button and modal
+- [ ] Add task filtering by priority/assignee
+- [ ] Connect to backend tasks.list and tasks.update endpoints
+
+### Products Page
+- [ ] Create Products page component with table layout
+- [ ] Add "Create Product" button and modal form
+- [ ] Implement product form with validation (name, SKU, price, category)
+- [ ] Add edit functionality (inline or modal)
+- [ ] Add delete confirmation dialog
+- [ ] Display inventory levels with color-coded indicators
+- [ ] Add low stock warnings (threshold-based)
+- [ ] Implement search and category filtering
+- [ ] Connect to backend products CRUD endpoints
+- [ ] Add inventory adjustment functionality
+
+
+## Phase 29 Completion Status (Nov 30, 2025)
+
+### Machines Page - COMPLETED ✅
+- [x] Created Machines page component with table layout
+- [x] Added status filter buttons (All, Online, Offline, Maintenance)
+- [x] Implemented search by serial number or location
+- [x] Added status badges with color coding (green/yellow/red)
+- [x] Created interactive map view with Google Maps
+- [x] Added map markers for each machine with status indicators
+- [x] Implemented toggle between table and map views
+- [x] Added Russian UI translations
+- [x] Connected to backend machines.list endpoint
+
+### Tasks Page - COMPLETED ✅
+- [x] Created Tasks page component with kanban layout
+- [x] Implemented three columns: Pending, In Progress, Completed
+- [x] Added drag-and-drop functionality with @dnd-kit/core
+- [x] Created task cards with priority indicators
+- [x] Added task assignment display
+- [x] Implemented task status update on drop
+- [x] Added "Create New Task" button and modal
+- [x] Added task filtering by priority/assignee
+- [x] Connected to backend tasks.list and tasks.update endpoints
+- [x] Added Russian UI translations
+- [x] Fixed filter error with optional chaining
+
+### Products Page - COMPLETED ✅
+- [x] Created Products page component with table layout
+- [x] Added "Create Product" button and modal form
+- [x] Implemented product form with validation (name, SKU, price, category)
+- [x] Added edit functionality (modal)
+- [x] Added delete confirmation dialog
+- [x] Displayed inventory levels with color-coded indicators
+- [x] Added low stock warnings (threshold-based)
+- [x] Implemented search and category filtering
+- [x] Connected to backend products.list endpoint
+- [x] Added inventory statistics dashboard
+- [x] Added Russian UI translations

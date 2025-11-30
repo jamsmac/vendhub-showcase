@@ -84,127 +84,17 @@ function DashboardPage() {
   );
 }
 
-// Machines page with real data
-function MachinesPage() {
-  const { data: machines, isLoading } = trpc.machines.list.useQuery();
+// Import Machines page
+import MachinesPageComponent from "./pages/Machines";
+const MachinesPage = MachinesPageComponent;
 
-  if (isLoading) {
-    return (
-      <div>
-        <h2 className="text-2xl font-bold mb-4">Аппараты</h2>
-        <div className="animate-pulse space-y-4">
-          {[1, 2, 3].map((i) => (
-            <div key={i} className="h-20 bg-muted rounded"></div>
-          ))}
-        </div>
-      </div>
-    );
-  }
+// Import Tasks page
+import TasksPageComponent from "./pages/Tasks";
+const TasksPage = TasksPageComponent;
 
-  return (
-    <div>
-      <h2 className="text-2xl font-bold mb-4">Аппараты</h2>
-      <p className="text-muted-foreground mb-4">Всего: {machines?.length || 0}</p>
-      <div className="space-y-4">
-        {machines?.map((machine) => (
-          <div key={machine.id} className="p-4 border rounded-lg">
-            <div className="font-semibold">{machine.name}</div>
-            <div className="text-sm text-muted-foreground">{machine.location}</div>
-            <div className="text-xs mt-2">
-              <span className={`px-2 py-1 rounded ${
-                machine.status === 'active' ? 'bg-green-500/20 text-green-500' :
-                machine.status === 'maintenance' ? 'bg-yellow-500/20 text-yellow-500' :
-                'bg-gray-500/20 text-gray-500'
-              }`}>
-                {machine.status}
-              </span>
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-// Tasks page with real data
-function TasksPage() {
-  const { data: tasks, isLoading } = trpc.tasks.list.useQuery();
-
-  if (isLoading) {
-    return (
-      <div>
-        <h2 className="text-2xl font-bold mb-4">Задачи</h2>
-        <div className="animate-pulse space-y-4">
-          {[1, 2, 3].map((i) => (
-            <div key={i} className="h-20 bg-muted rounded"></div>
-          ))}
-        </div>
-      </div>
-    );
-  }
-
-  return (
-    <div>
-      <h2 className="text-2xl font-bold mb-4">Задачи</h2>
-      <p className="text-muted-foreground mb-4">Всего: {tasks?.length || 0}</p>
-      <div className="space-y-4">
-        {tasks?.map((task) => (
-          <div key={task.id} className="p-4 border rounded-lg">
-            <div className="font-semibold">{task.type}</div>
-            <div className="text-sm text-muted-foreground">{task.description}</div>
-            <div className="text-xs mt-2">
-              <span className={`px-2 py-1 rounded ${
-                task.status === 'completed' ? 'bg-green-500/20 text-green-500' :
-                task.status === 'in_progress' ? 'bg-blue-500/20 text-blue-500' :
-                task.status === 'pending' ? 'bg-yellow-500/20 text-yellow-500' :
-                'bg-red-500/20 text-red-500'
-              }`}>
-                {task.status}
-              </span>
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-// Products page with real data
-function ProductsPage() {
-  const { data: products, isLoading } = trpc.products.list.useQuery();
-
-  if (isLoading) {
-    return (
-      <div>
-        <h2 className="text-2xl font-bold mb-4">Товары</h2>
-        <div className="animate-pulse space-y-4">
-          {[1, 2, 3].map((i) => (
-            <div key={i} className="h-20 bg-muted rounded"></div>
-          ))}
-        </div>
-      </div>
-    );
-  }
-
-  return (
-    <div>
-      <h2 className="text-2xl font-bold mb-4">Товары</h2>
-      <p className="text-muted-foreground mb-4">Всего: {products?.length || 0}</p>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {products?.map((product) => (
-          <div key={product.id} className="p-4 border rounded-lg">
-            <div className="font-semibold">{product.name}</div>
-            <div className="text-sm text-muted-foreground">{product.category}</div>
-            <div className="text-sm mt-2">
-              <div>Цена: {product.sellingPrice} ₽</div>
-              <div className="text-muted-foreground">Себестоимость: {product.costPrice} ₽</div>
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
+// Import Products page
+import ProductsPageComponent from "./pages/Products";
+const ProductsPage = ProductsPageComponent;
 
 // Placeholder pages
 function LocationsPage() {
