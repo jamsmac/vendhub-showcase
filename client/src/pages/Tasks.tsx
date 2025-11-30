@@ -1,4 +1,3 @@
-import { useState, useMemo } from "react";
 import { Layout } from "@/components/Layout";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -43,6 +42,7 @@ import {
 import { CSS } from "@dnd-kit/utilities";
 import { toast } from "sonner";
 import { trpc } from "@/lib/trpc";
+import { useDictionaryOptions } from "@/hooks/useDictionaries";
 
 interface Task {
   id: number;
@@ -65,7 +65,7 @@ const mockTasks: Task[] = [
     title: "Пополнить автомат снеками",
     description: "Необходимо пополнить запасы снеков в автомате в лобби",
     machine: "Lobby Snack #04",
-    type: "Пополнение",
+    type: "refill",
     priority: "high",
     status: "pending",
     assignee: "Иван Иванов",
@@ -76,7 +76,7 @@ const mockTasks: Task[] = [
     title: "Ремонт монетоприемника",
     description: "Монетоприемник не принимает 10-рублевые монеты",
     machine: "Gym Drink #02",
-    type: "Ремонт",
+    type: "repair",
     priority: "urgent",
     status: "in-progress",
     assignee: "Михаил Смирнов",
@@ -87,7 +87,7 @@ const mockTasks: Task[] = [
     title: "Ежемесячная чистка",
     description: "Плановая ежемесячная чистка и дезинфекция",
     machine: "Office Coffee #01",
-    type: "Обслуживание",
+    type: "cleaning",
     priority: "medium",
     status: "completed",
     assignee: "Сара Джонсон",
@@ -98,54 +98,111 @@ const mockTasks: Task[] = [
     title: "Пополнить Кока-Колу Зеро",
     description: "Закончились запасы Кока-Колы Зеро",
     machine: "Station Drink #05",
-    type: "Пополнение",
-    priority: "low",
-    status: "pending",
-    assignee: "Иван Иванов",
-    dueDate: "Завтра, 9:00",
-  },
-  {
-    id: 5,
-    title: "Проверка системы охлаждения",
-    description: "Плановая проверка работы системы охлаждения",
-    machine: "Mall Snack #08",
-    type: "Инспекция",
+    type: "refill",
     priority: "medium",
     status: "pending",
-    assignee: "Михаил Смирнов",
-    dueDate: "Завтра, 11:00",
+    assignee: "Анна Петрова",
+    dueDate: "Завтра, 10:00",
   },
 ];
 
-export default function Tasks() {
-  const [activeId, setActiveId] = useState<number | null>(null);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [priorityFilter, setPriorityFilter] = useState<string>("all");
+function SortableTaskCard({ task }: { task: Task }) {
+  const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id: task.id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+  };
+
+  const getPriorityColor = (priority: string) => {
+    switch (priority) {
+      case "urgent":
+        return "bg-red-100 text-red-800 border-red-300";
+      case "high":
+        return "bg-orange-100 text-orange-800 border-orange-300";
+      case "medium":
+        return "bg-yellow-100 text-yellow-800 border-yellow-300";
+      case "low":
+        return "bg-green-100 text-green-800 border-green-300";
+      default:
+        return "bg-gray-100 text-gray-800 border-gray-300";
+    }
+  };
+
+  return (
+    <Card
+      ref={setNodeRef}
+      style={style}
+      className="cursor-grab active:cursor-grabbing hover:shadow-md transition-shadow"
+      {...attributes}
+      {...listeners}
+    >
+      <CardContent className="p-4 space-y-3">
+        <div className="flex items-start gap-3">
+          <GripVertical className="w-4 h-4 text-gray-400 mt-1 flex-shrink-0" />
+          <div className="flex-1 min-w-0">
+            <h3 className="font-semibold text-sm truncate">{task.title}</h3>
+            {task.description && (
+              <p className="text-xs text-gray-600 mt-1 line-clamp-2">{task.description}</p>
+            )}
+          </div>
+        </div>
+
+        <div className="flex flex-wrap gap-2">
+          <Badge variant="outline" className={getPriorityColor(task.priority)}>
+            {task.priority}
+          </Badge>
+          <Badge variant="secondary" className="text-xs">
+            {task.type}
+          </Badge>
+        </div>
+
+        {task.machine && (
+          <div className="text-xs text-gray-600 flex items-center gap-1">
+            <AlertCircle className="w-3 h-3" />
+            {task.machine}
+          </div>
+        )}
+
+        {task.assignee && (
+          <div className="text-xs text-gray-600 flex items-center gap-1">
+            <User className="w-3 h-3" />
+            {task.assignee}
+          </div>
+        )}
+
+        {task.dueDate && (
+          <div className="text-xs text-gray-600 flex items-center gap-1">
+            <Calendar className="w-3 h-3" />
+            {task.dueDate}
+          </div>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
+
+export function Tasks() {
+  const [displayTasks, setDisplayTasks] = useState<Task[]>(mockTasks);
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [priorityFilter, setPriorityFilter] = useState("all");
   const [newTask, setNewTask] = useState({
     title: "",
     description: "",
-    type: "Пополнение",
+    type: "refill",
     priority: "medium",
     assignee: "",
   });
+  const [activeId, setActiveId] = useState<number | null>(null);
 
-  const { data: tasks = [], isLoading } = trpc.tasks.list.useQuery();
-  const utils = trpc.useUtils();
-  const updateTaskMutation = trpc.tasks.update.useMutation({
-    onSuccess: () => {
-      utils.tasks.list.invalidate();
-    },
-  });
-
-  // Use mock data if no real data
-  const displayTasks = tasks.length > 0 ? tasks : mockTasks;
+  // Get dictionary options
+  const taskTypeOptions = useDictionaryOptions('task_types');
+  const taskPriorityOptions = useDictionaryOptions('task_priorities');
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
-      activationConstraint: {
-        distance: 8,
-      },
+      distance: 8,
     }),
     useSensor(KeyboardSensor, {
       coordinateGetter: sortableKeyboardCoordinates,
@@ -158,64 +215,50 @@ export default function Tasks() {
 
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
+
+    if (over && active.id !== over.id) {
+      setDisplayTasks((tasks) => {
+        const oldIndex = tasks.findIndex((t) => t.id === active.id);
+        const newIndex = tasks.findIndex((t) => t.id === over.id);
+
+        const newTasks = [...tasks];
+        const [movedTask] = newTasks.splice(oldIndex, 1);
+        newTasks.splice(newIndex, 0, movedTask);
+
+        return newTasks;
+      });
+    }
+
     setActiveId(null);
-
-    if (!over) return;
-
-    const taskId = active.id as number;
-    const newStatus = over.id as string;
-
-    // Find the task being dragged
-    const task = displayTasks.find((t: Task) => t.id === taskId);
-    if (!task) return;
-
-    // If status hasn't changed, do nothing
-    if (task.status === newStatus) return;
-
-    // Update task status via API
-    updateTaskMutation.mutate({
-      id: taskId,
-      status: newStatus,
-    });
-
-    // Show success toast
-    const statusLabels: Record<string, string> = {
-      pending: "Ожидание",
-      "in-progress": "В работе",
-      completed: "Завершено",
-    };
-
-    toast.success(`Задача перемещена в "${statusLabels[newStatus]}"`);
   };
 
-  const activeTask = activeId ? displayTasks.find((t: Task) => t.id === activeId) : null;
+  const filteredTasks = displayTasks.filter((task: Task) => {
+    const matchesSearch =
+      task.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      task.description?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      task.machine?.toLowerCase().includes(searchQuery.toLowerCase());
 
-  // Filter tasks
-  const filteredTasks = useMemo(() => {
-    return displayTasks.filter((task: Task) => {
-      const matchesSearch =
-        (task.title?.toLowerCase() ?? "").includes(searchQuery.toLowerCase()) ||
-        (task.description?.toLowerCase() ?? "").includes(searchQuery.toLowerCase()) ||
-        (task.machine?.toLowerCase() ?? "").includes(searchQuery.toLowerCase());
+    const matchesPriority =
+      priorityFilter === "all" || task.priority === priorityFilter;
 
-      const matchesPriority =
-        priorityFilter === "all" || task.priority === priorityFilter;
-
-      return matchesSearch && matchesPriority;
-    });
-  }, [displayTasks, searchQuery, priorityFilter]);
+    return matchesSearch && matchesPriority;
+  });
 
   const pendingTasks = filteredTasks.filter((t: Task) => t.status === "pending");
   const inProgressTasks = filteredTasks.filter((t: Task) => t.status === "in-progress");
   const completedTasks = filteredTasks.filter((t: Task) => t.status === "completed");
 
   const handleCreateTask = () => {
+    if (!newTask.title) {
+      toast.error("Please enter task title");
+      return;
+    }
     toast.success("Задача создана успешно!");
     setIsCreateDialogOpen(false);
     setNewTask({
       title: "",
       description: "",
-      type: "Пополнение",
+      type: "refill",
       priority: "medium",
       assignee: "",
     });
@@ -246,7 +289,7 @@ export default function Tasks() {
               </DialogHeader>
               <div className="space-y-4 py-4">
                 <div className="space-y-2">
-                  <Label htmlFor="title">Название задачи</Label>
+                  <Label htmlFor="title">Название задачи *</Label>
                   <Input
                     id="title"
                     placeholder="Введите название задачи"
@@ -265,30 +308,34 @@ export default function Tasks() {
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="type">Тип</Label>
+                    <Label htmlFor="type">Тип задачи *</Label>
                     <Select value={newTask.type} onValueChange={(value) => setNewTask({ ...newTask, type: value })}>
                       <SelectTrigger>
-                        <SelectValue />
+                        <SelectValue placeholder="Select task type" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="Пополнение">Пополнение</SelectItem>
-                        <SelectItem value="Ремонт">Ремонт</SelectItem>
-                        <SelectItem value="Обслуживание">Обслуживание</SelectItem>
-                        <SelectItem value="Инспекция">Инспекция</SelectItem>
+                        {taskTypeOptions.map((option) => (
+                          <SelectItem key={option.value} value={option.value}>
+                            {option.icon && <span className="mr-2">{option.icon}</span>}
+                            {option.label}
+                          </SelectItem>
+                        ))}
                       </SelectContent>
                     </Select>
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="priority">Приоритет</Label>
+                    <Label htmlFor="priority">Приоритет *</Label>
                     <Select value={newTask.priority} onValueChange={(value) => setNewTask({ ...newTask, priority: value })}>
                       <SelectTrigger>
-                        <SelectValue />
+                        <SelectValue placeholder="Select priority" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="low">Низкий</SelectItem>
-                        <SelectItem value="medium">Средний</SelectItem>
-                        <SelectItem value="high">Высокий</SelectItem>
-                        <SelectItem value="urgent">Срочный</SelectItem>
+                        {taskPriorityOptions.map((option) => (
+                          <SelectItem key={option.value} value={option.value}>
+                            {option.icon && <span className="mr-2">{option.icon}</span>}
+                            {option.label}
+                          </SelectItem>
+                        ))}
                       </SelectContent>
                     </Select>
                   </div>
@@ -352,7 +399,7 @@ export default function Tasks() {
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-green-700">Завершено</p>
+                  <p className="text-sm text-green-700">Выполнено</p>
                   <p className="text-2xl font-bold mt-1 text-green-700">{completedTasks.length}</p>
                 </div>
                 <CheckCircle2 className="w-8 h-8 text-green-400" />
@@ -361,218 +408,102 @@ export default function Tasks() {
           </Card>
         </div>
 
-        {/* Filters */}
-        <Card>
-          <CardContent className="p-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="relative">
-                <Search className="absolute left-3 top-3 w-4 h-4 text-gray-400" />
-                <Input
-                  placeholder="Поиск задач..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-10"
-                />
+        {/* Search and Filter */}
+        <div className="flex flex-col md:flex-row gap-4">
+          <div className="flex-1 relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+            <Input
+              placeholder="Поиск задач..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-10"
+            />
+          </div>
+          <Select value={priorityFilter} onValueChange={setPriorityFilter}>
+            <SelectTrigger className="w-full md:w-48">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Все приоритеты</SelectItem>
+              <SelectItem value="low">Низкий</SelectItem>
+              <SelectItem value="medium">Средний</SelectItem>
+              <SelectItem value="high">Высокий</SelectItem>
+              <SelectItem value="urgent">Срочный</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
+        {/* Tasks Board */}
+        <DndContext
+          sensors={sensors}
+          collisionDetection={closestCenter}
+          onDragStart={handleDragStart}
+          onDragEnd={handleDragEnd}
+        >
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {/* Pending Column */}
+            <div className="space-y-4">
+              <div className="flex items-center gap-2">
+                <Clock className="w-5 h-5 text-amber-500" />
+                <h2 className="font-semibold text-lg">Ожидание ({pendingTasks.length})</h2>
               </div>
-              <Select value={priorityFilter} onValueChange={setPriorityFilter}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Фильтр по приоритету" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">Все приоритеты</SelectItem>
-                  <SelectItem value="urgent">Срочные</SelectItem>
-                  <SelectItem value="high">Высокие</SelectItem>
-                  <SelectItem value="medium">Средние</SelectItem>
-                  <SelectItem value="low">Низкие</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Task Columns with Drag & Drop */}
-        {isLoading ? (
-          <Card>
-            <CardContent className="py-8 text-center text-gray-500">
-              Загрузка задач...
-            </CardContent>
-          </Card>
-        ) : (
-          <DndContext
-            sensors={sensors}
-            collisionDetection={closestCenter}
-            onDragStart={handleDragStart}
-            onDragEnd={handleDragEnd}
-          >
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-              {/* Pending Column */}
-              <TaskColumn
-                id="pending"
-                title="Ожидание"
-                color="bg-amber-400"
-                count={pendingTasks.length}
-                tasks={pendingTasks}
-              />
-
-              {/* In Progress Column */}
-              <TaskColumn
-                id="in-progress"
-                title="В работе"
-                color="bg-blue-400"
-                count={inProgressTasks.length}
-                tasks={inProgressTasks}
-              />
-
-              {/* Completed Column */}
-              <TaskColumn
-                id="completed"
-                title="Завершено"
-                color="bg-emerald-400"
-                count={completedTasks.length}
-                tasks={completedTasks}
-              />
+              <SortableContext
+                items={pendingTasks.map((t) => t.id)}
+                strategy={verticalListSortingStrategy}
+              >
+                <div className="space-y-3">
+                  {pendingTasks.map((task) => (
+                    <SortableTaskCard key={task.id} task={task} />
+                  ))}
+                </div>
+              </SortableContext>
             </div>
 
-            <DragOverlay>
-              {activeTask ? <TaskCard task={activeTask} isDragging /> : null}
-            </DragOverlay>
-          </DndContext>
-        )}
+            {/* In Progress Column */}
+            <div className="space-y-4">
+              <div className="flex items-center gap-2">
+                <AlertCircle className="w-5 h-5 text-blue-500" />
+                <h2 className="font-semibold text-lg">В работе ({inProgressTasks.length})</h2>
+              </div>
+              <SortableContext
+                items={inProgressTasks.map((t) => t.id)}
+                strategy={verticalListSortingStrategy}
+              >
+                <div className="space-y-3">
+                  {inProgressTasks.map((task) => (
+                    <SortableTaskCard key={task.id} task={task} />
+                  ))}
+                </div>
+              </SortableContext>
+            </div>
+
+            {/* Completed Column */}
+            <div className="space-y-4">
+              <div className="flex items-center gap-2">
+                <CheckCircle2 className="w-5 h-5 text-green-500" />
+                <h2 className="font-semibold text-lg">Выполнено ({completedTasks.length})</h2>
+              </div>
+              <SortableContext
+                items={completedTasks.map((t) => t.id)}
+                strategy={verticalListSortingStrategy}
+              >
+                <div className="space-y-3">
+                  {completedTasks.map((task) => (
+                    <SortableTaskCard key={task.id} task={task} />
+                  ))}
+                </div>
+              </SortableContext>
+            </div>
+          </div>
+
+          <DragOverlay>
+            {activeId ? (
+              <SortableTaskCard task={displayTasks.find((t) => t.id === activeId)!} />
+            ) : null}
+          </DragOverlay>
+        </DndContext>
       </div>
     </Layout>
   );
 }
-
-interface TaskColumnProps {
-  id: string;
-  title: string;
-  color: string;
-  count: number;
-  tasks: Task[];
-}
-
-function TaskColumn({ id, title, color, count, tasks }: TaskColumnProps) {
-  const { setNodeRef } = useSortable({
-    id: id,
-    data: {
-      type: "column",
-    },
-  });
-
-  return (
-    <div ref={setNodeRef} className="space-y-4">
-      <div className="flex items-center justify-between mb-2">
-        <h3 className="font-bold flex items-center gap-2">
-          <div className={`w-2 h-2 rounded-full ${color}`} />
-          {title}
-        </h3>
-        <span className="text-xs text-gray-600 bg-gray-100 px-2 py-1 rounded-full">
-          {count}
-        </span>
-      </div>
-
-      <SortableContext items={tasks.map((t) => t.id)} strategy={verticalListSortingStrategy}>
-        <div className="space-y-3 min-h-[200px]">
-          {tasks.map((task) => (
-            <DraggableTaskCard key={task.id} task={task} />
-          ))}
-        </div>
-      </SortableContext>
-    </div>
-  );
-}
-
-function DraggableTaskCard({ task }: { task: Task }) {
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    transform,
-    transition,
-    isDragging,
-  } = useSortable({ id: task.id });
-
-  const style = {
-    transform: CSS.Transform.toString(transform),
-    transition,
-    opacity: isDragging ? 0.5 : 1,
-  };
-
-  return (
-    <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
-      <TaskCard task={task} />
-    </div>
-  );
-}
-
-function TaskCard({ task, isDragging = false }: { task: Task; isDragging?: boolean }) {
-  const getPriorityLabel = (priority: string) => {
-    switch (priority) {
-      case "urgent":
-        return "Срочный";
-      case "high":
-        return "Высокий";
-      case "medium":
-        return "Средний";
-      case "low":
-        return "Низкий";
-      default:
-        return priority;
-    }
-  };
-
-  return (
-    <Card
-      className={`border hover:shadow-md transition-all duration-300 group cursor-grab active:cursor-grabbing ${
-        isDragging ? "rotate-3 scale-105 shadow-lg" : ""
-      }`}
-    >
-      <CardContent className="p-4 space-y-3">
-        <div className="flex justify-between items-start">
-          <div className="flex items-center gap-2">
-            <GripVertical className="w-4 h-4 text-gray-400" />
-            <Badge
-              variant="outline"
-              className={`
-                ${task.priority === "urgent" ? "border-rose-500 text-rose-600 bg-rose-50" : ""}
-                ${task.priority === "high" ? "border-orange-500 text-orange-600 bg-orange-50" : ""}
-                ${task.priority === "medium" ? "border-blue-500 text-blue-600 bg-blue-50" : ""}
-                ${task.priority === "low" ? "border-gray-500 text-gray-600 bg-gray-50" : ""}
-              `}
-            >
-              {getPriorityLabel(task.priority)}
-            </Badge>
-          </div>
-          <Badge variant="secondary" className="bg-gray-100">
-            {task.type}
-          </Badge>
-        </div>
-
-        <div>
-          <h4 className="font-semibold">{task.title}</h4>
-          {task.description && (
-            <p className="text-xs text-gray-600 mt-1 line-clamp-2">{task.description}</p>
-          )}
-          {task.machine && (
-            <p className="text-xs text-gray-500 mt-1">{task.machine}</p>
-          )}
-        </div>
-
-        <div className="pt-3 border-t flex items-center justify-between text-xs text-gray-600">
-          {task.assignee && (
-            <div className="flex items-center gap-1">
-              <User className="w-3 h-3" />
-              {task.assignee}
-            </div>
-          )}
-          {task.dueDate && (
-            <div className="flex items-center gap-1">
-              <Calendar className="w-3 h-3" />
-              {task.dueDate}
-            </div>
-          )}
-        </div>
-      </CardContent>
-    </Card>
-  );
-}
+export default Tasks;
