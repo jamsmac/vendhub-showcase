@@ -1654,3 +1654,139 @@ All tasks completed:
 - Ensures clean environment for dev and migrations
 - Automatic cleanup without manual intervention
 - Optional background monitoring for production environments
+
+
+## GitHub Actions, Docker & System Health (NEW)
+
+### GitHub Actions Workflow
+- [x] .github/workflows/cleanup.yml: Automated cleanup workflow that:
+  * Runs on every push to main/develop branches
+  * Runs on every pull request to main/develop branches
+  * Runs on schedule every 6 hours (cron job)
+  * Installs dependencies and runs cleanup script
+  * Kills stale database migration processes
+  * Cleans up build artifacts
+  * Frees up development ports
+  * Creates workflow summary with cleanup logs
+  * Posts failure notifications to PR comments
+  * Posts success notifications to PR comments
+  * Provides detailed health check report
+
+### Dockerfile & Docker Compose
+- [x] Dockerfile: Multi-stage production Docker image that:
+  * Stage 1: Dependencies - Installs pnpm and dependencies
+  * Stage 2: Builder - Builds the application with esbuild
+  * Stage 3: Runtime - Lean production image with only runtime dependencies
+  * Includes cleanup scripts for pre-startup cleanup
+  * Runs as non-root nodejs user for security
+  * Exposes port 3000
+  * Includes health check endpoint
+  * Startup script runs cleanup before starting app
+  * Multi-stage build for minimal image size
+
+- [x] docker-compose.yml: Development and production compose file that:
+  * App service with environment variables
+  * MySQL database service
+  * Health checks for both services
+  * Automatic restart policy
+  * Volume mounts for logs and database
+  * Network configuration for service communication
+  * Depends on MySQL before starting app
+
+### System Health Monitoring Service
+- [x] systemHealthService.ts: Backend service that monitors:
+  * Memory usage (total, used, free, percentage)
+  * CPU usage (cores, usage percentage, load average)
+  * Disk usage (total, used, free, percentage)
+  * Process list (top 10 processes)
+  * Stale processes detection
+  * System uptime
+  * Health status determination (healthy/warning/critical)
+  * Issue detection and reporting
+  * Process killing functionality
+  * Byte formatting utilities
+  * Uptime formatting utilities
+
+### tRPC System Health Endpoints
+- [x] systemHealth.ts: 8 tRPC endpoints for system monitoring:
+  * getHealth: Get current system health status (admin only)
+  * getProcesses: Get detailed process list (admin only)
+  * getStaleProcesses: Get list of stale processes (admin only)
+  * killProcess: Kill a specific process by PID (admin only)
+  * killAllStaleProcesses: Kill all stale processes (admin only)
+  * getMetrics: Get formatted metrics for dashboard (admin only)
+  * healthCheck: Public health endpoint for Docker/Kubernetes (no auth)
+
+### System Health Dashboard Widget
+- [x] SystemHealthWidget.tsx: React component that:
+  * Displays real-time system health metrics
+  * Shows memory, CPU, disk, and stale process metrics
+  * Color-coded status indicators (green/yellow/red)
+  * Progress bars for resource usage
+  * Auto-refresh every 30 seconds (toggleable)
+  * One-click cleanup button for stale processes
+  * Issues section with detailed problem list
+  * Status icons and badges
+  * Metric icons for visual distinction
+  * Last updated timestamp
+  * Responsive grid layout
+
+### Admin Dashboard Page
+- [x] AdminDashboard.tsx: Comprehensive admin dashboard that:
+  * Displays system health widget at the top
+  * Shows user statistics (total, active, admins, suspended)
+  * Quick action buttons for common admin tasks
+  * Links to user management, permissions, and security pages
+  * System information card (Node version, environment, platform)
+  * Help and documentation section
+  * Refresh button to reload all data
+  * Protected route (admin only)
+  * Responsive layout for mobile and desktop
+
+### Features
+- Automated cleanup on every push/PR in CI/CD
+- Scheduled cleanup every 6 hours in GitHub Actions
+- Docker health checks every 30 seconds
+- Real-time system monitoring in admin dashboard
+- One-click cleanup from admin UI
+- Automatic process killing on container startup
+- Public health endpoint for Kubernetes/Docker monitoring
+- Comprehensive logging and reporting
+- Issue detection and alerting
+- Non-blocking startup (warnings only)
+
+### How It Works
+
+**GitHub Actions Workflow:**
+1. Triggered on push, PR, or schedule (every 6 hours)
+2. Installs dependencies
+3. Runs cleanup script
+4. Creates workflow summary with logs
+5. Posts success/failure comments to PRs
+6. Provides health check report
+
+**Docker Deployment:**
+1. Multi-stage build for minimal image size
+2. Health check every 30 seconds
+3. Startup script runs cleanup before starting app
+4. Non-root user for security
+5. Automatic restart on failure
+6. MySQL database with health checks
+
+**Admin Dashboard:**
+1. Real-time system metrics with color-coded status
+2. Auto-refresh every 30 seconds
+3. One-click cleanup button for stale processes
+4. Issue detection and alerting
+5. Quick links to other admin pages
+6. System information display
+
+### Benefits
+- Prevents stale processes in CI/CD pipelines
+- Ensures clean Docker deployments
+- Real-time monitoring from admin UI
+- Automatic cleanup without manual intervention
+- Health checks for Docker/Kubernetes
+- Comprehensive logging and auditing
+- Non-blocking operations (warnings only)
+- Production-ready monitoring
