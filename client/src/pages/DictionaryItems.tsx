@@ -40,6 +40,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Plus, Search, Edit2, Trash2, MoreHorizontal, ArrowLeft, Download, Upload } from 'lucide-react';
 import { toast } from 'sonner';
+import { trpc } from '@/lib/trpc';
 import { DictionaryImportModal } from '@/components/DictionaryImportModal';
 import { DictionaryExportModal } from '@/components/DictionaryExportModal';
 import { ImportHistory } from '@/components/ImportHistory';
@@ -71,48 +72,25 @@ export function DictionaryItems() {
   const [isImportModalOpen, setIsImportModalOpen] = useState(false);
   const [isExportModalOpen, setIsExportModalOpen] = useState(false);
 
-  useEffect(() => {
-    // TODO: Load items from tRPC API
-    // const loadItems = async () => {
-    //   try {
-    //     const data = await trpc.dictionaries.getItems.query({ dictionaryCode: code });
-    //     setItems(data);
-    //   } catch (error) {
-    //     toast.error('Ошибка при загрузке справочника');
-    //   } finally {
-    //     setIsLoading(false);
-    //   }
-    // };
-    // loadItems();
-
-    // Mock data for now
-    setItems([
-      {
-        id: 1,
-        code: 'hot_drinks',
-        name: 'Напитки горячие',
-        name_en: 'Hot Drinks',
-        name_ru: 'Напитки горячие',
-        sort_order: 1,
-        is_active: true,
-      },
-      {
-        id: 2,
-        code: 'cold_drinks',
-        name: 'Напитки холодные',
-        name_en: 'Cold Drinks',
-        name_ru: 'Напитки холодные',
-        sort_order: 2,
-        is_active: true,
-      },
-    ]);
-    setIsLoading(false);
-  }, [code]);
-
-  const filteredItems = items.filter((item) =>
-    item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    item.code.toLowerCase().includes(searchTerm.toLowerCase())
+  const { data: itemsData, isLoading: isLoadingItems, refetch } = trpc.dictionaryItems.getItems.useQuery(
+    { dictionaryCode: code || '', activeOnly: false },
+    { enabled: !!code }
   );
+
+  useEffect(() => {
+    if (itemsData) {
+      setItems(itemsData);
+    }
+    setIsLoading(isLoadingItems);
+  }, [itemsData, isLoadingItems]);
+
+  // Use search endpoint when search term is present
+  const { data: searchResults } = trpc.dictionaryItems.search.useQuery(
+    { dictionaryCode: code || '', searchTerm, activeOnly: false },
+    { enabled: !!code && searchTerm.length > 0 }
+  );
+
+  const filteredItems = searchTerm.length > 0 ? (searchResults || []) : items;
 
   const handleAddItem = () => {
     setEditingItem(null);
@@ -124,29 +102,79 @@ export function DictionaryItems() {
     setIsDialogOpen(true);
   };
 
+  const createMutation = trpc.dictionaryItems.create.useMutation({
+    onSuccess: () => {
+      toast.success('Элемент добавлен');
+      setIsDialogOpen(false);
+      refetch();
+    },
+    onError: (error) => {
+      toast.error(error.message || 'Ошибка при добавлении');
+    },
+  });
+
+  const updateMutation = trpc.dictionaryItems.update.useMutation({
+    onSuccess: () => {
+      toast.success('Элемент обновлен');
+      setIsDialogOpen(false);
+      refetch();
+    },
+    onError: (error) => {
+      toast.error(error.message || 'Ошибка при обновлении');
+    },
+  });
+
   const handleSaveItem = async (item: DictionaryItem) => {
     try {
-      // TODO: Save to API
       if (editingItem) {
-        setItems(items.map((i) => (i.id === item.id ? item : i)));
-        toast.success('Элемент обновлен');
+        await updateMutation.mutateAsync({
+          id: item.id,
+          code: item.code,
+          name: item.name,
+          name_en: item.name_en,
+          name_ru: item.name_ru,
+          name_uz: item.name_uz,
+          icon: item.icon,
+          color: item.color,
+          symbol: item.symbol,
+          sort_order: item.sort_order,
+          is_active: item.is_active,
+        });
       } else {
-        setItems([...items, { ...item, id: Date.now() }]);
-        toast.success('Элемент добавлен');
+        await createMutation.mutateAsync({
+          dictionaryCode: code || '',
+          code: item.code,
+          name: item.name,
+          name_en: item.name_en,
+          name_ru: item.name_ru,
+          name_uz: item.name_uz,
+          icon: item.icon,
+          color: item.color,
+          symbol: item.symbol,
+          sort_order: item.sort_order,
+          is_active: item.is_active,
+        });
       }
-      setIsDialogOpen(false);
     } catch (error) {
-      toast.error('Ошибка при сохранении');
+      console.error('Error saving item:', error);
     }
   };
 
+  const deleteMutation = trpc.dictionaryItems.delete.useMutation({
+    onSuccess: () => {
+      toast.success('Элемент удален');
+      refetch();
+    },
+    onError: (error) => {
+      toast.error(error.message || 'Ошибка при удалении');
+    },
+  });
+
   const handleDeleteItem = async (id: number) => {
     try {
-      // TODO: Delete from API
-      setItems(items.filter((i) => i.id !== id));
-      toast.success('Элемент удален');
+      await deleteMutation.mutateAsync({ id });
     } catch (error) {
-      toast.error('Ошибка при удалении');
+      console.error('Error deleting item:', error);
     }
   };
 
