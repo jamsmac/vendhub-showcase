@@ -1019,3 +1019,57 @@ All tasks completed:
 - [x] Add subtle animation when date range changes
 - [x] Ensure badge doesn't overlap with "Добавить запись" button
 - [x] Test on different screen sizes
+
+
+## Phase 34: Reset All Filters Button
+
+### Reset Handler Function
+- [ ] Create resetFilters function
+- [ ] Reset dateRangePreset to "Всё время"
+- [ ] Reset maintenanceFilter to "Все"
+- [ ] Reset customDateRange to empty values
+- [ ] Add optional toast notification on reset
+
+### Reset Button UI
+- [ ] Add reset button next to date range badge
+- [ ] Use X icon from lucide-react
+- [ ] Style as outline variant for subtle appearance
+- [ ] Add hover tooltip "Сбросить все фильтры"
+- [ ] Make button responsive on mobile
+
+### Button Visibility Logic
+- [ ] Show button only when filters are not default
+- [ ] Hide when dateRangePreset="Всё время" AND maintenanceFilter="Все"
+- [ ] Smooth fade in/out animation
+- [ ] Position button properly in header layout
+
+### Testing
+- [ ] Test reset with date filters active
+- [ ] Test reset with operation type filters active
+- [ ] Test reset with both filters active
+- [ ] Verify button disappears when filters are default
+- [ ] Check mobile responsiveness
+
+
+## Phase 34 Completion Status
+
+All tasks completed:
+- [x] Create resetFilters function
+- [x] Reset dateRangePreset to "Всё время"
+- [x] Reset maintenanceFilter to "Все"
+- [x] Reset customDateRange to empty values
+- [x] Add optional toast notification on reset
+- [x] Add reset button next to date range badge
+- [x] Use X icon from lucide-react
+- [x] Style as outline variant for subtle appearance
+- [x] Add hover tooltip "Сбросить все фильтры"
+- [x] Make button responsive on mobile
+- [x] Show button only when filters are not default
+- [x] Hide when dateRangePreset="Всё время" AND maintenanceFilter="Все"
+- [x] Smooth fade in/out animation
+- [x] Position button properly in header layout
+- [x] Test reset with date filters active
+- [x] Test reset with operation type filters active
+- [x] Test reset with both filters active
+- [x] Verify button disappears when filters are default
+- [x] Check mobile responsiveness

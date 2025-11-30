@@ -124,6 +124,17 @@ export default function MachineDetail() {
     return `${formatDate(dateRange.start)} - ${formatDate(dateRange.end)}`;
   };
 
+  // Reset all filters to default state
+  const resetFilters = () => {
+    setDateRangePreset("Всё время");
+    setMaintenanceFilter("Все");
+    setCustomDateRange({ start: "", end: "" });
+    toast.success("Фильтры сброшены");
+  };
+
+  // Check if filters are active (not default)
+  const hasActiveFilters = dateRangePreset !== "Всё время" || maintenanceFilter !== "Все";
+
   // Mock machine data (replace with real API call)
   const mockMachine = {
     id: machineId || 1,
@@ -604,6 +615,18 @@ export default function MachineDetail() {
                   <Calendar className="w-3.5 h-3.5" />
                   {formatDateRangeDisplay()}
                 </Badge>
+                {hasActiveFilters && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={resetFilters}
+                    className="gap-1.5 h-8 px-2 text-xs hover:bg-destructive/10 hover:text-destructive transition-colors"
+                    title="Сбросить все фильтры"
+                  >
+                    <X className="w-3.5 h-3.5" />
+                    <span className="hidden sm:inline">Сбросить</span>
+                  </Button>
+                )}
               </div>
               <Dialog open={isMaintenanceOpen} onOpenChange={setIsMaintenanceOpen}>
                 <DialogTrigger asChild>
