@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { AlertTriangle, CheckCircle2, Copy, Download } from 'lucide-react';
+import { AlertTriangle, CheckCircle2, Copy, Download, Loader2 } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -13,11 +13,13 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
 import { toast } from 'sonner';
+import { useState } from 'react';
+import { trpc } from '@/lib/trpc';
 
 interface RegenerateBackupCodesDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onConfirm: () => Promise<void>;
+  onConfirm?: () => Promise<void>;
   isLoading?: boolean;
 }
 
@@ -38,13 +40,16 @@ export const RegenerateBackupCodesDialog: React.FC<RegenerateBackupCodesDialogPr
 
   const handleConfirmRegenerate = async () => {
     try {
-      await onConfirm();
-      // TODO: Get new codes from response
-      setStep('success');
-      setAcknowledged(false);
-    } catch (error) {
+      const response = await trpc.auth.regenerateBackupCodes.mutate();
+      if (response.success && response.codes) {
+        setNewCodes(response.codes);
+        setStep('success');
+        setAcknowledged(false);
+        await onConfirm();
+      }
+    } catch (error: any) {
       console.error('Error regenerating codes:', error);
-      toast.error('Failed to regenerate backup codes');
+      toast.error(error.message || 'Failed to regenerate backup codes');
     }
   };
 
@@ -195,10 +200,17 @@ export const RegenerateBackupCodesDialog: React.FC<RegenerateBackupCodesDialogPr
               </Button>
               <Button
                 onClick={handleConfirmRegenerate}
-                disabled={isLoading}
+                disabled={isRegenerating}
                 className="gap-2 bg-red-600 hover:bg-red-700 dark:bg-red-700 dark:hover:bg-red-800"
               >
-                {isLoading ? 'Regenerating...' : 'Regenerate Now'}
+                {isRegenerating ? (
+                  <>
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    Regenerating...
+                  </>
+                ) : (
+                  'Regenerate Now'
+                )}
               </Button>
             </DialogFooter>
           </>

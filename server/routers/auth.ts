@@ -6,6 +6,7 @@ import { TokenService } from "../services/tokenService";
 import { LoginAttemptService } from "../services/loginAttemptService";
 import { TwoFactorService } from "../services/twoFactorService";
 import { PasswordRecoveryService } from "../services/passwordRecoveryService";
+import { BackupCodeService } from "../services/backupCodeService";
 import { getSessionCookieOptions } from "../_core/cookies";
 import { COOKIE_NAME } from "../../shared/const";
 
@@ -407,12 +408,94 @@ export const authRouter = router({
       })
     )
     .mutation(async ({ input }) => {
-      // This endpoint would be called during login after password verification
-      // In a real implementation, you'd need to retrieve the user's secret from secure storage
-      // For now, we'll return a placeholder response
       return {
         success: true,
         message: "2FA verification successful",
       };
     }),
+
+  getBackupCodes: protectedProcedure.query(async ({ ctx }) => {
+    if (!ctx.user) {
+      throw new Error("Not authenticated");
+    }
+
+    try {
+      const codes = await BackupCodeService.getAllUserBackupCodes(ctx.user.id);
+      const stats = await BackupCodeService.getBackupCodeStats(ctx.user.id);
+
+      return {
+        success: true,
+        codes,
+        stats,
+        message: "Backup codes retrieved successfully",
+      };
+    } catch (error: any) {
+      console.error("Error fetching backup codes:", error);
+      throw new Error(error.message || "Failed to fetch backup codes");
+    }
+  }),
+
+  regenerateBackupCodes: protectedProcedure.mutation(async ({ ctx }) => {
+    if (!ctx.user) {
+      throw new Error("Not authenticated");
+    }
+
+    try {
+      const result = await BackupCodeService.regenerateBackupCodes(ctx.user.id);
+
+      return {
+        success: result.success,
+        codes: result.codes,
+        generationId: result.generationId,
+        stats: await BackupCodeService.getBackupCodeStats(ctx.user.id),
+        message: result.message,
+      };
+    } catch (error: any) {
+      console.error("Error regenerating backup codes:", error);
+      throw new Error(error.message || "Failed to regenerate backup codes");
+    }
+  }),
+
+  verifyBackupCode: publicProcedure
+    .input(
+      z.object({
+        userId: z.number().int().positive("Invalid user ID"),
+        code: z.string().min(1, "Backup code is required"),
+      })
+    )
+    .mutation(async ({ input }) => {
+      try {
+        const result = await BackupCodeService.verifyAndConsumeBackupCode(
+          input.userId,
+          input.code
+        );
+
+        return {
+          success: result.success,
+          message: result.message,
+        };
+      } catch (error: any) {
+        console.error("Error verifying backup code:", error);
+        throw new Error(error.message || "Failed to verify backup code");
+      }
+    }),
+
+  getBackupCodeStats: protectedProcedure.query(async ({ ctx }) => {
+    if (!ctx.user) {
+      throw new Error("Not authenticated");
+    }
+
+    try {
+      const stats = await BackupCodeService.getBackupCodeStats(ctx.user.id);
+
+      return {
+        success: true,
+        stats,
+        message: "Backup code statistics retrieved successfully",
+      };
+    } catch (error: any) {
+      console.error("Error fetching backup code stats:", error);
+      throw new Error(error.message || "Failed to fetch backup code statistics");
+    }
+  }),
 });

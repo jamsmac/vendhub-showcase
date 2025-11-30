@@ -6,6 +6,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
+import { trpc } from '@/lib/trpc';
 
 interface BackupCode {
   id: number;
@@ -46,13 +47,14 @@ export const BackupCodeManager: React.FC<BackupCodeManagerProps> = ({
   const loadBackupCodes = async () => {
     try {
       setLoading(true);
-      // TODO: Call tRPC endpoint to fetch backup codes
-      // const response = await trpc.user.getBackupCodes.useQuery({ userId });
-      // setCodes(response.data);
-      // setStats(response.stats);
-    } catch (error) {
+      const response = await trpc.auth.getBackupCodes.query();
+      if (response.success && response.codes) {
+        setCodes(response.codes);
+        setStats(response.stats);
+      }
+    } catch (error: any) {
       console.error('Failed to load backup codes:', error);
-      toast.error('Failed to load backup codes');
+      toast.error(error.message || 'Failed to load backup codes');
     } finally {
       setLoading(false);
     }
@@ -65,15 +67,16 @@ export const BackupCodeManager: React.FC<BackupCodeManagerProps> = ({
 
     try {
       setRegenerating(true);
-      // TODO: Call tRPC endpoint to regenerate backup codes
-      // const response = await trpc.user.regenerateBackupCodes.mutate({ userId });
-      // setCodes(response.codes);
-      // setStats(response.stats);
-      toast.success('Backup codes regenerated successfully');
-      onCodesRegenerated?.();
-    } catch (error) {
+      const response = await trpc.auth.regenerateBackupCodes.mutate();
+      if (response.success && response.codes) {
+        setCodes(response.codes);
+        setStats(response.stats);
+        toast.success('Backup codes regenerated successfully');
+        onCodesRegenerated?.();
+      }
+    } catch (error: any) {
       console.error('Failed to regenerate backup codes:', error);
-      toast.error('Failed to regenerate backup codes');
+      toast.error(error.message || 'Failed to regenerate backup codes');
     } finally {
       setRegenerating(false);
     }

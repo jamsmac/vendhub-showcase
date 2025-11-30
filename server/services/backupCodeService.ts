@@ -1,7 +1,15 @@
-import { v4 as uuidv4 } from 'uuid';
 import { getDb } from '../db';
 import { backupCodes } from '../../drizzle/schema';
 import { eq, and } from 'drizzle-orm';
+
+// Simple UUID v4-like generator (no external dependency)
+function generateUUID(): string {
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+    const r = (Math.random() * 16) | 0;
+    const v = c === 'x' ? r : (r & 0x3) | 0x8;
+    return v.toString(16);
+  });
+}
 
 /**
  * BackupCodeService - Handles backup code generation, storage, and verification
@@ -43,7 +51,7 @@ export class BackupCodeService {
       const db = await getDb();
       if (!db) throw new Error('Database not connected');
 
-      const generationId = uuidv4();
+      const generationId = generateUUID();
 
       // Delete old backup codes for this user
       await db.delete(backupCodes).where(eq(backupCodes.userId, userId));

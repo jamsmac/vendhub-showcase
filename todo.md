@@ -2266,3 +2266,11 @@ All tasks completed:
 - [x] Implement regenerate backup codes functionality with warnings
 - [x] Integrate backup code management into UserSettings page
 - [x] Test and deliver backup code management feature
+
+
+## tRPC Endpoints for Backup Codes
+- [x] Create tRPC endpoints for backup codes (getBackupCodes, regenerateBackupCodes, verifyBackupCode)
+- [x] Connect BackupCodeManager to tRPC queries
+- [x] Connect RegenerateBackupCodesDialog to tRPC mutations
+- [x] Test endpoints and UI integration
+- [x] Deploy and deliver tRPC integration
