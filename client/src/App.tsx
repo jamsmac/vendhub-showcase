@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import '@/i18n/config';
 import { Route, Switch } from "wouter";
 import ErrorBoundary from "./components/ErrorBoundary";
@@ -6,6 +6,21 @@ import { ThemeProvider } from "./contexts/ThemeContext";
 import VendHubLayout from "./components/VendHubLayout";
 import CommandPalette from "./components/CommandPalette";
 import { trpc } from "@/lib/trpc";
+import Registration from "./components/Registration";
+import Login from "./components/Login";
+import OnboardingWizard from "./components/OnboardingWizard";
+
+// Auth state management
+interface AuthState {
+  isAuthenticated: boolean;
+  user?: {
+    id: number;
+    email: string;
+    fullName: string;
+    role: string;
+  };
+  needsOnboarding?: boolean;
+}
 
 // Dashboard with real backend data
 function DashboardPage() {
@@ -247,6 +262,80 @@ function Router() {
 }
 
 function App() {
+  const [authState, setAuthState] = useState<AuthState>({
+    isAuthenticated: false,
+  });
+  const [currentView, setCurrentView] = useState<'auth' | 'onboarding' | 'app'>('auth');
+
+  const handleRegistrationComplete = () => {
+    // After registration, show login
+    setCurrentView('auth');
+  };
+
+  const handleLoginSuccess = (user: AuthState['user']) => {
+    // After login, check if user needs onboarding
+    setAuthState({
+      isAuthenticated: true,
+      user,
+      needsOnboarding: true, // TODO: Check from server if user has completed onboarding
+    });
+    setCurrentView('onboarding');
+  };
+
+  const handleOnboardingComplete = () => {
+    // After onboarding, show app
+    setCurrentView('app');
+  };
+
+  const handleLogout = () => {
+    // Reset auth state and show login
+    setAuthState({
+      isAuthenticated: false,
+    });
+    setCurrentView('auth');
+  };
+
+  // Show authentication screens
+  if (currentView === 'auth') {
+    return (
+      <ErrorBoundary>
+        <ThemeProvider defaultTheme="dark">
+          <div className="flex">
+            <Registration
+              onRegistrationComplete={handleRegistrationComplete}
+              onSwitchToLogin={() => setCurrentView('auth')}
+            />
+            {/* TODO: Add Login component toggle */}
+            <Login
+              onLoginSuccess={(user) => handleLoginSuccess({
+                id: 1,
+                email: 'user@example.com',
+                fullName: 'User Name',
+                role: 'operator',
+              })}
+              onSwitchToRegister={() => setCurrentView('auth')}
+            />
+          </div>
+        </ThemeProvider>
+      </ErrorBoundary>
+    );
+  }
+
+  // Show onboarding wizard
+  if (currentView === 'onboarding' && authState.user) {
+    return (
+      <ErrorBoundary>
+        <ThemeProvider defaultTheme="dark">
+          <OnboardingWizard
+            userEmail={authState.user.email}
+            onOnboardingComplete={handleOnboardingComplete}
+          />
+        </ThemeProvider>
+      </ErrorBoundary>
+    );
+  }
+
+  // Show main app
   return (
     <ErrorBoundary>
       <ThemeProvider defaultTheme="dark">
