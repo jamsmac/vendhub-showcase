@@ -12,6 +12,7 @@ import OnboardingWizard from "./components/OnboardingWizard";
 import MandatoryPasswordChange from "./components/MandatoryPasswordChange";
 import Alerts from "./pages/Alerts";
 import AdminAnalytics from "./pages/AdminAnalytics";
+import AdminSecurity from "./pages/AdminSecurity";
 
 // Auth state management
 interface AuthState {
@@ -254,6 +255,7 @@ function Router() {
         <Route path="/counterparties" component={CounterpartiesPage} />
         <Route path="/contracts" component={ContractsPage} />
         <Route path="/analytics" component={AdminAnalytics} />
+        <Route path="/admin/security" component={AdminSecurity} />
         <Route path="/alerts" component={Alerts} />
         <Route path="/reports" component={ReportsPage} />
         <Route path="/incidents" component={IncidentsPage} />

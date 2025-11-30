@@ -2,10 +2,11 @@ import { useState } from "react";
 import { Link, useLocation } from "wouter";
 import { 
   Home, Factory, Package, DollarSign, BarChart3, Users, 
-  Settings, HelpCircle, Bell, Menu, X, ChevronDown, ChevronRight, AlertCircle
+  Settings, HelpCircle, Bell, Menu, X, ChevronDown, ChevronRight, AlertCircle, Shield
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { useAuth } from "@/hooks/useAuth";
 
 interface NavGroup {
   id: string;
@@ -72,6 +73,14 @@ const navigationGroups: NavGroup[] = [
       { id: "access-requests", title: "Заявки на доступ", path: "/access-requests", badge: 2 },
     ],
   },
+  {
+    id: "security",
+    title: "Безопасность",
+    icon: Shield,
+    items: [
+      { id: "security-dashboard", title: "Мониторинг", path: "/admin/security" },
+    ],
+  },
 ];
 
 interface VendHubLayoutProps {
@@ -82,6 +91,16 @@ export default function VendHubLayout({ children }: VendHubLayoutProps) {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [expandedGroups, setExpandedGroups] = useState<string[]>(["operations"]);
   const [location] = useLocation();
+  const { user } = useAuth();
+
+  // Filter navigation groups based on user role
+  const filteredNavigationGroups = navigationGroups.filter(group => {
+    // Show security group only for admin users
+    if (group.id === "security") {
+      return user?.role === "admin" || user?.role === "superadmin";
+    }
+    return true;
+  });
 
   const toggleGroup = (groupId: string) => {
     setExpandedGroups(prev =>
@@ -150,7 +169,7 @@ export default function VendHubLayout({ children }: VendHubLayoutProps) {
           <div className="my-2 border-t" />
 
           {/* Navigation Groups */}
-          {navigationGroups.map((group) => {
+          {filteredNavigationGroups.map((group) => {
             const Icon = group.icon;
             const isExpanded = expandedGroups.includes(group.id);
 
@@ -226,12 +245,12 @@ export default function VendHubLayout({ children }: VendHubLayoutProps) {
         <div className="border-t p-2">
           <button className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium hover:bg-accent">
             <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-primary-foreground">
-              J
+              {user?.name?.charAt(0).toUpperCase() || "J"}
             </div>
             {sidebarOpen && (
               <div className="flex-1 text-left">
-                <div className="font-medium">Jamshid</div>
-                <div className="text-xs text-muted-foreground">Owner</div>
+                <div className="font-medium">{user?.name || "User"}</div>
+                <div className="text-xs text-muted-foreground">{user?.role || "User"}</div>
               </div>
             )}
             {sidebarOpen && <ChevronDown className="h-4 w-4" />}
