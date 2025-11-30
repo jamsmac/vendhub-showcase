@@ -1416,3 +1416,142 @@ All tasks completed:
 - Security dashboard with real-time metrics
 - Session management and monitoring
 - Best practices guide for administrators
+
+
+## Dynamic Permission Editor System (NEW)
+
+### Database Schema (5 new tables)
+- [x] Create permissions table with key, name, description, category, and risk level
+- [x] Create rolePermissions table to map permissions to roles dynamically
+- [x] Create permissionChanges table for auditing permission modifications
+- [x] Create permissionGroups table for grouping related permissions
+- [x] Create permissionGroupMembers table to link permissions to groups
+
+### Permission Management Service (db-permissions.ts)
+- [x] getAllPermissions: Fetch all permissions with filtering
+- [x] getPermissionsByCategory: Filter permissions by category
+- [x] getRolePermissions: Get all permissions for a specific role
+- [x] hasPermission: Check if a role has a specific permission
+- [x] grantPermission: Grant a permission to a role with audit logging
+- [x] revokePermission: Remove a permission from a role with audit logging
+- [x] updateRolePermissions: Bulk update all permissions for a role
+- [x] getPermissionChangeHistory: Audit trail of permission changes
+- [x] getPermissionGroups: Fetch permission groups
+- [x] getGroupPermissions: Get permissions in a group
+- [x] createPermission: Create new permission (for admins)
+- [x] updatePermission: Modify permission details
+- [x] deletePermission: Remove a permission
+- [x] getRoleHierarchy: Get all permissions for all roles
+- [x] getPermissionStats: Analytics on permission distribution
+
+### tRPC Endpoints (permissionsRouter)
+- [x] getAllPermissions: Query all permissions (admin only)
+- [x] getPermissionsByCategory: Filter by category (admin only)
+- [x] getRolePermissions: Get role's permissions (admin only)
+- [x] hasPermission: Check if role has permission (admin only)
+- [x] grantPermission: Grant permission to role (admin only, audited)
+- [x] revokePermission: Revoke permission from role (admin only, audited)
+- [x] updateRolePermissions: Bulk update permissions (admin only, audited)
+- [x] getPermissionChangeHistory: View audit trail (admin only)
+- [x] getPermissionGroups: Fetch groups (admin only)
+- [x] getGroupPermissions: Get group members (admin only)
+- [x] createPermission: Create new permission (admin only)
+- [x] updatePermission: Modify permission (admin only)
+- [x] deletePermission: Remove permission (admin only)
+- [x] getRoleHierarchy: View role hierarchy (admin only)
+- [x] getPermissionStats: View statistics (admin only)
+
+### Frontend Components
+- [x] PermissionMatrix: Interactive table with checkboxes for selecting permissions
+  * Search by name, key, or description
+  * Filter by category and risk level
+  * Group permissions by category
+  * Show risk level badges (low, medium, high, critical)
+  * Select/deselect all in category
+  * Display permission summary
+
+- [x] RolePreviewPanel: Real-time preview of what a role can access
+  * Role description and statistics
+  * Permissions grouped by category with tabs
+  * Visual indication of selected permissions
+  * Access summary showing capabilities (users, machines, inventory, reports, settings, audit)
+  * Risk level breakdown (critical, high risk counts)
+
+### Permission Hierarchy & Inheritance (usePermissionHierarchy.ts)
+- [x] ROLE_HIERARCHY: Define role levels (user < operator < manager < admin)
+- [x] DEFAULT_ROLE_PERMISSIONS: Pre-configured permissions for each role
+- [x] inheritsFrom: Check if role inherits from another
+- [x] getInheritedPermissions: Get permissions from role and lower roles
+- [x] getExclusivePermissions: Get role-specific permissions
+- [x] getMinimumRoleForPermission: Find minimum role for a permission
+- [x] isHighRiskPermission: Check if permission is high-risk
+- [x] getConfigurationWarnings: Validate role configuration
+- [x] suggestPermissionsForRole: Get recommended permissions
+- [x] getRoleDescription: Get role description
+- [x] getRoleDisplayName: Get role display name
+- [x] getRoleColor: Get role UI color
+
+### Permission Editor Page (AdminPermissions.tsx)
+- [x] Role selector with permission count display
+- [x] Permission matrix with advanced filtering
+- [x] Real-time preview panel showing accessible features
+- [x] Apply recommended permissions button
+- [x] Save/Discard changes functionality
+- [x] Unsaved changes warning
+- [x] Configuration warnings display
+- [x] Sticky action buttons at bottom
+- [x] Tabs for matrix view and preview view
+- [x] Loading states and error handling
+
+### Permission Validation (permissionValidator.ts)
+- [x] validatePermissions: Comprehensive validation of permission sets
+  * Detect conflicting permissions
+  * Detect suspicious combinations
+  * Detect missing related permissions
+  * Check for excessive critical/high-risk permissions
+  * Return errors, warnings, and suggestions
+
+- [x] detectConflicts: Find permission conflicts
+  * Delete without view/create
+  * Missing prerequisite permissions
+
+- [x] detectSuspiciousCombinations: Find unusual permission patterns
+  * Delete without create/update
+  * Excessive admin permissions
+  * Export without view
+
+- [x] detectMissingRelatedPermissions: Suggest related permissions
+  * Create requires view
+  * Update requires view
+  * Delete requires view and update
+  * Export requires view
+
+- [x] isSafeToGrant: Check if permission is safe for role
+  * Critical permissions only for admins
+  * High-risk permissions restricted for users
+
+- [x] getPermissionImpact: Assess permission impact
+  * Risk level
+  * Description
+  * Affected areas
+
+- [x] comparePermissions: Diff two permission sets
+  * Added permissions
+  * Removed permissions
+  * Unchanged permissions
+
+- [x] generateAuditMessage: Create audit trail message
+
+### Features Implemented
+- Dynamic permission management without hardcoding
+- Role-based permission assignment with inheritance
+- Real-time preview of role capabilities
+- Comprehensive validation and conflict detection
+- Audit logging for all permission changes
+- Permission grouping by category
+- Risk level assessment (low, medium, high, critical)
+- Recommended permissions for each role
+- Configuration warnings and suggestions
+- Bulk permission updates with change tracking
+- Permission statistics and analytics
+- Admin-only access control

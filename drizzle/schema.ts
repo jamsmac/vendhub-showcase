@@ -644,3 +644,114 @@ export type InsertApiRateLimit = typeof apiRateLimits.$inferInsert;
 
 export type DataAccessLog = typeof dataAccessLogs.$inferSelect;
 export type InsertDataAccessLog = typeof dataAccessLogs.$inferInsert;
+
+
+/**
+ * Permissions - Define granular permissions for the system
+ */
+export const permissions = mysqlTable(
+	"permissions",
+	{
+		id: int().autoincrement().notNull(),
+		key: varchar({ length: 100 }).notNull().unique(), // 'users.view', 'users.create', 'machines.edit', etc.
+		name: varchar({ length: 255 }).notNull(), // Human-readable name
+		description: text(), // What this permission allows
+		category: varchar({ length: 50 }).notNull(), // 'users', 'machines', 'inventory', 'reports', 'settings'
+		riskLevel: mysqlEnum(['low', 'medium', 'high', 'critical']).default('low').notNull(),
+		createdAt: timestamp({ mode: 'string' }).default('CURRENT_TIMESTAMP').notNull(),
+		updatedAt: timestamp({ mode: 'string' }).default('CURRENT_TIMESTAMP').notNull(),
+	},
+	(table) => [
+		index("permissions_key_unique").on(table.key),
+		index("permissions_category_index").on(table.category),
+	]
+);
+
+/**
+ * Role Permissions - Map permissions to roles
+ */
+export const rolePermissions = mysqlTable(
+	"rolePermissions",
+	{
+		id: int().autoincrement().notNull(),
+		role: mysqlEnum(['user', 'operator', 'manager', 'admin']).notNull(),
+		permissionId: int().notNull(),
+		grantedAt: timestamp({ mode: 'string' }).default('CURRENT_TIMESTAMP').notNull(),
+		grantedBy: int(), // Admin who granted this permission
+		notes: text(), // Why this permission was granted
+	},
+	(table) => [
+		index("rolePermissions_role_index").on(table.role),
+		index("rolePermissions_permissionId_index").on(table.permissionId),
+		index("rolePermissions_role_permissionId_unique").on(table.role, table.permissionId),
+	]
+);
+
+/**
+ * Permission Changes - Audit log for permission modifications
+ */
+export const permissionChanges = mysqlTable(
+	"permissionChanges",
+	{
+		id: int().autoincrement().notNull(),
+		role: mysqlEnum(['user', 'operator', 'manager', 'admin']).notNull(),
+		permissionId: int().notNull(),
+		action: mysqlEnum(['granted', 'revoked']).notNull(),
+		changedBy: int().notNull(), // Admin who made the change
+		reason: text(), // Why the permission was changed
+		createdAt: timestamp({ mode: 'string' }).default('CURRENT_TIMESTAMP').notNull(),
+	},
+	(table) => [
+		index("permissionChanges_role_index").on(table.role),
+		index("permissionChanges_changedBy_index").on(table.changedBy),
+		index("permissionChanges_createdAt_index").on(table.createdAt),
+	]
+);
+
+/**
+ * Permission Groups - Group related permissions for easier management
+ */
+export const permissionGroups = mysqlTable(
+	"permissionGroups",
+	{
+		id: int().autoincrement().notNull(),
+		name: varchar({ length: 255 }).notNull(), // 'User Management', 'Machine Operations', etc.
+		description: text(),
+		category: varchar({ length: 50 }).notNull(), // 'users', 'machines', 'inventory', 'reports', 'settings'
+		createdAt: timestamp({ mode: 'string' }).default('CURRENT_TIMESTAMP').notNull(),
+	},
+	(table) => [
+		index("permissionGroups_category_index").on(table.category),
+	]
+);
+
+/**
+ * Permission Group Members - Link permissions to groups
+ */
+export const permissionGroupMembers = mysqlTable(
+	"permissionGroupMembers",
+	{
+		id: int().autoincrement().notNull(),
+		groupId: int().notNull(),
+		permissionId: int().notNull(),
+	},
+	(table) => [
+		index("permissionGroupMembers_groupId_index").on(table.groupId),
+		index("permissionGroupMembers_permissionId_index").on(table.permissionId),
+	]
+);
+
+export type Permission = typeof permissions.$inferSelect;
+export type InsertPermission = typeof permissions.$inferInsert;
+
+export type RolePermission = typeof rolePermissions.$inferSelect;
+export type InsertRolePermission = typeof rolePermissions.$inferInsert;
+
+export type PermissionChange = typeof permissionChanges.$inferSelect;
+export type InsertPermissionChange = typeof permissionChanges.$inferInsert;
+
+export type PermissionGroup = typeof permissionGroups.$inferSelect;
+export type InsertPermissionGroup = typeof permissionGroups.$inferInsert;
+
+export type PermissionGroupMember = typeof permissionGroupMembers.$inferSelect;
+export type InsertPermissionGroupMember = typeof permissionGroupMembers.$inferInsert;
