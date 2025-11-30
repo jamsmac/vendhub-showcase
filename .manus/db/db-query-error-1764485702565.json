@@ -1,0 +1,8 @@
+{
+  "query": "INSERT INTO machines (name, serial_number, model, location, status) VALUES \n('Аппарат №1 - Офис', 'VM-001', 'VendMax 3000', 'БЦ \"Москва-Сити\", 1 этаж', 'active'),\n('Аппарат №2 - Метро', 'VM-002', 'VendMax 3000', 'Метро Парк Культуры', 'active'),\n('Аппарат №3 - Вокзал', 'VM-003', 'VendMax 5000', 'Казанский вокзал', 'maintenance');",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3FfdjCLoumdFxBM.root --database CnvwHcg9Gg9M7uweMepDrE --execute INSERT INTO machines (name, serial_number, model, location, status) VALUES \n('Аппарат №1 - Офис', 'VM-001', 'VendMax 3000', 'БЦ \"Москва-Сити\", 1 этаж', 'active'),\n('Аппарат №2 - Метро', 'VM-002', 'VendMax 3000', 'Метро Парк Культуры', 'active'),\n('Аппарат №3 - Вокзал', 'VM-003', 'VendMax 5000', 'Казанский вокзал', 'maintenance');",
+  "returncode": 1,
+  "logs": [
+    "ERROR 1265 (01000) at line 1: Data truncated for column 'status' at row 1"
+  ]
+}

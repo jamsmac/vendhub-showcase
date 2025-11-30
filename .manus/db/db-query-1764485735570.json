@@ -1,0 +1,9 @@
+{
+  "query": "INSERT INTO tasks (machineId, type, status, priority, description) VALUES \n(1, 'refill', 'pending', 'normal', 'Пополнить кофе'),\n(2, 'maintenance', 'in_progress', 'urgent', 'Проверить кофемашину'),\n(3, 'cleaning', 'pending', 'low', 'Плановая чистка');",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3FfdjCLoumdFxBM.root --database CnvwHcg9Gg9M7uweMepDrE --execute INSERT INTO tasks (machineId, type, status, priority, description) VALUES \n(1, 'refill', 'pending', 'normal', 'Пополнить кофе'),\n(2, 'maintenance', 'in_progress', 'urgent', 'Проверить кофемашину'),\n(3, 'cleaning', 'pending', 'low', 'Плановая чистка');",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 55
+}

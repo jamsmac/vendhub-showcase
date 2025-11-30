@@ -1,0 +1,8 @@
+{
+  "query": "INSERT INTO machines (name, serial_number, model, location, status, total_revenue, total_sales) VALUES \n('Аппарат №1 - Офис', 'VM-001', 'VendMax 3000', 'БЦ \"Москва-Сити\", 1 этаж', 'active', 150000, 450),\n('Аппарат №2 - Метро', 'VM-002', 'VendMax 3000', 'Метро Парк Культуры', 'active', 280000, 890),\n('Аппарат №3 - Вокзал', 'VM-003', 'VendMax 5000', 'Казанский вокзал', 'maintenance', 320000, 1200);",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3FfdjCLoumdFxBM.root --database CnvwHcg9Gg9M7uweMepDrE --execute INSERT INTO machines (name, serial_number, model, location, status, total_revenue, total_sales) VALUES \n('Аппарат №1 - Офис', 'VM-001', 'VendMax 3000', 'БЦ \"Москва-Сити\", 1 этаж', 'active', 150000, 450),\n('Аппарат №2 - Метро', 'VM-002', 'VendMax 3000', 'Метро Парк Культуры', 'active', 280000, 890),\n('Аппарат №3 - Вокзал', 'VM-003', 'VendMax 5000', 'Казанский вокзал', 'maintenance', 320000, 1200);",
+  "returncode": 1,
+  "logs": [
+    "ERROR 1054 (42S22) at line 1: Unknown column 'total_revenue' in 'field list'"
+  ]
+}

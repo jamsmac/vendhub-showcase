@@ -1,0 +1,9 @@
+{
+  "query": "INSERT INTO products (name, sku, category, unit, cost_price, selling_price) VALUES \n('Кофе Американо', 'COFFEE-001', 'Напитки', 'шт', 25, 80),\n('Кофе Капучино', 'COFFEE-002', 'Напитки', 'шт', 30, 100),\n('Чай черный', 'TEA-001', 'Напитки', 'шт', 15, 50);",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3FfdjCLoumdFxBM.root --database CnvwHcg9Gg9M7uweMepDrE --execute INSERT INTO products (name, sku, category, unit, cost_price, selling_price) VALUES \n('Кофе Американо', 'COFFEE-001', 'Напитки', 'шт', 25, 80),\n('Кофе Капучино', 'COFFEE-002', 'Напитки', 'шт', 30, 100),\n('Чай черный', 'TEA-001', 'Напитки', 'шт', 15, 50);",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 56
+}

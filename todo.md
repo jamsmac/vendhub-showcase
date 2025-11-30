@@ -681,3 +681,34 @@
 - [x] Test keyboard navigation (arrow keys, Enter)
 - [x] Update todo.md with completion status
 - [ ] Add quick actions (create task, add machine, etc.) - future enhancement
+
+
+## Phase 26: Backend Integration (Nov 30, 2025)
+- [ ] Review existing database schema (drizzle/schema.ts)
+- [ ] Set up tRPC client in frontend
+- [ ] Create tRPC router structure for all modules
+- [ ] Implement machines module (list, create, update, delete)
+- [ ] Implement tasks module (list, create, update, delete)
+- [ ] Implement inventory module (list, update stock levels)
+- [ ] Implement products module (list, create, update, delete)
+- [ ] Implement locations module (list, create, update, delete)
+- [ ] Implement users module (list, roles, permissions)
+- [ ] Connect Dashboard metrics to real database queries
+- [ ] Add loading states and error handling
+- [ ] Test all CRUD operations
+- [ ] Update todo.md with completion status
+
+
+## Phase 27: Backend Connection Fixes (Nov 30, 2025)
+- [x] Identify drizzle schema mismatch (camelCase fields vs snake_case DB columns)
+- [x] Fix machines table schema with proper snake_case mapping
+- [x] Fix products table schema with proper snake_case mapping  
+- [x] Fix tasks table schema with proper snake_case mapping
+- [ ] Fix all remaining tables in schema (inventory, transactions, suppliers, etc.)
+- [ ] Test tRPC endpoints return correct data
+- [ ] Verify Dashboard displays real data from database
+- [ ] Test Machines page with real data
+- [ ] Test Tasks page with real data
+- [ ] Test Products page with real data
+- [ ] Create comprehensive seed script with realistic data
+- [ ] Save checkpoint with working backend integration

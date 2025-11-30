@@ -1,0 +1,9 @@
+{
+  "query": "INSERT INTO machines (name, serial_number, model, location, status) VALUES \n('Аппарат №1 - Офис', 'VM-001', 'VendMax 3000', 'БЦ \"Москва-Сити\", 1 этаж', 'online'),\n('Аппарат №2 - Метро', 'VM-002', 'VendMax 3000', 'Метро Парк Культуры', 'online'),\n('Аппарат №3 - Вокзал', 'VM-003', 'VendMax 5000', 'Казанский вокзал', 'maintenance');",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3FfdjCLoumdFxBM.root --database CnvwHcg9Gg9M7uweMepDrE --execute INSERT INTO machines (name, serial_number, model, location, status) VALUES \n('Аппарат №1 - Офис', 'VM-001', 'VendMax 3000', 'БЦ \"Москва-Сити\", 1 этаж', 'online'),\n('Аппарат №2 - Метро', 'VM-002', 'VendMax 3000', 'Метро Парк Культуры', 'online'),\n('Аппарат №3 - Вокзал', 'VM-003', 'VendMax 5000', 'Казанский вокзал', 'maintenance');",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 65
+}

@@ -96,23 +96,23 @@ export const inventoryAdjustments = mysqlTable("inventoryAdjustments", {
 export const machines = mysqlTable("machines", {
 	id: int().autoincrement().notNull(),
 	name: varchar({ length: 255 }).notNull(),
-	serialNumber: varchar({ length: 100 }).notNull(),
+	serialNumber: varchar('serial_number', { length: 100 }).notNull(),
 	model: varchar({ length: 100 }),
 	location: text().notNull(),
 	latitude: varchar({ length: 50 }),
 	longitude: varchar({ length: 50 }),
-	status: mysqlEnum(['active','maintenance','offline','retired']).default('offline').notNull(),
-	lastMaintenance: timestamp({ mode: 'string' }),
-	nextServiceDue: timestamp({ mode: 'string' }),
-	totalRevenue: int().default(0).notNull(),
-	totalSales: int().default(0).notNull(),
+	status: mysqlEnum(['online','maintenance','offline']).default('offline').notNull(),
+	lastMaintenance: timestamp('last_maintenance', { mode: 'string' }),
+	nextServiceDue: timestamp('next_service_due', { mode: 'string' }),
+	totalRevenue: int('total_revenue').default(0),
+	totalSales: int('total_sales').default(0),
 	photo: varchar({ length: 255 }),
 	notes: text(),
-	createdAt: timestamp({ mode: 'string' }).default('CURRENT_TIMESTAMP').notNull(),
-	updatedAt: timestamp({ mode: 'string' }).defaultNow().onUpdateNow().notNull(),
+	createdAt: timestamp('created_at', { mode: 'string' }).default(sql`CURRENT_TIMESTAMP`).notNull(),
+	updatedAt: timestamp('updated_at', { mode: 'string' }).default(sql`CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP`).notNull(),
 },
 (table) => [
-	index("machines_serialNumber_unique").on(table.serialNumber),
+	index("machines_serial_number_unique").on(table.serialNumber),
 ]);
 
 export const products = mysqlTable("products", {
@@ -121,10 +121,10 @@ export const products = mysqlTable("products", {
 	sku: varchar({ length: 100 }),
 	category: varchar({ length: 100 }),
 	unit: varchar({ length: 50 }).notNull(),
-	costPrice: int().notNull(),
-	sellingPrice: int().notNull(),
-	createdAt: timestamp({ mode: 'string' }).default('CURRENT_TIMESTAMP').notNull(),
-	updatedAt: timestamp({ mode: 'string' }).defaultNow().onUpdateNow().notNull(),
+	costPrice: int('cost_price').notNull(),
+	sellingPrice: int('selling_price').notNull(),
+	createdAt: timestamp('created_at', { mode: 'string' }).default(sql`CURRENT_TIMESTAMP`).notNull(),
+	updatedAt: timestamp('updated_at', { mode: 'string' }).default(sql`CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP`).notNull(),
 },
 (table) => [
 	index("products_sku_unique").on(table.sku),
@@ -175,17 +175,17 @@ export const suppliers = mysqlTable("suppliers", {
 
 export const tasks = mysqlTable("tasks", {
 	id: int().autoincrement().notNull(),
-	machineId: int().notNull(),
-	assignedTo: int(),
+	machineId: int('machineId').notNull(),
+	assignedTo: int('assignedTo'),
 	type: mysqlEnum(['refill','maintenance','cleaning']).notNull(),
 	status: mysqlEnum(['pending','in_progress','completed','rejected']).default('pending').notNull(),
 	priority: mysqlEnum(['low','normal','urgent']).default('normal').notNull(),
 	description: text(),
-	beforePhotoUrl: text(),
-	afterPhotoUrl: text(),
-	createdAt: timestamp({ mode: 'string' }).default('CURRENT_TIMESTAMP').notNull(),
-	completedAt: timestamp({ mode: 'string' }),
-	updatedAt: timestamp({ mode: 'string' }).defaultNow().onUpdateNow().notNull(),
+	beforePhotoUrl: text('beforePhotoUrl'),
+	afterPhotoUrl: text('afterPhotoUrl'),
+	createdAt: timestamp('createdAt', { mode: 'string' }).default(sql`CURRENT_TIMESTAMP`).notNull(),
+	completedAt: timestamp('completedAt', { mode: 'string' }),
+	updatedAt: timestamp('updatedAt', { mode: 'string' }).default(sql`CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP`).notNull(),
 });
 
 export const transactions = mysqlTable("transactions", {
