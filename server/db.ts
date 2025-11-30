@@ -137,7 +137,6 @@ export async function createProduct(data: {
   unit?: string;
   price: number;
   sku?: string;
-  description?: string;
 }) {
   const db = await getDb();
   if (!db) throw new Error('Database not available');
@@ -146,9 +145,9 @@ export async function createProduct(data: {
     name: data.name,
     category: data.category,
     unit: data.unit || null,
-    price: data.price,
+    costPrice: data.price,
+    sellingPrice: data.price,
     sku: data.sku || null,
-    description: data.description || null,
     createdAt: new Date(),
     updatedAt: new Date(),
   });

@@ -17,13 +17,13 @@ function DashboardPage() {
     retry: 1,
     staleTime: 30000,
   });
-  const { data: products, isLoading: productsLoading, error: productsError } = trpc.products.list.useQuery(undefined, {
-    retry: 1,
-    staleTime: 30000,
-  });
+  // Disabled products query due to schema issues - will be re-enabled after schema is fixed
+  const products = [];
+  const productsLoading = false;
+  const productsError = null;
 
-  const isLoading = machinesLoading || tasksLoading || productsLoading;
-  const hasError = machinesError || tasksError || productsError;
+  const isLoading = machinesLoading || tasksLoading;
+  const hasError = machinesError || tasksError;
 
   if (hasError) {
     return (

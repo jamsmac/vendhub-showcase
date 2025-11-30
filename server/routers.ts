@@ -50,7 +50,6 @@ export const appRouter = router({
         unit: z.string().optional(),
         price: z.number().min(0),
         sku: z.string().optional(),
-        description: z.string().optional(),
       }))
       .mutation(async ({ input }) => {
         return await db.createProduct(input);
