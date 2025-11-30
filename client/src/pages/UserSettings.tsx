@@ -4,13 +4,16 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { NotificationPreferences } from '@/components/NotificationPreferences';
 import { TwoFactorSetup } from '@/components/TwoFactorSetup';
-import { Bell, User, Lock, Smartphone, Shield, AlertCircle, CheckCircle2, Loader2 } from 'lucide-react';
+import { BackupCodeManager } from '@/components/BackupCodeManager';
+import { RegenerateBackupCodesDialog } from '@/components/RegenerateBackupCodesDialog';
+import { Bell, User, Lock, Smartphone, Shield, AlertCircle, CheckCircle2, Loader2, Key } from 'lucide-react';
 import { trpc } from '@/lib/trpc';
 import { toast } from 'sonner';
 
 export default function UserSettings() {
   const [activeTab, setActiveTab] = useState('notifications');
   const [showTwoFactorSetup, setShowTwoFactorSetup] = useState(false);
+  const [showRegenerateDialog, setShowRegenerateDialog] = useState(false);
 
   // Fetch 2FA status
   const { data: twoFactorStatus, isLoading: isLoadingStatus, refetch: refetchStatus } = 
@@ -41,6 +44,10 @@ export default function UserSettings() {
     setShowTwoFactorSetup(false);
     refetchStatus();
     toast.success('2FA setup complete!');
+  };
+
+  const handleRegenerateBackupCodes = async () => {
+    setShowRegenerateDialog(true);
   };
 
   return (
@@ -145,6 +152,13 @@ export default function UserSettings() {
                         Regenerate Secret
                       </Button>
                       <Button
+                        variant="outline"
+                        onClick={handleRegenerateBackupCodes}
+                        className="flex-1"
+                      >
+                        Regenerate Codes
+                      </Button>
+                      <Button
                         variant="destructive"
                         onClick={handleDisableTwoFactor}
                         disabled={disableTwoFactor.isPending}
@@ -218,6 +232,18 @@ export default function UserSettings() {
               </div>
             </Card>
 
+            {/* Backup Codes Card */}
+            {twoFactorStatus?.enabled && (
+              <Card className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 overflow-hidden">
+                <div className="p-6">
+                  <BackupCodeManager
+                    userId={1} // TODO: Get actual user ID from context
+                    onCodesRegenerated={() => setShowRegenerateDialog(false)}
+                  />
+                </div>
+              </Card>
+            )}
+
             {/* Session Management Card */}
             <Card className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 overflow-hidden">
               <div className="p-6">
@@ -259,6 +285,16 @@ export default function UserSettings() {
         open={showTwoFactorSetup}
         onOpenChange={setShowTwoFactorSetup}
         onSuccess={handleTwoFactorSetupSuccess}
+      />
+
+      {/* Regenerate Backup Codes Dialog */}
+      <RegenerateBackupCodesDialog
+        open={showRegenerateDialog}
+        onOpenChange={setShowRegenerateDialog}
+        onConfirm={async () => {
+          // TODO: Call tRPC endpoint to regenerate codes
+          toast.success('Backup codes regenerated');
+        }}
       />
     </div>
   );

@@ -907,11 +907,26 @@ export const notificationLog = mysqlTable("notificationLog", {
 	index('notificationLog_sentAt_idx').on(table.sentAt),
 ]);
 
+export const backupCodes = mysqlTable("backupCodes", {
+	id: int().autoincrement().notNull(),
+	userId: int().notNull(),
+	code: varchar({ length: 20 }).notNull(),
+	isUsed: boolean().default(false).notNull(),
+	usedAt: timestamp({ mode: 'string' }),
+	generationId: varchar({ length: 36 }).notNull(),
+	createdAt: timestamp({ mode: 'string' }).default('CURRENT_TIMESTAMP').notNull(),
+},
+(table) => [
+	index('backupCodes_userId_idx').on(table.userId),
+	index('backupCodes_generationId_idx').on(table.generationId),
+	index('backupCodes_isUsed_idx').on(table.isUsed),
+]);
+
 export type NotificationPreferences = typeof notificationPreferences.$inferSelect;
 export type InsertNotificationPreferences = typeof notificationPreferences.$inferInsert;
-
 export type AlertNotification = typeof alertNotifications.$inferSelect;
 export type InsertAlertNotification = typeof alertNotifications.$inferInsert;
-
 export type NotificationLog = typeof notificationLog.$inferSelect;
 export type InsertNotificationLog = typeof notificationLog.$inferInsert;
+export type BackupCode = typeof backupCodes.$inferSelect;
+export type InsertBackupCode = typeof backupCodes.$inferInsert;
