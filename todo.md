@@ -152,6 +152,43 @@
 - [x] Initialize scheduler on server startup
 - [ ] Add unsubscribe/preferences functionality (future enhancement)
 
+## Email & Telegram Notification Integration (COMPLETED)
+
+### Database Schema ✅
+- [x] notificationPreferences table: User notification settings
+- [x] alertNotifications table: Alert delivery tracking
+- [x] notificationLog table: Notification history
+
+### Notification Service ✅
+- [x] NotificationService.ts: Email and Telegram delivery
+- [x] SMTP email configuration
+- [x] Telegram Bot API integration
+- [x] Severity-based filtering (critical, warning, info)
+- [x] Quiet hours support
+- [x] Notification logging and retry logic
+
+### tRPC Endpoints ✅
+- [x] getPreferences: Fetch user notification settings
+- [x] updatePreferences: Save notification preferences
+- [x] sendTest: Send test notification via channel
+- [x] getStats: Notification statistics and metrics
+
+### UI Components ✅
+- [x] NotificationPreferences.tsx: Settings form with toggles
+- [x] Email alerts configuration (critical, warning, info)
+- [x] Telegram alerts configuration (critical, warning, info)
+- [x] Quiet hours time picker
+- [x] Timezone selector
+- [x] Test notification buttons
+- [x] Statistics display
+
+### User Settings Page ✅
+- [x] UserSettings.tsx: Main settings page with tabs
+- [x] Notifications tab with preferences
+- [x] Profile tab (placeholder)
+- [x] Security tab (placeholder)
+- [x] Responsive design with dark mode
+
 ## New Features - Role Change History
 - [x] Create role_changes database table
 - [x] Track role modifications with old/new values

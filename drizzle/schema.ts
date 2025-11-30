@@ -841,3 +841,75 @@ export type InsertPerformanceMetricsHourly = typeof performanceMetricsHourly.$in
 
 export type PerformanceMetricsDaily = typeof performanceMetricsDaily.$inferSelect;
 export type InsertPerformanceMetricsDaily = typeof performanceMetricsDaily.$inferInsert;
+
+
+// ============================================================
+// Notification Preferences & Alert Notifications
+// ============================================================
+
+export const notificationPreferences = mysqlTable("notificationPreferences", {
+	id: int().autoincrement().notNull(),
+	userId: int().notNull(),
+	emailAlerts: boolean().default(true).notNull(),
+	telegramAlerts: boolean().default(true).notNull(),
+	emailCritical: boolean().default(true).notNull(),
+	emailWarning: boolean().default(true).notNull(),
+	emailInfo: boolean().default(false).notNull(),
+	telegramCritical: boolean().default(true).notNull(),
+	telegramWarning: boolean().default(true).notNull(),
+	telegramInfo: boolean().default(false).notNull(),
+	quietHoursStart: varchar({ length: 5 }), // HH:MM format
+	quietHoursEnd: varchar({ length: 5 }), // HH:MM format
+	timezone: varchar({ length: 50 }).default('UTC').notNull(),
+	createdAt: timestamp({ mode: 'string' }).default('CURRENT_TIMESTAMP').notNull(),
+	updatedAt: timestamp({ mode: 'string' }).defaultNow().onUpdateNow().notNull(),
+},
+(table) => [
+	index('notificationPreferences_userId_idx').on(table.userId),
+]);
+
+export const alertNotifications = mysqlTable("alertNotifications", {
+	id: int().autoincrement().notNull(),
+	alertId: int().notNull(),
+	userId: int().notNull(),
+	channel: mysqlEnum(['email', 'telegram', 'in-app']).notNull(),
+	status: mysqlEnum(['pending', 'sent', 'failed', 'skipped']).default('pending').notNull(),
+	sentAt: timestamp({ mode: 'string' }),
+	failureReason: text(),
+	retryCount: int().default(0).notNull(),
+	maxRetries: int().default(3).notNull(),
+	createdAt: timestamp({ mode: 'string' }).default('CURRENT_TIMESTAMP').notNull(),
+},
+(table) => [
+	index('alertNotifications_alertId_idx').on(table.alertId),
+	index('alertNotifications_userId_idx').on(table.userId),
+	index('alertNotifications_status_idx').on(table.status),
+	index('alertNotifications_channel_idx').on(table.channel),
+]);
+
+export const notificationLog = mysqlTable("notificationLog", {
+	id: int().autoincrement().notNull(),
+	userId: int().notNull(),
+	channel: mysqlEnum(['email', 'telegram', 'in-app']).notNull(),
+	subject: varchar({ length: 255 }),
+	message: text().notNull(),
+	recipientEmail: varchar({ length: 320 }),
+	recipientTelegramId: varchar({ length: 64 }),
+	status: mysqlEnum(['sent', 'failed', 'skipped']).notNull(),
+	errorMessage: text(),
+	sentAt: timestamp({ mode: 'string' }).default('CURRENT_TIMESTAMP').notNull(),
+},
+(table) => [
+	index('notificationLog_userId_idx').on(table.userId),
+	index('notificationLog_channel_idx').on(table.channel),
+	index('notificationLog_sentAt_idx').on(table.sentAt),
+]);
+
+export type NotificationPreferences = typeof notificationPreferences.$inferSelect;
+export type InsertNotificationPreferences = typeof notificationPreferences.$inferInsert;
+
+export type AlertNotification = typeof alertNotifications.$inferSelect;
+export type InsertAlertNotification = typeof alertNotifications.$inferInsert;
+
+export type NotificationLog = typeof notificationLog.$inferSelect;
+export type InsertNotificationLog = typeof notificationLog.$inferInsert;
